@@ -1,0 +1,104 @@
+<div class="row pd-top">
+    <div class="col-12 my-auto breadcrum-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="breadcrum-title mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span class="breadcrum-title" *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+
+<div class="bg-white full-width mt-4 pt-2 pb-4" *ngIf="userProfile">
+    <div class="col-12">
+        <div class="text-center">
+            <img class="rounded-circle" [src]="(userProfile.avatarURL) ? userProfile.avatarURL : '../../../../../assets/img/user-avatar.png'"/>
+            <p class="title-info">{{userProfile?.name}}</p>
+        </div>
+    </div>
+    <div class="bg-info">
+        {{"Courses.Enroll_Courses" | translate}}
+    </div>
+    <div class="table-style">
+        <ng-container *ngFor="let courseEnroll of userProfile.courses; let i1 = index;">
+            <div class="featured" (click)="showCourseCurriculum(courseEnroll)">
+                <img [src]="(courseEnroll.logoURL) ? courseEnroll.logoURL : '../../../../../assets/img/course-profile.png'" style="width: 100%; height: 180px"/>
+                <div class="row">
+                    <div class="col-sm-12 text-left">
+                        <p class="large-title bold">{{courseEnroll.crsName}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-7 text-left">
+                        <p class="medium-text">{{courseEnroll.orgName}}</p>
+                        <p class="medium-text-red bold"></p>
+                    </div>
+                    <div class="col-sm-5 text-right">
+                        <div class="medium-text">
+                            <div>
+                                <app-star [rank]="courseEnroll.rank" [index]="i1 + 1"></app-star>
+                                <span style="font-size: 15px; font-weight: bold">{{courseEnroll.rank | number}}</span>
+                            </div>
+                        </div>
+                        <p class="medium-text" style="font-size: 13px">{{courseEnroll.totalUser | number}}</p>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+<div class="bg-info">
+    {{"Courses.Certifications" | translate}}
+</div>
+<div class="table-style bg-white mb-3" *ngIf="userProfile">
+    <table class="table">
+        <tr class="header-title">
+            <th>{{"Courses.NAME" | translate}}</th>
+            <th>{{"Courses.LEVEL" | translate}}</th>
+            <th>{{"Courses.ISSUER" | translate}}</th>
+            <th>{{"Courses.ON_DATE" | translate}}</th>
+            <th>{{"Courses.ACTION" | translate}}</th>
+        </tr>
+        <ng-container *ngFor="let certification of userProfile.certifications; let i2 = index;">
+            <tr class="info-title">
+                <td>
+                    {{certification.name}}
+                </td>
+                <td>{{certification.level}}</td>
+                <td>{{certification.issuer}}</td>
+                <td>
+                    {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(certification.onDate).st, 'day': getCreateDateInfo(certification.onDate).day}) + '/' +
+                (('DATEFORMAT.' + getCreateDateInfo(certification.onDate).month) | translate) + '/' +
+                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(certification.onDate).year})}}
+                </td>
+                <td>
+                    <div class="font-icon">
+                        <span (click)="showCertificate(i2)" class="pe-7s-ribbon pr-2"></span>
+                        <span (click)="showSignature(i2)" class="pe-7s-id"></span>
+                    </div>
+                </td>
+            </tr>
+        </ng-container>
+    </table>
+</div>
+
+<div mdbModal #modal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog profiles-attachment" role="document">
+        <div class="modal-content">
+            <div class="modal-body" *ngIf="selectedCertificate">
+                <div style="position: relative">
+                    <img class="certificates" (click)="modal.hide()" width="100%"
+                         [src]="(selectedCertificate.url) ? selectedCertificate.url : '../../../../../assets/img/certificate.png'"/>
+                    <div style='position: absolute;right:10px;top:10px;'>
+                        <button class="btn-download" (click)="downloadCert(modal)">
+                            <i class="fa fa-download mr-1" aria-hidden="true"></i>{{"MESSAGE.Download" | translate}}
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

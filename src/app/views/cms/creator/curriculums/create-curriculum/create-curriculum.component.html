@@ -1,0 +1,966 @@
+<div class="row pt-4">
+  <div class="col-8 breadcrum-title">
+    <a class="mr-1 breadcrum" routerLink="/cms/creator/curriculums">{{"MESSAGE.NameList.Curriculums" | translate}}</a>
+    <span class="mr-1">></span>
+    <span>{{"MESSAGE.NameList.Create" | translate}}</span>
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="progress-area">
+      <div class='progress-my'>
+        <div class='bar-my' [style.width]="percentage + '%'"></div>
+        <div class='percent-my' [innerHTML]="percentage + '%'"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row header">
+  <div class="col-md-12">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <div class="nav-link modal-step-title" (click)="gotoTab(1)" [ngClass]="{ 'active': step==1 }">
+          <span>{{'1. ' + ("SIDEBAR.CONTENTS.NEW_CURRICULUM.CREATE" | translate)}}</span></div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-link modal-step-title" (click)="gotoTab(2)" [ngClass]="{ 'active': step==2 }">
+          <span>{{'2. ' + ("SIDEBAR.CONTENTS.NEW_CURRICULUM.UPDATE_INFO" | translate)}}</span></div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-link modal-step-title" (click)="gotoTab(3)" [ngClass]="{ 'active': step==3 }">
+          <span>{{'3. ' + ("SIDEBAR.CONTENTS.NEW_CURRICULUM.UPDATE_UNITS" | translate)}}</span></div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-link modal-step-title" (click)="gotoTab(4)" [ngClass]="{ 'active': step==4 }">
+          <span>{{'4. ' + ("SIDEBAR.CONTENTS.NEW_CURRICULUM.REQUEST_QUOTATION" | translate)}}</span></div>
+      </li>
+      <li class="nav-item">
+        <div class="nav-link modal-step-title" (click)="gotoTab(5)" [ngClass]="{ 'active': step==5 }">
+          <span>{{'5. ' + ("SIDEBAR.CONTENTS.NEW_CURRICULUM.DONE" | translate)}}</span></div>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="bg-white">
+  <div class="tab-content">
+    <div *ngIf="step === 1">
+      <form [formGroup]="templateFormGroup">
+        <div class="pl-3 pr-3">
+          <div class="row">
+            <div class="col-sm-12 pt-2" style="display: flex;">
+              <label class="my-auto" style="color: #000000">{{"LAYOUT.TEMPLATE" | translate}}</label>
+              <select id="template" class="form-control ml-3" (change)="changeSelectedTemplate($event)"
+                formControlName="template">
+                <option *ngFor="let template of templates" [value]="template.id">{{template.name}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="p-3">
+          <div class="row">
+            <div class="col-12">
+              <!-- Card content -->
+              <div style="width: 1rem; display: inline-block">1.</div><span>{{'Learning Objectives'}}</span>
+              <div style="padding-left: 1rem"><span
+                  class="text-justify">{{(selectedTemplate) ? selectedTemplate.objectives : ''}}</span></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div style="width: 1rem; display: inline-block">2.</div><span>{{'Goals and Expectations'}}</span>
+              <div style="padding-left: 1rem"><span
+                  class="text-justify">{{(selectedTemplate) ? selectedTemplate.requirements : ''}}</span></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div style="width: 1rem; display: inline-block">3.</div><span>{{'Materials'}}</span>
+              <div style="padding-left: 1rem"><span
+                  class="text-justify">{{(selectedTemplate) ? selectedTemplate.material : ''}}</span></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div style="width: 1rem; display: inline-block">4.</div><span>{{'Curriculum Units'}}</span>
+              <div *ngFor="let unit of selectedTemplate.units" style="padding-left: 1rem;">
+                <span class="text-justify">{{unit.name}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="step === 2">
+      <p class="font-he">{{"CREATOR.CURRICULUMS.LIST.INFORMATION" | translate}}</p>
+      <form [formGroup]="updateInfoFormGroup">
+        <div class="row pt-3">
+          <div class="col-6">
+            <label for="type">{{("CREATOR.CURRICULUMS.LIST.TYPE" | translate)}}</label>
+            <select id="type" class="form-control type-select" formControlName="type">
+              <option *ngFor="let type of types" [value]="type.id">{{type.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="title">{{("CREATOR.CURRICULUMS.LIST.TITLE" | translate)}}</label>
+            <input id="title" class="form-control" formControlName="title">
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="learning_objective">{{("CREATOR.CURRICULUMS.LIST.LEARNING_OBJECTIVES" | translate)}}</label>
+            <textarea autosize [minRows]="2" [maxRows]="10" id="learning_objective" class="form-control"
+              formControlName="learning_objective"></textarea>
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-12">
+            <!-- Card content -->
+            <label
+              for="goals_and_expectations">{{("CREATOR.CURRICULUMS.LIST.GLOBAL_AND_EXPECTATIONS" | translate)}}</label>
+            <input id="goals_and_expectations" class="form-control" formControlName="goals_and_expectations">
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="materials">{{("CREATOR.CURRICULUMS.LIST.MATERIALS" | translate)}}</label>
+            <input id="materials" class="form-control" formControlName="materials">
+          </div>
+        </div>
+        <label class="align-top pt-3">{{("CREATOR.CURRICULUMS.LIST.SUB_TITLES" | translate)}}</label>
+        <div class="bg-white box-check mb-3">
+          <div class="row" formGroupName="subtitles">
+            <div *ngFor="let item of updateInfoFormGroup.get('subtitles').value | keyvalue" class="col-4 no-pd">
+              <div>
+                <label><input class="form-control inline checkbox" type="checkbox" name="sub-label"
+                    [formControlName]="item.key" [value]="item.value" />{{ item.key }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="step === 3">
+      <form [formGroup]="updateUnitsFormGroup">
+        <div class="row pb-1">
+          <div class="col-sm-12">
+            <div class="text-right">
+              <div class="col-inline">
+                <button class="create relative btn" title="{{'CREATOR.CURRICULUMS.LIST.CREATE_NEW_UNIT' | translate}}"
+                  (click)="openUnitInfoModal()">
+                  <i class="fas fa-plus"></i><span>{{('LAYOUT.CREATE' | translate)}}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="row">
+            <div class="col-12 form-group">
+              <!-- Card content -->
+              <table class="table-striped table-wrapper-scroll-y style-1"
+                style="font-family: 'Roboto Regular'; font-size: 14px;">
+                <thead>
+                  <tr>
+                    <th scope="col" width="5%">#</th>
+                    <th scope="col" width="54%">{{"CREATOR.CURRICULUMS.LIST.NAME" | translate}}</th>
+                    <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.LIST.TYPE" | translate}}</th>
+                    <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.LIST.Prerequisite" | translate}}</th>
+                    <th scope="col" width="15%"></th>
+                  </tr>
+                </thead>
+                <tbody style="color: #000000">
+                  <ng-container>
+                    <ng-container *ngFor="let unit of cv.units; let i = index;">
+                      <tr class="info-line">
+                        <td scope="row" width="5%" [style.vertical-align]="'top'" [style.color]="'#0B3FEB'"
+                          [style.padding-top]="(i !== 0) ? '15px' : ''">{{unit.no}}</td>
+                        <td width="54%" [style.vertical-align]="'top'" [style.padding-top]="(i !== 0) ? '15px' : ''">
+                          <span style="font-size: 14px; font-weight: bolder;">{{unit.name}}</span>
+                          <p [style.color]="'#7B7B7B'" *ngIf="unit.description">{{unit.description}}</p>
+                        </td>
+                        <td width="13%"></td>
+                        <td scope="row" [style.vertical-align]="'top'" width="13%"
+                          [style.padding-top]="(i !== 0) ? '15px' : ''"
+                          [style.font-style]="(unit.prerequisites.length > 0) ? 'normal' : 'italic'"
+                          [style.color]="(unit.prerequisites.length > 0) ? '#000000' : '#239638'">
+                          {{(unit.prerequisites.length > 0) ? ('[' + unit.prerequisites.join(', ') + ']') : '[Empty]'}}
+                        </td>
+                        <td width="15%" [style.vertical-align]="'top'" [style.padding-top]="(i !== 0) ? '15px' : ''">
+                          <i class="fas fa-pen item-edit fa-pen-display" (click)="openUnitInfoEditModal(unit)"
+                            title="{{('CREATOR.CURRICULUMS.LIST.EDIT_UNIT_INFO' | translate)}}"></i>
+                          <i class="fas fa-trash item-delete fa-trash-display" (click)="removeUnit(unit)"
+                            title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_UNIT' | translate)}}"></i>
+                        </td>
+                      </tr>
+                      <ng-container *ngFor="let lesson of unit.lessonGroup">
+                        <tr class="info-line">
+                          <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                          <td width="54%">
+                            <span [style.color]="'#000000'" [style.font-size]="'13px'">{{lesson.name}}
+                              <i class="fas fa-pencil-alt icon fa-display"
+                                title="{{('CREATOR.CURRICULUMS.LIST.EDIT_LESSON_NAME' | translate)}}"
+                                (click)="openGroupModal(i, lesson, 'Lesson')"></i>
+                            </span>
+                          </td>
+                          <td width="13%">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</td>
+                          <td width="13%"></td>
+                          <td width="15%">
+                            <i [class]="'fas fa-pen item-edit fa-pen-display'" (click)="editLesson(i, lesson)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.EDIT_LESSON' | translate)}}">
+                            </i>
+                            <i class="fas fa-trash item-delete fa-trash-display" (click)="removeLesson(i, lesson)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_LESSON' | translate)}}">
+                            </i>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <ng-container *ngFor="let exercise of unit.exerciseGroup">
+                        <tr class="info-line">
+                          <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                          <td width="54%">
+                            <span [style.color]="'#000000'" [style.font-size]="'13px'">{{exercise.name}}
+                              <i class="fas fa-pencil-alt icon fa-display"
+                                title="{{('CREATOR.CURRICULUMS.LIST.EDIT_EXERCISE_NAME' | translate)}}"
+                                (click)="openGroupModal(i, exercise, 'Exercise')"></i>
+                            </span>
+                          </td>
+                          <td width="13%">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</td>
+                          <td width="13%"></td>
+                          <td width="15%">
+                            <i [class]="'fas fa-pen item-edit fa-pen-display'" (click)="editExercise(i, exercise)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.EDIT_EXERCISE' | translate)}}">
+                            </i>
+                            <i class="fas fa-trash item-delete fa-trash-display" (click)="removeExercise(i, exercise)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_EXERCISE' | translate)}}">
+                            </i>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <ng-container *ngFor="let quiz of unit.quizGroup">
+                        <tr class="info-line">
+                          <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                          <td width="54%">
+                            <span [style.color]="'#000000'" [style.font-size]="'13px'">{{quiz.name}}
+                              <i class="fas fa-pencil-alt icon fa-display"
+                                title="{{('CREATOR.CURRICULUMS.LIST.EDIT_QUIZ_NAME' | translate)}}"
+                                (click)="openGroupModal(i, quiz, 'Quiz')"></i>
+                            </span>
+                          </td>
+                          <td width="13%">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</td>
+                          <td width="13%"></td>
+                          <td width="15%">
+                            <i [class]="'fas fa-pen item-edit fa-pen-display'" (click)="editQuestion(i, quiz)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.EDIT_QUIZ' | translate)}}">
+                            </i>
+                            <i class="fas fa-trash item-delete fa-trash-display" (click)="removeQuiz(i, quiz)"
+                              title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_QUIZ' | translate)}}">
+                            </i>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <tr>
+                        <td style="vertical-align: middle"></td>
+                        <td id="addGroupType_{{i}}" colspan="3" style=""></td>
+                        <td>
+                          <i id="{{'createBtn_' + i}}" class="fas fa-plus item-create-group"
+                             title="{{('CREATOR.CURRICULUMS.LIST.CREATE_NEW_GROUP' | translate)}}" (click)="openCreateArea(i)"></i>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="step === 4">
+      <form [formGroup]="quoteFormGroup" [style.font-size]="'14px'">
+        <div class="fourth-form-scroll square scrollbar-cyan">
+          <!-- Card content -->
+          <div class="row">
+            <div class="col-12">
+              <label class="pt-2">{{ "CREATOR.CURRICULUMS.QUOTE.Description" | translate}}</label>
+            </div>
+            <div class="col-12">
+              <textarea class="form-control" style="width: 100%" autosize [minRows]="2" [maxRows]="10" formControlName="description"></textarea>
+            </div>
+          </div>
+          <div class="pt-3 pb-2">
+            <span>{{ "CREATOR.CURRICULUMS.QUOTE.Attachment" | translate}}</span><span><i class="fas fa-plus"
+                [style.margin-left]="'5px'" (click)="openFile()"></i></span>
+            <input type="file" multiple="multiple" style="display: none" #fileInput (change)="previewFile($event)">
+            <input type="hidden" formControlName="attachment">
+          </div>
+          <div #attachments_preview class="row">
+          </div>
+          <label class="mt-3">{{ "CREATOR.CURRICULUMS.QUOTE.Service_fee" | translate}}</label>
+          <div class="form-width">
+            <input type="text" class="form-control with-control" formControlName="wishMinPrice" value=""
+              oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            <p class="my-auto ml-2 mr-2">-</p>
+            <input type="text" class="form-control with-control" formControlName="wishMaxPrice" value=""
+              oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            <p class="TEN_TITLE my-auto">TEN</p>
+          </div>
+          <div class="form-row form-pd pt-3">
+            <div class="col-md-2 mb-3">
+              <label>{{ "CREATOR.CURRICULUMS.QUOTE.Be_done_within" | translate}}</label>
+              <select class="form-control" formControlName="wishDayEndOn"
+                style="font-family: 'Roboto Regular'; font-size: 14px;">
+                <option *ngFor="let template of date_template" [value]="template.value">{{template.text}}</option>
+              </select>
+            </div>
+            <div class="col-md-2 mb-3">
+              <label class="mb-0">{{ "CREATOR.CURRICULUMS.QUOTE.Expired_Date" | translate}}</label>
+              <div class="feature-info">
+                <input type="date" class="date-field" [min]="today | date : 'yyyy-MM-dd'" formControlName="expireOn"
+                  onkeydown="return false">
+              </div>
+            </div>
+          </div>
+          <div class="pr-4 pt-3 pb-3">
+            <span>{{ "CREATOR.CURRICULUMS.QUOTE.Category" | translate}}</span><span><i (click)="addCategory()"
+                class="fas fa-plus" [style.margin-left]="'5px'"></i></span>
+          </div>
+          <div class="col-sm-10 form-categories">
+            <div class="form-row" id="categories_area">
+              <ng-container style="display: block" formArrayName="categories"
+                *ngIf="quoteFormGroup['controls']['categories']['controls'].length >= 0">
+                <ng-container style="display: block"
+                  *ngFor="let vendor_item of quoteFormGroup['controls']['categories']['controls']; let i = index;">
+                  <div
+                    [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'"
+                    class="col-md-2 mb-3" [formGroupName]="i">
+                    <input id="category_input_{{i}}" type="text"
+                      [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'"
+                      class="form-control" formControlName="category">
+                    <span id="span_category_{{i}}"
+                      [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'"><i
+                        (click)="removeCategory(i)" class="fas fa-times-circle text-danger"
+                        style="top: -3px;right: 5px; position: absolute;box-shadow:none"></i></span>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+          <div class="pr-4 pt-3 pb-3">
+            <span>{{"CREATOR.CURRICULUMS.QUOTE.To_Vendor" | translate}}</span><span><i (click)="addNotifyVendor()"
+                class="fas fa-plus" [style.margin-left]="'5px'"></i></span>
+          </div>
+          <div class="col-sm-10 form-vendors">
+            <div class="form-row" id="vendors_area">
+              <ng-container style="display: block" formArrayName="notify_vendors"
+                *ngIf="quoteFormGroup['controls']['notify_vendors']['controls'].length >= 0">
+                <ng-container style="display: block"
+                  *ngFor="let vendor_item of quoteFormGroup['controls']['notify_vendors']['controls']; let i = index;">
+                  <div
+                    [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'"
+                    class="col-md-2 mb-3" [formGroupName]="i">
+                    <input id="input_{{i}}" type="text"
+                      [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'"
+                      class="form-control" formControlName="vendor">
+                    <input type="hidden" style="display: none" class="form-control" formControlName="vendor_sig">
+                    <span id="span_{{i}}"
+                      [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'"><i
+                        (click)="removeNotifyVendor(i)" class="fas fa-times-circle text-danger"
+                        style="top: -3px;right: 5px; position: absolute;box-shadow:none"></i></span>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+          <div class="custom-control custom-checkbox pb-4">
+            <input type="checkbox" class="custom-control-input" id="customCheck1" formControlName="invitedOnly">
+            <label class="custom-control-label"
+              for="customCheck1">{{"CREATOR.CURRICULUMS.QUOTE.Only_show" | translate}}</label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="step === 5">
+      <div class="bg-blue">
+        <div class="row" style="align-items: baseline">
+          <div class="col-12 info_message">
+            {{"CREATOR.CURRICULUMS.General_Information" | translate}}
+            <i (click)="specialGotoTab(2);" class="fas fa-edit" style="padding-top: 4px;float: right;"></i>
+          </div>
+        </div>
+      </div>
+      <div class="pl-4 pr-4 pt-3 pb-3">
+        <div class="row">
+          <div class="col-12">
+            <!-- Card content -->
+            <span style="font-family: 'Roboto medium'; font-size: 14px;color: #8B8787">{{selectedTemplate.name}}</span>
+            <p style="font-family: 'Roboto regular'; font-size: 14px;" *ngIf="selectedTemplate.description">
+              {{selectedTemplate.description}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-blue">
+        <div class="row" style="align-items: baseline">
+          <div class="col-12 info_message">
+            {{"CREATOR.CURRICULUMS.Request_for_Quotation" | translate}}
+            <i (click)="specialGotoTab(4);" class="fas fa-edit" style="padding-top: 4px;float: right;"></i>
+          </div>
+        </div>
+      </div>
+      <div class="pl-4 pr-4 pt-3 pb-3">
+        <div class="">
+          <div class="form-group">
+            <!-- Card content -->
+            <div class="row">
+              <div class="col-12">
+                <label class="pt-2">{{"CREATOR.CURRICULUMS.Request_text" | translate}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <p style="text-align: justify">
+                  {{quoteFormGroup.get('description').value}}
+                </p>
+              </div>
+            </div>
+            <label class="pt-2">{{"CREATOR.CURRICULUMS.Service_fee" | translate}}</label>
+            <div class="row">
+              <div class="col-12">
+                <div>
+                  <span
+                    class="pr-1">{{quoteFormGroup.get('wishMinPrice').value + ' - ' + quoteFormGroup.get('wishMaxPrice').value}}</span>
+                  <span class="TEN_TITLE">TEN</span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <label class="pt-2">{{"CREATOR.CURRICULUMS.Should_be_completed" | translate}}</label>
+              </div>
+              <div class="col-6">
+                <label class="pt-2">{{"CREATOR.CURRICULUMS.Expired_date" | translate}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <label class="pt-2">{{getDurationName(quoteFormGroup?.get('wishDayEndOn').value)}}</label>
+              </div>
+              <div class="col-6">
+                <label class="pt-2">{{quoteFormGroup?.get('expireOn').value | date: 'dd/MM/yyyy'}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <label class="pt-2 pr-1">{{"CREATOR.CURRICULUMS.Requested_Vendors" | translate}}</label><span
+                  style="color: #1B75BC" *ngIf="quoteFormGroup.get('invitedOnly').value">(Exclusive)</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-3" *ngFor="let vendor of getSelectedVendors()">
+                {{vendor}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- unit infor -->
+      <div class="bg-blue">
+        <div class="row" style="align-items: baseline">
+          <div class="col-12 info_message">
+            {{"CREATOR.CURRICULUMS.UNITS_INFORMATION" | translate}}
+            <i (click)="specialGotoTab(3);" class="fas fa-edit" style="padding-top: 4px;float: right;"></i>
+          </div>
+        </div>
+      </div>
+      <div class="pl-4 pr-4 pt-3 pb-3">
+        <div class="row">
+          <div class="col-12 form-group">
+            <!-- Card content -->
+            <table class="table-striped table-wrapper-scroll-y style-1"
+              style="font-family: 'Roboto Regular'; font-size: 14px;">
+              <thead>
+                <tr>
+                  <th scope="col" width="5%">#</th>
+                  <th scope="col" width="54%">{{"CREATOR.CURRICULUMS.LIST.NAME" | translate}}</th>
+                  <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.LIST.TYPE" | translate}}</th>
+                  <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.LIST.Prerequisite" | translate}}</th>
+                </tr>
+              </thead>
+              <tbody style="color: #000000">
+                <ng-container>
+                  <ng-container *ngFor="let unit of cv.units; let i = index;">
+                    <tr>
+                      <td scope="row" width="5%" [style.vertical-align]="'top'" [style.color]="'#0B3FEB'"
+                        [style.padding-top]="(i !== 0) ? '15px' : ''">{{unit.no}}</td>
+                      <td width="54%" [style.vertical-align]="'top'" [style.padding-top]="(i !== 0) ? '15px' : ''">
+                        <span style="font-size: 14px; font-weight: bolder;">{{unit.name}}</span>
+                        <p [style.color]="'#7B7B7B'" *ngIf="unit.description">{{unit.description}}</p>
+                      </td>
+                      <td width="13%"></td>
+                      <td scope="row" [style.vertical-align]="'top'" width="13%"
+                        [style.padding-top]="(i !== 0) ? '15px' : ''"
+                        [style.font-style]="(unit.prerequisites.length > 0) ? 'normal' : 'italic'"
+                        [style.color]="(unit.prerequisites.length > 0) ? '#000000' : '#239638'">
+                        {{(unit.prerequisites.length > 0) ? ('[' + unit.prerequisites.join(', ') + ']') : '[Empty]'}}
+                      </td>
+                    </tr>
+                    <ng-container *ngFor="let lesson of unit.lessonGroup">
+                      <tr>
+                        <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                        <td width="54%">
+                          <span [style.color]="'#000000'">{{lesson.name}}
+                          </span>
+                        </td>
+                        <td width="13%">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</td>
+                        <td width="13%"></td>
+                      </tr>
+                    </ng-container>
+                    <ng-container *ngFor="let exercise of unit.exerciseGroup">
+                      <tr>
+                        <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                        <td width="54%">
+                          <span [style.color]="'#000000'">{{exercise.name}}
+                          </span>
+                        </td>
+                        <td width="13%">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</td>
+                        <td width="13%"></td>
+                      </tr>
+                    </ng-container>
+                    <ng-container *ngFor="let quiz of unit.quizGroup">
+                      <tr>
+                        <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                        <td width="54%">
+                          <span [style.color]="'#000000'">{{quiz.name}}
+                          </span>
+                        </td>
+                        <td width="13%">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</td>
+                        <td width="13%"></td>
+                      </tr>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center pb-2">
+    <div *ngIf="step === 1">
+      <button class="button-cancel" (click)="gotoCVList();">{{ "LAYOUT.CANCEL" | translate}}</button>
+      <button class="button-save"
+        (click)="confirmCreateCVFromTemplate.show();">{{ "LAYOUT.NEXT_STEP" | translate}}</button>
+    </div>
+    <div *ngIf="step === 2">
+      <button class="button-save" (click)="backToSelecteTemplateStep()">{{ "LAYOUT.PREV_STEP" | translate}}</button>
+      <button class="button-save" (click)="confirmUpdateInfoDialog.show()">{{ "LAYOUT.NEXT_STEP" | translate}}</button>
+    </div>
+    <div *ngIf="step == 3">
+      <button class="button-save"
+        (click)="step = step - 1; percentage = 30;">{{ "LAYOUT.PREV_STEP" | translate}}</button>
+      <button class="button-save" (click)="showStep4();">{{ "LAYOUT.NEXT_STEP" | translate}}</button>
+    </div>
+    <div *ngIf="step == 4">
+      <button class="button-save"
+        (click)="step = step - 1; percentage = 50;">{{ "LAYOUT.PREV_STEP" | translate}}</button>
+      <button class="button-save" (click)="confirmSaveSettings.show();">{{ "LAYOUT.NEXT_STEP" | translate}}</button>
+    </div>
+    <div class="scroll-button" *ngIf="step == 5">
+      <div class="scroll">
+        <div class="row">
+          <div class="mx-auto" style="display: inline-flex;">
+            <button class="button-save my-auto"
+              (click)="gotoTab(4);">{{ "LAYOUT.PREV_STEP" | translate}}</button>
+            <select class="form-control complete" [(ngModel)]="selectedSaveType" (change)="saveStatus()">
+              <option value="">{{'MESSAGE.ChooseAnOption' | translate}}</option>
+              <option value="complete">{{'MESSAGE.Complete' | translate}}</option>
+              <option value="draf">{{'MESSAGE.SaveAsDraf' | translate}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #vendorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog vendorDialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "CREATOR.CURRICULUMS.QUOTE.Vendor_list" | translate}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeVendorModal()">
+          <span aria-hidden="true" class="close-label">X</span>
+        </button>
+      </div>
+      <div class="modal-header text-center search-bar">
+        <input class="search pl-3 pr-3" placeholder="{{'CREATOR.CURRICULUMS.QUOTE.Search_term' | translate}}"
+          type="text" [(ngModel)]="searchText2" />
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="modal-body vendor-list style-1">
+        <ng-container *ngFor="let vendor of notify_vendors_list; let i = index;">
+          <div class="row vendor-list-row my-hover"
+            *ngIf="searchText2 === '' || vendor.name.toLowerCase().indexOf(searchText2.toLowerCase()) >= 0">
+            <div class="col-sm-3 vendor-list-item">
+              <img
+                src="{{(vendor) ? ((vendor.logoURL) ? ((vendor.logoURL.indexOf('http') < 0) ? ('http://' + vendor.logoURL) : vendor.logoURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}"
+                width="40">
+            </div>
+            <div (click)="showVendor(vendor);"
+              [class]="(i !== notify_vendors_list.length -1) ? 'col-sm-9 d-flex align-items-center border-bottom vendor-list-info' : 'col-sm-9 d-flex align-items-center vendor-list-info'">
+              <div>
+                <div class="vendor-list-infol-label1">{{(vendor) ? vendor.name : ''}}</div>
+                <div class="vendor-list-infol-label2">
+                  {{(vendor) ? ((vendor.city) ? (vendor.city + ((vendor.country) ? (', ' + vendor.country) : '')) : ((vendor.country) ? vendor.country : '')) : ''}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #categoryModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog categoryDialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "CREATOR.CURRICULUMS.QUOTE.Category_list" | translate}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeCategoryModal()">
+          <span aria-hidden="true" class="close-label">X</span>
+        </button>
+      </div>
+      <div class="modal-header text-center search-bar">
+        <input class="search pl-3 pr-3" placeholder="{{'CREATOR.CURRICULUMS.QUOTE.Search_term' | translate}}"
+          type="text" [(ngModel)]="searchCategoryText" />
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="modal-body vendor-list style-1">
+        <ng-container *ngFor="let category of category_list; let j = index;">
+          <div class="row vendor-list-row my-hover"
+            *ngIf="searchCategoryText === '' || (category && category.name.toLowerCase().indexOf(searchCategoryText.toLowerCase()) >= 0)">
+            <div class="col-sm-3 vendor-list-item">
+              <img class="rounded-circle"
+                [src]="(category) ? category.url : '../../../../../assets/img/user-avatar.png'" alt="" width="40">
+            </div>
+            <div (click)="showCategory(category)"
+              [class]="(j !== category_list.length -1) ? 'col-sm-9 d-flex align-items-center border-bottom vendor-list-info' : 'col-sm-9 d-flex align-items-center vendor-list-info'">
+              <div>
+                <div class="vendor-list-infol-label1">{{(category) ? category.name : ''}}</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmSaveSettings="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "BUSINESS.Confirm" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+        {{ "CREATOR.CURRICULUMS.QUOTE.Are_You_Sure_Save_Quote" | translate}}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" (click)="confirmSaveSettings.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;"
+          (click)="confirmSaveSettings.hide(); updateCvRqtQuote();">{{ "LAYOUT.SAVE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmCreateCVFromTemplate="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialogNewTemplate" role="document">
+    <div class="modal-content confirmDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "BUSINESS.Confirm" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3">
+        <div class="pt-3 mb-2">
+          <label for="newName" class="font-weight-bold mr-1">{{'MESSAGE.Name' | translate}}</label>
+          <input class="form-control" type="text" id="newName" [(ngModel)]="newName">
+        </div>
+        <p>{{ "CREATOR.CURRICULUMS.Are_You_Sure_Create_CV_Template" | translate}}</p>
+      </div>
+      <div [class]="'btn-button mt-1'">
+        <button class="button-cancel" (click)="confirmCreateCVFromTemplate.hide()">{{ "LAYOUT.NO" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;"
+          (click)="confirmCreateCVFromTemplate.hide(); createCvFromTemplate();">{{ "LAYOUT.YES" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #curriculumUnitInfo="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog unitInfoDialog" role="document">
+    <div class="modal-content unitInfoDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{('CREATOR.CURRICULUMS.LIST.UNIT_INFORMATION' | translate)}}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <form [formGroup]="unitInfoForm">
+            <div class="row">
+              <div class="col-12 form-group">
+                <label for="name">{{('CREATOR.CURRICULUMS.LIST.UNIT_NAME' | translate)}}</label>
+                <input id="name" class="form-control" formControlName="name">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="description">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</label>
+                <textarea autosize [minRows]="2" [maxRows]="10" id="description" class="form-control"
+                  formControlName="description"></textarea>
+              </div>
+            </div>
+            <div *ngIf="checkPrerequisites(unitInfoForm)">{{('CREATOR.CURRICULUMS.LIST.Prerequisite' | translate)}}
+            </div>
+            <div class="bg-white box-check mb-3" *ngIf="checkPrerequisites(unitInfoForm)">
+              <div formGroupName="prerequisites" class="well well-lg row">
+                <div *ngFor="let item of unitInfoForm.get('prerequisites').value | keyvalue" class="col-6">
+                  <label class="checkbox_label">
+                    <input class="form-control inline checkbox" type="checkbox" [formControlName]="item.key"
+                           [value]="item.value" />
+                    {{ getUnitNameFromPrerequisitesKey(item.key) }}
+                  </label>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </form>
+          <div class="text-center pb-3">
+            <button class="button-cancel" (click)="curriculumUnitInfo.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+            <button class="button-save"
+              (click)="curriculumUnitInfo.hide(); createUnit();">{{'LAYOUT.CREATE' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #curriculumUnitInfoEdit="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog unitInfoDialog" role="document">
+    <div class="modal-content unitInfoDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{('CREATOR.CURRICULUMS.LIST.UNIT_INFORMATION' | translate)}}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <form [formGroup]="unitInfoEditForm">
+            <div class="row">
+              <div class="col-12 form-group">
+                <label for="name2">{{('CREATOR.CURRICULUMS.LIST.UNIT_NAME' | translate)}}</label>
+                <input id="name2" class="form-control" formControlName="name" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="description2">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</label>
+                <textarea autosize [minRows]="2" [maxRows]="10" id="description2" class="form-control"
+                  formControlName="description"></textarea>
+              </div>
+            </div>
+            <div *ngIf="checkPrerequisites(unitInfoEditForm)">{{('CREATOR.CURRICULUMS.LIST.Prerequisite' | translate)}}
+            </div>
+            <div class="bg-white box-check mb-3" *ngIf="checkPrerequisites(unitInfoEditForm)">
+              <div formGroupName="prerequisites" class="well well-lg row">
+                <div *ngFor="let item of unitInfoEditForm.get('prerequisites').value | keyvalue" class="col-6">
+                  <label class="checkbox_label">
+                    <input class="form-control inline checkbox" type="checkbox" [formControlName]="item.key"
+                      [value]="item.value" />
+                    {{ getUnitNameFromPrerequisitesKey(item.key) }}
+                  </label>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </form>
+          <div class="text-center pb-3">
+            <button class="button-cancel"
+              (click)="curriculumUnitInfoEdit.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+            <button class="button-save"
+              (click)="curriculumUnitInfoEdit.hide(); updateUnit();">{{'LAYOUT.SAVE' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #groupItemDescription="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel4" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog itemInfoDialog" role="document">
+    <div class="modal-content itemInfoDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{('BUSINESS.Confirm' | translate)}}</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="groupForm">
+          <div class="row">
+            <div class="col-12 form-group">
+              <div class="unit">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</div>
+            </div>
+          </div>
+          <div>
+            <input id="name3" class="form-control mb-3" formControlName="name">
+            <div class="text-center pb-3">
+              <button class="button-cancel"
+                (click)="groupItemDescription.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+              <button class="button-save" (click)="updateGroupItemName();">{{'LAYOUT.SAVE' | translate}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmDeleteDialog="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "BUSINESS.Confirm" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center" style="padding-top: 15px;">
+        {{ 'MESSAGE.ConfirmDeleteActionThis' | translate : {'name' : ('MESSAGE.NameList.' + deleteWhat | translate) } }}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button (click)="confirmDeleteDialog.hide()" class="button-cancel"
+          style="margin-right: 0;">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button (click)="removeSelectedItem();" class="button-save">{{ "LAYOUT.OK" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmUpdateInfoDialog="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">{{ "BUSINESS.Confirm" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center" style="padding-top: 15px;">
+        {{ 'MESSAGE.ConfirmUpdateCVInfo' | translate }}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button (click)="confirmUpdateInfoDialog.hide()" class="button-cancel"
+          style="margin-right: 0;">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button (click)="updateCvInfo();" class="button-save">{{ "LAYOUT.OK" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #individualModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true"
+  [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+  <div class="modal-dialog terminateDialog" role="document">
+    <div class="modal-content">
+      <div class="row header">
+        <div class="col-md-12">
+          <ul class="nav nav-tabs" id="terminateTab" role="tablist">
+            <li class="nav-item">
+              <div *ngIf="stepTerminate >= 1" class="nav-link modal-step-title"
+                [ngClass]="{ 'active': stepTerminate === 1 }">
+                <span (click)="gotoTabTerminate(1)" *ngIf="kind === 1 && lesson">{{shortString(lesson.name, 20)}}</span>
+                <span (click)="gotoTabTerminate(1)"
+                  *ngIf="kind === 2 && exercise">{{shortString(exercise.name, 20)}}</span>
+                <span (click)="gotoTabTerminate(1)" *ngIf="kind === 3 && quiz">{{shortString(quiz.name, 20)}}</span>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div *ngIf="stepTerminate === 2" class="nav-link modal-step-title" (click)="gotoTabTerminate(2)"
+                [ngClass]="{ 'active': stepTerminate === 2 }">
+                <span>Solution</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="tab-content quote-sieries square scrollbar-cyan">
+        <div *ngIf="stepTerminate === 1">
+          <app-cms-creator-curriculum-lesson-view *ngIf="kind === 1" [toRouters]="[]" [editable]="true">
+          </app-cms-creator-curriculum-lesson-view>
+          <app-cms-creator-curriculum-exercise-view *ngIf="kind === 2" [toRouters]="[]" [editable]="true"
+            (solutionEmit)="showUnitsExerciseDetailFullForTerminateTab()">
+          </app-cms-creator-curriculum-exercise-view>
+          <app-cms-creator-curriculum-quiz-tf-view *ngIf="kind === 3" [toRouters]="[]" [editable]="true"
+            (solutionEmit)="showUnitsQuizDetailFullForTerminateTab()">
+          </app-cms-creator-curriculum-quiz-tf-view>
+        </div>
+        <div *ngIf="stepTerminate === 2">
+          <app-cms-creator-exercise-solution-view *ngIf="kind === 2" [editable]="true" [toRouters]="[]"
+            (emit)="gotoTabTerminate(1)">
+          </app-cms-creator-exercise-solution-view>
+          <app-cms-creator-question-solution-view *ngIf="kind === 3" [editable]="true" [toRouters]="[]"
+            (emit)="gotoTabTerminate(1)">
+          </app-cms-creator-question-solution-view>
+        </div>
+      </div>
+      <div class="text-center pb-2">
+        <div *ngIf="stepTerminate === 1">
+          <div class="text-center">
+            <button class="button-save" (click)="individualModal.hide();">{{'LAYOUT.CLOSE' | translate}}</button>
+          </div>
+        </div>
+        <div *ngIf="stepTerminate === 2">
+          <button class="button-save" (click)="gotoTabTerminate(1)">{{ "LAYOUT.PREV" | translate}}</button>
+          <button class="button-save" (click)="individualModal.hide();">{{'LAYOUT.CLOSE' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #groupCreate="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel4" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body group-create">
+        <div class="row">
+          <div class="col-12 form-group" style="margin-bottom: 0">
+            <label for="{{'name_' + selectedUnitIndex}}">{{('CREATOR.CURRICULUMS.LIST.GROUP_NAME' | translate)}}</label><br>
+            <input id="{{'name_' + selectedUnitIndex}}" value="" class="form-control" type="text"
+                   placeholder="{{('CREATOR.CURRICULUMS.LIST.ENTER_GROUP_NAME' | translate)}}"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 form-group pt-3" style="margin-bottom: 0">
+            <label for="{{'type_' + selectedUnitIndex}}">{{('CREATOR.CURRICULUMS.LIST.GROUP_TYPE' | translate)}}</label><br>
+            <select style="width: 170px;" id="{{'type_' + selectedUnitIndex}}"
+                    class="form-control browser-default custom-select">
+              <option value="Lesson">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</option>
+              <option value="Exercise">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</option>
+              <option value="Quiz">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-center" style="padding-top: 10px;">
+            <input type="button" class="button-cancel" style="margin-left: unset"
+                   (click)="groupCreate.hide()" value="{{('LAYOUT.CANCEL' | translate)}}">
+            <input type="button" class="button-save"
+                   (click)="addType(selectedUnitIndex);" value="{{('LAYOUT.CREATE' | translate)}}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

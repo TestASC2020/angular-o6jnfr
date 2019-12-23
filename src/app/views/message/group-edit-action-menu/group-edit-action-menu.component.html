@@ -1,0 +1,27 @@
+<div class="menu-icon">
+    <button class="action-button">
+        <i *ngIf="item.settings !== 2" class="fas fa-ellipsis-h fa-lg" [popover]="popContent"></i>
+        <i *ngIf="item.settings === 2" class="fas fa-ban" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="left-bottom" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" *ngIf="item.role === 2" (click)="removeAdmin();">
+                <i class="fas fa-user-alt-slash padding-icon"></i><span class="pl-2">{{"MESSAGE.Remove_admin" | translate}}</span>
+            </li>
+            <li class="list-group-item" *ngIf="item.role === 3" (click)="setAdmin();">
+                <i class="fas fa-user padding-icon"></i><span class="pl-2">{{"MESSAGE.Set_admin" | translate}}</span>
+            </li>
+            <li class="list-group-item" *ngIf="item.settings !== 2" (click)="confirmBan(item)">
+                <i class="pe-7s-lock padding-icon"></i><span class="pl-2">{{"Courses.Ban" | translate}}</span>
+            </li>
+            <li class="list-group-item" *ngIf="item.settings === 2" (click)="confirmUnBan(item)">
+                <i class="pe-7s-unlock padding-icon"></i><span class="pl-2">{{"Courses.Un-ban" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="removeMember()">
+                <i class="fas fa-user-minus padding-icon"></i><span class="pl-2">{{"MESSAGE.NameList.Delete" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

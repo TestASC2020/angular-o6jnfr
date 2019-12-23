@@ -1,0 +1,304 @@
+<div class="employees-top">
+    <div class="row pb-3">
+        <div class="col-sm-8 my-auto breadcrum-title">
+           <a class="breadcrum mr-1" routerLink="../../course-list">{{"Courses.Course_List" | translate}}</a>/ {{"Courses.Contract" | translate}}
+        </div>
+        <div class="col-sm-4">
+            <div class="searchbar text-right">
+                <div class="col-inline">
+                    <button class="mr-2 user-plus fas fa-plus-circle" (click)="contractAddModal.show()"> {{"LAYOUT.CREATE" | translate}}</button>
+                </div>
+                <div class="col-inline"> <input [(ngModel)]="searchText" placeholder='{{"COURSES.SEARCH" | translate}}' class="form-control search-bar" type="text" (keydown)="updateSearch($event)"/></div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row education">
+            <div class="col-sm-8">
+                <div class="text-left">
+                    <div class="col-inline">
+                        <div class="text-white">{{ ("COURSES.TITLE" | translate) + ': ' + courseInfo.name}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="background: #ffffff" class="row table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="13%">{{"Accounting.From" | translate}}</th>
+                    <th width="13%">{{"Accounting.To" | translate}}</th>
+                    <th width="16%">{{"Accounting.DESCRIPTION" | translate}}</th>
+                    <th width="8%">{{"Accounting.SALES" | translate}}</th>
+                    <th width="8%">{{"Accounting.DISCOUNT" | translate}}</th>
+                    <th width="7%">{{"Accounting.SHARE" | translate}}</th>
+                    <th width="8%">{{"Accounting.MinUseAmt" | translate}}</th>
+                    <th width="11%">{{"Accounting.ExpiredInDays" | translate}}</th>
+                    <th width="8%">{{"Accounting.STATUS" | translate}}</th>
+                    <th width="8%">{{"Accounting.ACTION" | translate}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngFor="let item of items">
+                    <tr class="info-line">
+                        <td *ngIf="item.startOn">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item.startOn).st, 'day': getCreateDateInfo(item.startOn).day})  + '/' +
+                            ('DATEFORMAT.' + getCreateDateInfo(item.startOn).month | translate) + '/' +
+                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item.startOn).year})}}
+                        </td>
+                        <td *ngIf="!item.startOn" style="color: green; font-style: italic">
+                            {{"MESSAGE.EMPTY" | translate}}
+                        </td>
+                        <td *ngIf="item.endOn">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item.endOn).st, 'day': getCreateDateInfo(item.endOn).day})  + '/' +
+                            ('DATEFORMAT.' + getCreateDateInfo(item.endOn).month | translate) + '/' +
+                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item.endOn).year})}}
+                        </td>
+                        <td *ngIf="!item.endOn" style="color: green; font-style: italic">
+                            {{"MESSAGE.EMPTY" | translate}}
+                        </td>
+                        <td *ngIf="item.name">{{item.name}}</td>
+                        <td *ngIf="!item.name" style="color: green; font-style: italic">
+                            {{"MESSAGE.EMPTY" | translate}}
+                        </td>
+                        <td>{{item.saleAmt | number}}</td>
+                        <td>{{item.discountRatio | number}}</td>
+                        <td>{{item.shareRatio | number}}</td>
+                        <td>{{item.minUseAmt | number}}</td>
+                        <td>{{item.expiredInDays | number}}</td>
+                        <td [style.color]="(item.status) ? COURSECONTRACTSTATUS.valueOf(item.status).getColor() : COURSECONTRACTSTATUS.PENDING.getColor()">{{(item.status) ? (COURSECONTRACTSTATUS.valueOf(item.status).getDisplay() | translate) : (COURSECONTRACTSTATUS.PENDING.getDisplay() | translate)}}</td>
+                        <td>
+                            <div *ngIf="item.status !== null && item.status.toString() === COURSECONTRACTSTATUS.PENDING.getValue().toString()">
+                                <span class="pe-7s-note" (click)="editContract(item)"></span>
+                                <span class="pe-7s-trash ml-2" (click)="removeContract(item)"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+                </tbody>
+            </table>
+            <ng-container>
+                <div class="my-table-footer">
+                    <div style="float: left">
+                        <span>{{('MESSAGE.NameList.CurrentTotalItems' | translate) + ':'}}</span>
+                        <span style="margin-left: 5px; font-weight: bold;">{{items.length}}</span></div>
+                    <div class="my-select-area">
+                        <div class="d-flex">
+                            <span class="my-auto">{{'MESSAGE.NameList.NumRowsPerRequest' | translate}}</span>
+                            <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadRecords()">
+                                <option *ngFor="let size of pageSize" [value]="size">{{size}}</option>
+                            </select>
+                        </div>
+                        <div class="my-auto" style="text-align: right" *ngIf="enableMore">
+            <span class="show-more-records" (click)="loadMoreRecords()">
+                {{'MESSAGE.More' | translate}}
+            </span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ngx-spinner
+                    bdColor="transparent"
+                    color="#1E8EEB"
+                    type="line-spin-clockwise-fade"
+                    size="medium">
+                <p class="loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+            </ngx-spinner>
+        </div>
+    </div>
+</div>
+<div mdbModal #contractAddModal ="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <p class="modal-title w-100 font-weight-bold">{{"Courses.Create_contract" | translate}}</p>
+                </div>
+                <div class="modal-body mx-3 border-bottom">
+                    <form [formGroup]="addContractFormGroup" [style.font-size]="'14px'">
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.From" | translate}}</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="date-field" type="date" formControlName="startOn" onkeydown="return false">
+                            </div>
+                            <div class="col-sm-1 m-auto">
+                                <p class="font-mg">{{"Accounting.To" | translate}}</p>
+                            </div>
+                            <div class="col-sm-5">
+                                <input class="date-field" type="date" formControlName="endOn" onkeydown="return false">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.DESCRIPTION" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" formControlName="name">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.SALES" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="saleAmt">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.DISCOUNT" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="discountRatio">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.SHARE" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="shareRatio">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.MinUseAmt" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="minUseAmt">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.ExpiredInDays" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="expiredInDays">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                        <button class="button-save" (click)="addNewContract()">{{"LAYOUT.CREATE" | translate}}</button>
+                        <button class="button-cancel" (click)="contractAddModal.hide()">{{"LAYOUT.CANCEL" | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #contractEditModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <p class="modal-title w-100 font-weight-bold">{{"Courses.Edit_contract" | translate}}</p>
+                </div>
+                <div class="modal-body mx-3 border-bottom">
+                    <form [formGroup]="editContractFormGroup" [style.font-size]="'14px'">
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.From" | translate}}</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="date-field" type="date" formControlName="startOn" onkeydown="return false">
+                            </div>
+                            <div class="col-sm-1 m-auto">
+                                <p class="font-mg">{{"Accounting.To" | translate}}</p>
+                            </div>
+                            <div class="col-sm-5">
+                                <input class="date-field" type="date" formControlName="endOn" onkeydown="return false">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.DESCRIPTION" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" formControlName="name">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.SALES" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="saleAmt">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.DISCOUNT" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="discountRatio">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.SHARE" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="shareRatio">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.MinUseAmt" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="minUseAmt">
+                            </div>
+                        </div>
+                        <div class="row date-pb">
+                            <div class="col-sm-2 m-auto">
+                                <p class="font-mg">{{"Accounting.ExpiredInDays" | translate}}</p>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text" formControlName="expiredInDays">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                        <button class="button-cancel" (click)="contractEditModal.hide()">{{"LAYOUT.CANCEL" | translate}}</button>
+                        <button class="button-save" (click)="editSelectedContract();">{{"LAYOUT.SAVE" | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate : {"error": error.text}'>
+            </div>
+            <div [class]="'btn-button text-center'">
+                <button class="button-cancel" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <div class="diaglog-title-confirm text-center">
+                <h4>{{ "MESSAGE.CONFIRM" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ConfirmRemoveContract" | translate'>
+            </div>
+            <div [class]="'btn-button text-center'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="confirmModal.hide()">{{ "LAYOUT.NO" | translate}}</button>
+              <button class="button-save" (click)="removeSelectedContract()">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

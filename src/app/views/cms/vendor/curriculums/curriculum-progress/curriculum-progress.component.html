@@ -1,0 +1,92 @@
+<div class="mb-4">
+    <div class="col-sm-8 my-auto breadcrums-title">
+        <a class="breadcrums mr-1" routerLink="../../">{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</a> / <span>{{ (cv) ? (("CREATOR.CURRICULUMS.progress" | translate) + ' ' + cv.name + '') : ("CREATOR.CURRICULUMS.progress" | translate)}}</span>
+    </div>
+</div>
+<div class="taskbar">
+    <div class="row feature-info pt-2 text-white">
+        <div class="col-sm-6">{{cv.name}}</div>
+        <div class="col-sm-6 text-right">{{('MESSAGE.vendor' | translate) + ': ' + ((cv.vendor) ? cv.vendor : '')}}</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="bg-white">
+            <div class="table-responsive scrollbar-cyan units-list">
+                <table class="table">
+                    <thead>
+                    <tr style="color: #8B8787; border-bottom: 1px solid #c4c4c4">
+                        <th scope="col" width="5%">#</th>
+                        <th scope="col" width="54%">{{"CREATOR.CURRICULUMS.LIST.NAME" | translate}}</th>
+                        <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.TYPE" | translate}}</th>
+                        <th scope="col" width="13%">{{"CREATOR.CURRICULUMS.LIST.STATUS" | translate}}</th>
+                        <th scope="col" width="15%"></th>
+                    </tr>
+                    </thead>
+                    <tbody style="color: #000000">
+                    <ng-container *ngIf="progress">
+                        <ng-container *ngFor="let unit of progress.units; let i = index;">
+                            <tr class="info-line">
+                                <td scope="row" width="5%" [style.vertical-align]="'top'" [style.font-weight]="'bold'">{{unit.no}}</td>
+                                <td width="54%">
+                                    <span [style.color]="'#7B7B7B'" [style.font-weight]="'bold'" [style.font-size]="'13px'">{{unit.name}}</span>
+                                    <p [style.color]="'#7B7B7B'" [style.font-size]="'13px'"
+                                       *ngIf="unit.description">{{unit.description}}</p>
+                                </td>
+                                <td width="13%"></td>
+                                <td width="13%" [style.color]="(unit.taskStatus) ? TASKSTATUS.valueOf(unit.taskStatus).getColor() : TASKSTATUS.PENDING.getColor()">
+                                    {{(unit.taskStatus) ? (TASKSTATUS.valueOf(unit.taskStatus).getDisplay() | translate) : (TASKSTATUS.PENDING.getDisplay() | translate)}}
+                                </td>
+                                <td width="15%"></td>
+                            </tr>
+                            <ng-container *ngFor="let lesson of unit.lessonGroup">
+                                <tr class="info-line">
+                                    <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                                    <td width="54%">
+                                                    <span [style.color]="'#000000'"
+                                                          [style.font-size]="'13px'">{{lesson.name}}
+                                                    </span>
+                                    </td>
+                                    <td width="13%">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</td>
+                                    <td width="13%"></td>
+                                    <td width="15%"></td>
+                                </tr>
+                            </ng-container>
+                            <ng-container *ngFor="let exercise of unit.exerciseGroup">
+                                <tr class="info-line">
+                                    <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                                    <td width="54%">
+                                                    <span [style.color]="'#000000'"
+                                                          [style.font-size]="'13px'">{{exercise.name}}
+                                                    </span>
+                                    </td>
+                                    <td width="13%">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</td>
+                                    <td width="13%"></td>
+                                    <td width="15%"></td>
+                                </tr>
+                            </ng-container>
+                            <ng-container *ngFor="let quiz of unit.quizGroup">
+                                <tr class="info-line">
+                                    <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+                                    <td width="54%">
+                                                    <span [style.color]="'#000000'"
+                                                          [style.font-size]="'13px'">{{quiz.name}}
+                                                    </span>
+                                    </td>
+                                    <td width="13%">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</td>
+                                    <td width="13%"></td>
+                                    <td width="15%"></td>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--
+curriculum-quote-log-feedback
+-->

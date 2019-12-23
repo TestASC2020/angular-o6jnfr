@@ -1,0 +1,76 @@
+<div class="my-auto breadcrum-title pt-3 pb-3">
+  <a class="breadcrum mr-1" routerLink="../../">{{'Courses.Course' | translate}}</a>
+  <span> > </span>
+  <a class="breadcrum mr-1" routerLink="../"> {{'Courses.Course_info' | translate}}</a>
+  <span class="mr-1">{{' > ' + ("BUSINESS.Staff_Profile" | translate)}}</span>
+</div>
+<div class="row pb-4" *ngIf="staffProfile">
+  <div class="col-sm-6">
+    <div class="background-profile p-4 text-center">
+      <img class="rounded-circle mx-auto d-block" [src]="(staffProfile.avatarURL) ? staffProfile.avatarURL : '../../../../../assets/img/user-avatar.png'" alt="">
+      <p class="tillman-font">{{(staffProfile.name) ? staffProfile.name : ''}}</p>
+      <div class="text-center">
+        <a href="mailto:{{staffProfile.email}}" *ngIf="staffProfile.email">
+          <img class="icon-margin" src="../../../../assets/icons/mails.png" alt="">
+        </a>
+        <span (click)="chat()" *ngIf="staffProfile.phone">
+          <img class="icon-margin" src="../../../../assets/icons/chats.png" alt="">
+        </span>
+        <a href="tel:{{staffProfile.phone.split().join('')}}" *ngIf="staffProfile.phone">
+          <img class="icon-margin" src="../../../../assets/icons/call.png" alt="">
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education>{{"AUTH.EDUCATION_EXPERIENCES" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="staffProfile.experiences && staffProfile.experiences.length > 0">
+        <ng-container class="pg-blue" *ngFor="let experience of staffProfile.experiences; let i = index">
+          <div class="row">
+            <div class="col-sm-6">
+              <p class="font-senior"><strong class="mr-1">{{ 'BUSINESS.Business' | translate }}:</strong><span  [class]="(experience.business) ? 'font-weight-normal' : 'font-italic empty-field'">{{(experience.business) ? experience.business : ('MESSAGE.EMPTY' | translate)}}</span></p>
+            </div>
+            <div class="col-sm-6">
+              <p class="font-senior"><strong class="mr-1">{{ 'BUSINESS.ROLE' | translate }}:</strong><span  [class]="(experience.role) ? 'font-weight-normal' : 'font-italic empty-field'">{{(experience.role) ? experience.role : ('MESSAGE.EMPTY' | translate)}}</span></p>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!staffProfile.experiences || staffProfile.experiences.length < 1">
+          <div class="pg-blue">
+            <div class="pg-blue pl-3 pr-3">
+              <p class="font-business font-italic empty-field">{{'MESSAGE.DOES_NOT_HAVE_EXPERIENCE' | translate}}</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="staffProfile">
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education>{{"AUTH.SPECIALTIES" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="staffProfile.specialties && staffProfile.specialties.length > 0">
+        <ng-container *ngFor="let specialty of staffProfile.specialties; let t = index">
+          <p *ngIf="specialty.name"><strong class="mr-3">-</strong><span  [class]="'font-italic'">{{specialty.name}}</span></p>
+        </ng-container>
+        <ng-container *ngIf="!staffProfile.experiences || staffProfile.experiences.length < 1">
+          <p class="font-italic empty-field">{{'MESSAGE.DOES_NOT_HAVE_SPECIALTY' | translate}}</p>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education>{{"AUTH.SPECIFIC" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="staffProfile" [style.font-style]="(staffProfile.about) ? 'normal' : 'italic'" [style.color]="(staffProfile.about) ? 'black' : 'green'">{{(staffProfile.about)? staffProfile.about : ('MESSAGE.EMPTY' | translate)}}</div>
+    </div>
+  </div>
+</div>

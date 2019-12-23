@@ -1,0 +1,89 @@
+<div class="text-back">
+  <div class="container">
+    <form (ngSubmit)="onSubmit()" [formGroup]="signinForm" class="pl-3 pr-3 background-sign">
+
+      <p class="mb-4 font-size text-center"><strong>{{ 'AUTH.LOG_IN' | translate }}</strong></p>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label>{{ 'AUTH.EMAIL' | translate }} {{ 'AUTH.ADDRESS' | translate }} *</label>
+        <input type="email" id="defaultLoginFormEmail" class="form-control mb-4" placeholder="{{ 'AUTH.EMAIL' | translate }}"
+          formControlName="email" [ngClass]="{ 'is-invalid': submitted && signinForm.controls.email.errors }">
+        <div *ngIf="submitted && signinForm.controls.email.errors" class="invalid-feedback">
+          <div *ngIf="signinForm.controls.email.errors.required">{{'MESSAGE.EMAIL_PLEASE_FILL' | translate}}</div>
+          <div *ngIf="signinForm.controls.email.errors.pattern">{{'MESSAGE.EMAIL_INVALID' | translate}}</div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label>{{ 'AUTH.PASSWORD' | translate }} *</label>
+        <div [style.position]="'relative'">
+          <input type="{{(showPass) ? 'text' : 'password'}}" id="defaultLoginFormPassword" class="form-control mb-4"
+            placeholder="{{ 'AUTH.PASSWORD' | translate }}" formControlName="password" [ngClass]="{ 'is-invalid': submitted && signinForm.controls.password.errors }">
+          <div *ngIf="submitted && signinForm.controls.password.errors" class="invalid-feedback">
+						<div *ngIf="signinForm.controls.password.errors.required">{{'MESSAGE.PASSWORD_PLEASE_FILL' | translate}}</div>
+						<div *ngIf="signinForm.controls.password.errors.minlength">{{'MESSAGE.PASSWORD_INVALID' | translate}}</div>
+          </div>
+          <i class="fas fa-eye" *ngIf="!showPass" (click)="showPass = !showPass"></i>
+          <i class="fas fa-eye-slash" *ngIf="showPass" (click)="showPass = !showPass"></i>
+        </div>
+      </div>
+      <div class="justify-content-around">
+        <div class="row">
+          <div class="col-6 text-left">
+            <!-- Remember me -->
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember" formControlName="remember">
+              <label class="custom-control-label" for="defaultLoginFormRemember">{{ 'AUTH.REMEMBER_ME' | translate }}</label>
+            </div>
+          </div>
+          <div class="col-6 text-right">
+            <!-- Forgot password -->
+            <a routerLink="/forgot-password"><strong style="color: #1DC7EA;">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</strong></a>
+          </div>
+        </div>
+        <div class="text-center">
+          <!-- Sign in button -->
+          <button mdbBtn data-toggle="modal" class="button-info my-4 waves-light" mdbWavesEffect>{{ 'AUTH.LOG_IN' |
+            translate }}</button>
+
+          <!-- Begin: Social login -->
+          <form>
+            <fieldset>
+              <legend>{{ 'AUTH.OR_LOG_IN_WITH' | translate }}</legend>
+            </fieldset>
+          </form>
+          <a type="button" class="light-blue-text mx-2 icon social fb" (click)="onFBLogin()">
+            <i class="fa fa-facebook"></i>
+          </a>
+          <a type="button" class="light-blue-text mx-2 icon social-gp gp" id="googleBtn">
+            <i class="fa fa-google-plus"></i>
+          </a>
+
+          <!-- End: Social login -->
+
+          <!-- Register -->
+          <p [style.padding-top]="'15px'">{{ 'AUTH.DONT_HAVE_ACCOUNT' | translate }}
+            <a routerLink="/register" style="color: #1DC7EA;;">{{ 'AUTH.CREATE_AN_ACCOUNT' | translate }}</a>
+          </p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog" *ngIf="error">
+      <div class="diaglog-title-warning text-center">
+        <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_PASSWORD" | translate : {"error": error.text}'>
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

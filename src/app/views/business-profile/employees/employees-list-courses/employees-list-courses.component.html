@@ -1,0 +1,59 @@
+<div class="breadcrums-title mt-2">
+    <a class="breadcrums mr-1" routerLink="../">{{ "BUSINESS.Employees" | translate}}</a>/ {{ "Courses.Course" | translate}}
+</div>
+<div>
+    <div class="row background-profile mt-4 pt-3 pb-3">
+        <div class="col-sm-6">
+            <div class="media" *ngIf="employeeProfile">
+                <img class="rounded-circle align-self-center mr-1" [src]="(employeeProfile.avatarURL) ? employeeProfile.avatarURL : '../../../../../assets/img/user-avatar.png'" alt="">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-0">{{employeeProfile.name}}</h5>
+                    <p class="mb-0">{{generateAddress()}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 text-right">
+            <span>{{currentDay + '/' + ('DATEFORMAT.' + currentMonth | translate) + '/' + currentYear}}</span><br>
+            <span>{{currentHour + ':' + currentMinute + ':' + currentSecond + ' ' + (('DATEFORMAT.' + currentAMPM | translate))}}</span>
+        </div>
+    </div>
+</div>
+    <div class="table-responsive bg-white">
+        <table class="table">
+            <tr class="title-info">
+                <td width="40%">{{ "Courses.NAME" | translate}}</td>
+                <td width="20%">{{ "Courses.Reg_User" | translate}}</td>
+                <td width="30%">{{ "BUSINESS.ASSIGNED_ON" | translate}}</td>
+                <td width="10%">{{ "BUSINESS.ACTION" | translate}}</td>
+            </tr>
+            <ng-container *ngFor="let item of items">
+                <tr>
+                    <td class="list-item"><img class="mr-2" [src]="item.logoURL" width="30px"
+                                               height="30px"
+                                               [style.border]="'1px solid #c4c4c4'"
+                                               [style.border-radius]="'50%'" alt="">{{item.name}}</td>
+                    <td class="list-item">{{item.enrollCount | number}}</td>
+                    <td class="list-item">{{item.assignedOn}}</td>
+                    <td>
+                        <span class="pe-7s-notebook"></span>
+                        <span class="pe-7s-comment pl-2" (click)="viewFeedback()"></span>
+                        <span class="pe-7s-lock pl-2"></span>
+                    </td>
+                </tr>
+            </ng-container>
+        </table>
+    </div>
+
+    <div *ngIf="pager.pages && pager.pages.length" class="pagination col-12 pt-3">
+        <div>
+            <a class="icon social angle-double-left" (click)="setPage(1)"><i class="fas fa-angle-double-left"></i></a>
+            <a class="iconA social angle-left" (click)="setPage(pager.currentPage - 1)"><i
+                    class="fas fa-angle-left"></i></a>
+            <a class="iconB social angle-center" (click)="setPage(page)" *ngFor="let page of pager.pages"
+               [ngClass]="{active:pager.currentPage === page}">
+                <p class="number">{{page}}</p></a>
+            <a class="iconA social angle-right" (click)="setPage(pager.currentPage + 1)"><i class="fas fa-angle-right"></i></a>
+            <a class="icon social angle-double-right" (click)="setPage(pager.totalPages)"><i
+                    class="fas fa-angle-double-right"></i></a>
+        </div>
+    </div>

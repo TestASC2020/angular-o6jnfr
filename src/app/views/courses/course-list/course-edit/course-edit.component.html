@@ -1,0 +1,287 @@
+<div class="employees-top">
+    <div class="row pb-3 pt-3">
+        <div class="col-sm-12 my-auto breadcrum-title">
+            <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+                <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+                <span class="breadcrum-title mr-1" *ngIf="i !== toRouters.length - 1">></span>
+                <span class="breadcrum-title mr-1" *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <form [formGroup]="formcourse">
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th width="8%" scope="row">{{"Courses.NAME" | translate}}</th>
+                    <td width="30%"><input class="form-control" placeholder="{{'Courses.NAME' | translate}}" formControlName="name"></td>
+                    <td width="8%">{{"BUSINESS.category" | translate}}</td>
+                    <td width="30%">
+                        <select class="form-control" formControlName="category">
+                            <option *ngFor="let category of categoryList" [value]="category.name">{{category.name}}</option>
+                        </select>
+                    </td>
+                    <td rowspan="5">
+                        <div class="img-rel">
+                            <img #avatar [src]="avatarURL" class="avatar mx-auto d-block">
+                            <i class="fas fa-camera" (click)="openFileDialog()"></i>
+                            <input type="file" #fileInput style="display: none" accept="image/*" (change)="previewFile($event)">
+                            <input type="hidden" formControlName="fileExt">
+                            <input type="hidden" formControlName="data">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="13%" scope="row">{{"Courses.Curriculum" | translate}}</th>
+                    <td><span class="mr-1"
+                              [innerHTML]='("MESSAGE.CV_Name_With_Blocks" | translate: {"name": getCvName().name, "blocks": getCvName().blocks, "s": getCvName().s})'>
+                    </span>
+                        <i class="fas fa-edit" (click)="cvListModal.show()"></i></td>
+                </tr>
+                <tr>
+                    <th width="8%" scope="row">{{"Courses.Tutor" | translate}}</th>
+                    <th colspan="3">
+                        <form [formGroup]="tutorsForm">
+                            <div class="form-row" id="tutor_area">
+                                <ng-container style="display: block" formArrayName="staffs" *ngIf="tutorsForm['controls']['staffs']['controls'].length >= 0">
+                                    <ng-container style="display: block" *ngFor="let staff_item of tutorsForm['controls']['staffs']['controls']; let tutorIndex = index;">
+                                        <div [style.display]="(tutorsForm['controls']['staffs']['controls'][tutorIndex].get('onEdit').value) ? 'block' : 'none'" class="staff-font mb-3" [formGroupName]="tutorIndex">
+                                            <input id="input_tutor_{{tutorIndex}}" type="text" [style.display]="(tutorsForm['controls']['staffs']['controls'][tutorIndex].get('onEdit').value) ? 'block' : 'none'" class="form-control" formControlName="staff">
+                                            <input type="hidden" style="display: none" class="form-control" formControlName="staff_id">
+                                            <input type="hidden" class="form-control" formControlName="onEdit">
+                                            <span id="span_tutor_{{tutorIndex}}" [style.display]="(tutorsForm['controls']['staffs']['controls'][tutorIndex].get('onEdit').value) ? 'block' : 'none'"><i (click)="removeTutor(tutorIndex)" class="fas fa-times-circle text-danger"></i></span>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                                <span><i (click)="addTutor()" class="fas fa-plus"></i></span>
+                            </div>
+                        </form>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="8%" scope="row">{{"MESSAGE.Administrative" | translate}}</th>
+                    <th colspan="3">
+                        <form [formGroup]="adminForm">
+                            <div class="form-row" id="admin_area">
+                                <ng-container style="display: block" formArrayName="staffs" *ngIf="adminForm['controls']['staffs']['controls'].length >= 0">
+                                    <ng-container style="display: block" *ngFor="let staff_item of adminForm['controls']['staffs']['controls']; let adminIndex = index;">
+                                        <div [style.display]="(adminForm['controls']['staffs']['controls'][adminIndex].get('onEdit').value) ? 'block' : 'none'" class="staff-font mb-3" [formGroupName]="adminIndex">
+                                            <input id="input_admin_{{adminIndex}}" type="text" [style.display]="(adminForm['controls']['staffs']['controls'][adminIndex].get('onEdit').value) ? 'block' : 'none'" class="form-control" formControlName="staff">
+                                            <input type="hidden" style="display: none" class="form-control" formControlName="staff_id">
+                                            <input type="hidden" class="form-control" formControlName="onEdit">
+                                            <span id="span_admin_{{adminIndex}}" [style.display]="(adminForm['controls']['staffs']['controls'][adminIndex].get('onEdit').value) ? 'block' : 'none'"><i (click)="removeAdmin(adminIndex)" class="fas fa-times-circle text-danger"></i></span>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                                <span><i (click)="addAdmin()" class="fas fa-plus plus-after"></i></span>
+                            </div>
+                        </form>
+                    </th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table class="table" style="width: 1160px">
+                <tbody>
+                <tr>
+                    <th width="15%" scope="row">{{"Courses.StarOn" | translate}}</th>
+                    <td width="15%">
+                      <input class="text-white date-field" [max]="formcourse.get('closeDate').value" onkeydown="return false" type="date" name="date_start" id="date_start" formControlName="openDate">
+                    </td>
+                    <td width="15%">{{"Courses.CloseOn" | translate}}</td>
+                     <td width="15%">
+                       <input class="text-white date-field" onkeydown="return false" type="date" [min]="formcourse.get('openDate').value"  name="date_close" id="date_close" formControlName="closeDate">
+                     </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <th width="15%" scope="row">{{"Courses.MaxDay" | translate}}</th>
+                    <td width="15%"><input class="form-control" placeholder="{{'' | translate}}" formControlName="maxDayToUse"></td>
+                    <td width="15%">{{"Courses.ListPrice" | translate}}</td>
+                    <td width="15%"><input class="form-control" placeholder="{{'' | translate}}" formControlName="listPrice"></td>
+                    <td width="25%">{{"Courses.MinPayment" | translate}} ( {{"CREATOR.CURRICULUMS.Units" | translate}} )</td>
+                    <td width="15%"><input class="form-control" placeholder="{{'' | translate}}" formControlName="minUseAmt"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+    <div class="text-center">
+        <button class="button-cancel" (click)="confirmExitCourseList.show()">{{"LAYOUT.CANCEL" | translate}}</button>
+        <button (click)="saveCourse()" class="button-save">{{"LAYOUT.SAVE" | translate}}</button>
+    </div>
+</div>
+<div mdbModal #createNewCourseModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog newCourse" role="document">
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-white newCourse-title">{{'Courses.NewCourse' | translate}}</div>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCourseForm">
+                    <div style="padding: 10px;display: flex;">
+                        <p class="my-auto pr-3">{{"Courses.NAME" | translate}}</p>
+                        <input class="form-control" placeholder="{{'Courses.NAME' | translate}}" formControlName="name">
+                    </div>
+                </form>
+                <div style="text-align: center; padding-bottom: 10px;">
+                    <button (click)="cancel()" class="button-cancel">{{"LAYOUT.CANCEL" | translate}}</button>
+                    <button (click)="newCourse()" class="button-save">{{"LAYOUT.CREATE" | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #cvListModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog cvList" role="document">
+
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-white cvList-title">{{"Courses.Curriculums_List" | translate}}
+                    <i (click)="cvListModal.hide();" class="fa fa-times text-right text-white"></i>
+                </div>
+            </div>
+            <div class="modal-bg-search">
+                <label><i class="fa fa-search" aria-hidden="true"></i></label>
+                <input placeholder="Enter curriculum name to search" type="text" class="form-control searchbar" [(ngModel)]="searchTextCv"/>
+            </div>
+            <div class="cv-list scroll square scrollbar-cyan" *ngIf="cvList">
+                <div>
+                    <ng-container *ngFor="let cv of cvList">
+                        <ng-container class="middle" *ngIf="searchTextCv === '' || cv.name.toLowerCase().indexOf(searchTextCv.toLowerCase()) !== -1">
+                            <div class="row" (click)="updateSelectedCv(cv)">
+                                <div class="offset-1 col-10">
+                                    {{(cv.name) ? cv.name : ''}}
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+            <div *ngIf="enableMoreCv">
+                <div class="pt-2 pb-2" style="text-align: center">
+                <span class="show-more-records" (click)="loadMoreRecordsCv()">
+                    {{'MESSAGE.More' | translate}}
+                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #tutorsListModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog staffList" role="document">
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-white cvList-title">{{"Courses.Tutors_List" | translate}}
+                    <i (click)="tutorsListModal.hide();" class="fa fa-times text-right text-white"></i>
+                </div>
+            </div>
+            <div class="modal-bg-search">
+                <label><i class="fa fa-search" aria-hidden="true"></i></label>
+                <input placeholder="Enter staff name to search" type="text" class="form-control searchbar" [(ngModel)]="searchTextTutors"/>
+            </div>
+            <div class="modal-body" style="background-color: #DCE1DF;" *ngIf="tutorsList">
+                <div class="mt-2 staff-list scroll square scrollbar-cyan">
+                    <ng-container *ngFor="let staff of tutorsList">
+                        <div class="middle staff-m" *ngIf="searchTextTutors === '' || (staff && staff.name.toLowerCase().indexOf(searchTextTutors.toLowerCase()) !== -1)">
+                            <img (click)="showTutor(staff);" class="rounded-circle" [src]="(staff && staff.avatarURL) ? staff.avatarURL : '../../../../../assets/img/user-avatar.png'" width="35px" height="35px" alt="">
+                            <div (click)="showTutor(staff);" class="russ-font">
+                                <p class="russ-ti">{{staff?.name}}</p>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div *ngIf="!enableMoreTutors">
+                    <div class="pt-2 pb-2" style="text-align: center">
+                        <span class="show-more-records">
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="enableMoreTutors">
+                    <div class="pt-2 pb-2" style="text-align: center">
+                        <span class="show-more-records" (click)="loadMoreRecordsTutors()">
+                            {{'MESSAGE.More' | translate}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #adminListModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog staffList" role="document">
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-white cvList-title">{{"Courses.Administrative_Staffs_List" | translate}}
+                    <i (click)="adminListModal.hide();" class="fa fa-times text-right text-white"></i>
+                </div>
+            </div>
+            <div class="modal-bg-search">
+                <label><i class="fa fa-search" aria-hidden="true"></i></label>
+                <input placeholder="Enter staff name to search" type="text" class="form-control searchbar" [(ngModel)]="searchTextAdmin"/>
+            </div>
+            <div class="modal-body" style="background-color: #DCE1DF;" *ngIf="adminList">
+                <div class="mt-2 staff-list scroll square scrollbar-cyan">
+                    <ng-container *ngFor="let staff of adminList">
+                        <div class="middle staff-m" *ngIf="searchTextAdmin === '' || (staff && staff.name.toLowerCase().indexOf(searchTextAdmin.toLowerCase()) !== -1)">
+                            <img (click)="showAdmin(staff);" class="rounded-circle" [src]="(staff && staff.avatarURL) ? staff.avatarURL : '../../../../../assets/img/user-avatar.png'" width="35px" height="35px" alt="">
+                            <div (click)="showAdmin(staff);" class="russ-font">
+                                <p class="russ-ti">{{staff?.name}}</p>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div *ngIf="!enableMoreAdmin">
+                    <div class="pt-2 pb-2" style="text-align: center">
+                        <span class="show-more-records">
+                        </span>
+                    </div>
+                </div>
+                <div *ngIf="enableMoreAdmin">
+                    <div class="pt-2 pb-2" style="text-align: center">
+                        <span class="show-more-records" (click)="loadMoreRecordsAdmin()">
+                            {{'MESSAGE.More' | translate}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_changer" | translate : {"error": error.text}'>
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmExitCourseList="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "Courses.Are_you_sure_to_escape" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="confirmExitCourseList.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" (click)="confirmExitCourseList.hide(); cancelCourse();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

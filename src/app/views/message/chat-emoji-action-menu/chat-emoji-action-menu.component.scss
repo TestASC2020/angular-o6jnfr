@@ -1,0 +1,134 @@
+@import "../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0 0 0.3rem 0;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  &:disabled{
+    cursor: not-allowed;
+  }
+}
+
+.fa-ellipsis-v{
+  padding-top: 13px !important;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 120px;
+    margin: 10px;
+  }
+  .popover::after {
+    border-color: transparent;
+  }
+  .list-group-item {
+    border: 0;
+    background-color: unset;
+  }
+  .popover {
+    margin-left: -15px;
+    margin-top: -15px;
+    border-radius: 5px;
+  }
+}
+.pe-7s-look {
+  color: #0b7c0a;
+  &:hover {
+    color: #11e810;
+  }
+}
+.pe-7s-note {
+  color: #6ef3ff;
+  &:hover {
+    color: #2562ff;
+  }
+}
+.pe-7s-like2 {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #0A1AFB;
+  font-weight: bold;
+  &:hover {
+    color: #00e5ff;
+  }
+}
+.smile-icon {
+  cursor: pointer;
+  color: #5aaef2;
+  font-size: 25px;
+  &:hover {
+    color: #278dda;
+  }
+}
+.smile-icon2 {
+  color: #c4c4c4;
+}
+img {
+  cursor: pointer;
+  margin-right: 5px;
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  &:hover {
+    background-color: #eaeaea;
+  }
+}
+.scrollbar-cyan::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #F5F5F5; }
+
+.scrollbar-cyan::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+  background-color: #F5F5F5; }
+
+.scrollbar-cyan::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #c1c1c16b; }
+
+.bordered-cyan::-webkit-scrollbar-track {
+  -webkit-box-shadow: none;
+  border: 1px solid #1B75BC; }
+
+.bordered-cyan::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: none; }
+
+.square::-webkit-scrollbar-track {
+  border-radius: 0 !important; }
+
+.square::-webkit-scrollbar-thumb {
+  border-radius: 0 !important; }
+
+.thin::-webkit-scrollbar {
+  width: 6px;
+}
+.list-emoji {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  max-height: 150px;
+  padding-right: 15px;
+}
+.nhichXeEmotion{
+  margin-right: 3px;
+}

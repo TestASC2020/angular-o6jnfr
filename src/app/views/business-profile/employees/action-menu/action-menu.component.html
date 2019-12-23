@@ -1,0 +1,32 @@
+<div style="cursor:pointer;text-align: center">
+    <button class="action-button">
+        <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" *ngIf="userProfile.email !== item.email" (click)="chat(item);">
+                <i class="pe-7s-chat padding-icon"></i><span class="pl-2">{{"BUSINESS.Chat" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="viewFeedback(item);">
+                <i class="pe-7s-comment padding-icon"></i><span class="pl-2">{{"BUSINESS.View_feedback" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="listcourse(item);">
+                <i class="pe-7s-notebook padding-icon"></i><span class="pl-2">{{"BUSINESS.List_courses" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="viewProfile(item);">
+                <i class="pe-7s-id padding-icon"></i><span class="pl-2">{{"BUSINESS.View_profile" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="viewRole(item);">
+                <i class="pe-7s-key padding-icon"></i><span class="pl-2">{{"BUSINESS.ROLE" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="setStatus(item);">
+                <i class="pe-7s-angle-down-circle padding-icon"></i><span class="pl-2">{{"BUSINESS.Set_status" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="remove(item.crsSig);">
+                <i class="pe-7s-trash padding-icon"></i><span class="pl-2">{{"LAYOUT.REMOVE" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

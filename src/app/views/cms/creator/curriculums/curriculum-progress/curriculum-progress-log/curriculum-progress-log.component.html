@@ -1,0 +1,90 @@
+<div class="mb-4 pd-top">
+    <div class="col-sm-8 my-auto breadcrums-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1 && i !== toRouters.length - 2" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <a *ngIf="i !== toRouters.length - 1 && i === toRouters.length - 2" class="breadcrums mr-1" routerLink="{{toRouter.link}}">
+                {{(toRouter.display | translate) + ' - ' + (cv ? cv.name : '')}}
+            </a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div class="taskbar">
+    <div class="row mt-1 mb-1 feature-info text-white">
+        <div class="col-sm-12">{{cv.name}}</div>
+    </div>
+</div>
+<div class="unit-form">
+    <p class="my-auto">{{"BUSINESS.Unit" | translate}}:</p>
+    <select class="form-control unit-control" *ngIf="unitsList" (change)="changeSelectedUnit($event)">
+        <option *ngFor="let unit of unitsList"
+                [value]="unit.signature"
+                [selected]="unit.signature === selectedUnit.signature"
+        >{{unit.name}}</option>
+    </select>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="bg-white">
+            <div class="table-responsive scrollbar-cyan units-list pl-3 pr-3">
+                <table class="table">
+                    <thead>
+                    <tr style="color: #8B8787; border-bottom: 1px solid #c4c4c4">
+                        <th scope="col" width="30%">{{"Accounting.DATE/TIME" | translate}}</th>
+                        <th scope="col" width="30%">{{"Accounting.DESCRIPTION" | translate}}</th>
+                        <th scope="col" width="25%">{{"VENDOR.VENDOR" | translate}}</th>
+                        <th scope="col" width="15%">{{"Accounting.STATUS" | translate}}</th>
+                    </tr>
+                    </thead>
+                    <tbody style="color: #000000" *ngIf="selectedLog">
+                    <ng-container *ngFor="let log of selectedLog">
+                        <tr style="color: #8B8787; border-bottom: 1px solid #c4c4c4">
+                            <td scope="col" width="30%">
+                                {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(log.createDate).st, 'day': getCreateDateInfo(log.createDate).day}) + '/' +
+                                ('DATEFORMAT.' + getCreateDateInfo(log.createDate).month | translate) + '/' +
+                                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(log.createDate).year}) + ', ' +
+                                getCreateDateInfo(log.createDate).hour +
+                                ':' + getCreateDateInfo(log.createDate).minute + ':' + getCreateDateInfo(log.createDate).second + ' ' +
+                                (('DATEFORMAT.' + getCreateDateInfo(log.createDate).ampm | translate))}}
+                            </td>
+                            <td scope="col" width="30%">{{log.description}}</td>
+                            <td scope="col" width="25%">{{log.vendorName}}</td>
+                            <td scope="col" width="15%"
+                                (click)="approve(log)"
+                                [style.color]="TASKSTATUS.valueOf(log.status).getColor()">{{TASKSTATUS.valueOf(log.status).getDisplay() | translate}}</td>
+                        </tr>
+                    </ng-container>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #progressLogModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body mx-3 text-center">
+                <h4 class="font-weight-bold" *ngIf="this.selectedUnit">{{this.selectedUnit.name}}</h4>
+            </div>
+            <div class="modal-body mx-3">
+                <form [formGroup]="approveForm">
+                    <div class="custom-control custom-radio">
+                        <ng-container *ngFor="let decide of decideList; let i = index;">
+                            <div>
+                                <input class="custom-control-input" id="decide_{{decide.value}}" type="radio" [checked]="i === 1" value="{{decide.value}}" name="decide" formControlName="decide">
+                                <label class="custom-control-label" for="decide_{{decide.value}}">{{(decide.display | translate) + ' : ' + (decide.message | translate)}}</label>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <label class="pt-3">{{"CREATOR.CURRICULUMS.QUOTE.MessageToVendor" | translate}}</label>
+                    <textarea class="form-control" formControlName="message" rows="2"></textarea>
+                </form>
+            </div>
+            <div class="d-flex justify-content-center pb-3 pt-3">
+                <button mdbBtn [style.width]="'117px'" [style.height]="'36px'" [style.color]="'#ffffff'" [style.background]="'#3BC7EF'" class="btn" mdbWavesEffect (click)="progressLogModal.hide(); approveData();">{{"MESSAGE.SEND" | translate}}</button>
+                <button mdbBtn [style.width]="'117px'" [style.height]="'36px'" [style.color]="'#3BC7EF'" [style.background]="'transparent'" class="btn" mdbWavesEffect (click)="progressLogModal.hide()">{{"LAYOUT.CANCEL" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

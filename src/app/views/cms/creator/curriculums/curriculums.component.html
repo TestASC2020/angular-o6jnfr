@@ -1,0 +1,133 @@
+<div class="bd-top">
+    <div class="row pb-3 pt-3">
+        <div class="col-sm-8 my-auto breadcrum-title">
+            {{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}
+        </div>
+        <div class="col-sm-4">
+            <div class="searchbar text-right">
+                <div class="col-inline">
+                    <button class="create relative btn" (click)="gotoCreateCV()">
+                        {{"CREATOR.CURRICULUMS.CREATE" | translate}}
+                    </button>
+                </div>
+                <div class="col-inline">
+                    <input [(ngModel)]="searchText" (keyup)="checkSearch($event)" placeholder='{{"CREATOR.CURRICULUMS.SEARCH" | translate}}' class="form-control search-bar" type="text"/>
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="error">
+    {{ error.message }}
+</div>
+<table class="table  table-striped table-wrapper-scroll-y" id="style-1">
+    <thead>
+    <tr>
+        <th width="40%">
+            {{ "CREATOR.CURRICULUMS.LIST.NAME" | translate}}
+            <div style="float: right">
+                <i *ngIf="sortOrder[2] === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder[2] = 2; sortOrder[1] = 0; sortOrder[3] = 0; sortBy = 2; refresh()"></i>
+                <i *ngIf="sortOrder[2] === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder[2] = 0; sortOrder[1] = 0; sortOrder[3] = 0; sortBy = 2; refresh()"></i>
+                <i *ngIf="sortOrder[2] === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder[2] = 1; sortOrder[1] = 0; sortOrder[3] = 0; sortBy = 2; refresh()"></i>
+            </div>
+        </th>
+        <th width="18%">{{ "CREATOR.CURRICULUMS.LIST.AUTHOR" | translate}}</th>
+        <th width="17%">{{ "CREATOR.CURRICULUMS.LIST.CREATED_ON" | translate}}
+            <div style="float: right">
+                <i *ngIf="sortOrder[1] === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder[1] = 2; sortOrder[2] = 0; sortOrder[3] = 0; sortBy = 1; refresh()"></i>
+                <i *ngIf="sortOrder[1] === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder[1] = 0; sortOrder[2] = 0; sortOrder[3] = 0; sortBy = 0; refresh()"></i>
+                <i *ngIf="sortOrder[1] === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder[1] = 1; sortOrder[2] = 0; sortOrder[3] = 0; sortBy = 1; refresh()"></i>
+            </div>
+        </th>
+        <th width="15%">{{ "CREATOR.CURRICULUMS.LIST.STATUS" | translate}}
+            <div style="float: right">
+                <i *ngIf="sortOrder[3] === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder[3] = 2; sortOrder[2] = 0; sortOrder[1] = 0; sortBy = 3; refresh()"></i>
+                <i *ngIf="sortOrder[3] === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder[3] = 0; sortOrder[2] = 0; sortOrder[1] = 0; sortBy = 0; refresh()"></i>
+                <i *ngIf="sortOrder[3] === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder[3] = 1; sortOrder[2] = 0; sortOrder[1] = 0; sortBy = 3; refresh()"></i>
+            </div>
+        </th>
+        <th class="text-center" width="10%">{{"CREATOR.CURRICULUMS.LIST.ACTION_MENU.TITLE" | translate}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let item of pagedItems; let i = index;">
+        <tr class="info-line">
+            <td width="40%">{{item?.name}}</td>
+            <td width="18%">{{item?.authors?.main?.name}}</td>
+            <td width="17%">
+                {{('00' + getCreateDateInfo(item?.createdOn).day).slice(-2) + '-' +
+                ('DATEFORMAT.' + getCreateDateInfo(item?.createdOn).month | translate) + '-' + getCreateDateInfo(item?.createdOn).year}}
+            </td>
+            <td width="15%" [style.color]="CURRICULUMSTATUS.valueOf(item?.status).getColor()">{{(CURRICULUMSTATUS.valueOf(item?.status).getDisplay()) | translate}}</td>
+            <td class="index-{{i}}" width="10%">
+                <app-cms-creator-action-menu class="my-menu-list" [item]="item" (complete)="complete(item)" (delete)="remove(item)"></app-cms-creator-action-menu>
+            </td>
+        </tr>
+    </ng-container>
+    </tbody>
+</table>
+<ng-container>
+    <div class="my-table-footer">
+        <div style="float: left">
+            <span>{{('MESSAGE.NameList.TotalItems' | translate) + ':'}}</span>
+            <span style="margin-left: 5px; font-weight: bold;">{{totalItems}}</span></div>
+        <div class="my-select-area">
+            <div class="d-flex">
+                <span class="my-auto">{{'MESSAGE.NameList.RowsPerPage' | translate}}</span>
+                <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadCVList()">
+                    <option *ngFor="let size of pageSize" [value]="size">{{size}}</option>
+                </select>
+            </div>
+            <div *ngIf="pager.pages && pager.pages.length" class="pagination">
+                <div style="width: 100%;">
+                    <a (click)="setPage(pager.totalPages)"><i class="fas fa-angle-double-right pd-icon"></i></a>
+                    <a (click)="setPage(pager.currentPage + 1)"><i class="fas fa-angle-right pd-icon"></i></a>
+                    <a (click)="setPage(page)" *ngFor="let page of pager.pages.slice()?.reverse()" [ngClass]="{active:pager.currentPage === page}">
+                        <div>
+                            <p class="mb-0 number">{{page}}</p>
+                        </div></a>
+                    <a (click)="setPage(pager.currentPage - 1)"><i class="fas fa-angle-left pd-icon"></i></a>
+                    <a (click)="setPage(1)"><i class="fas fa-angle-double-left pd-icon"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<div mdbModal #confirmDeleteCV="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" (click)="confirmDeleteCV.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" style="margin-right: 0;" (click)="confirmDeleteCV.hide(); deleteCV();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmUpdateCV="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.Are_You_Sure_Complete_CV" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" (click)="confirmUpdateCV.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" style="margin-right: 0;" (click)="confirmUpdateCV.hide(); completeCV();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<ngx-spinner
+        bdColor="transparent"
+        color="#1E8EEB"
+        type="line-spin-clockwise-fade"
+        size="medium">
+    <p class="loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+</ngx-spinner>

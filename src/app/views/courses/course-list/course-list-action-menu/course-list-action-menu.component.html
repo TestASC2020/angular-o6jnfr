@@ -1,0 +1,29 @@
+<div style="cursor:pointer;">
+    <button class="action-button">
+        <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="Discussion(item);">
+                <i class="pe-7s-chat padding-icon"></i><span class="pl-2">{{"Courses.Discussion" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="userlist(item)">
+                <i class="pe-7s-users padding-icon"></i><span class="pl-2">{{"Courses.User_List" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="courseinfo(item)">
+                <i class="pe-7s-info padding-icon"></i><span class="pl-2">{{"Courses.Course_info" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="contract(item)">
+                <i class="pe-7s-news-paper padding-icon"></i><span class="pl-2">{{"Courses.Contract" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="curriculum(item)">
+                <i class="pe-7s-notebook padding-icon"></i><span class="pl-2">{{"Courses.Curriculum" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="removeCourse(item)">
+                <i class="pe-7s-trash padding-icon"></i><span class="pl-2">{{"Courses.Remove" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

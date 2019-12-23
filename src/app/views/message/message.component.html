@@ -1,0 +1,834 @@
+<div class="pl-4">
+    <app-message-action-menu [item]="item" (findContact)="openfindContactModal(item)" (createGroup)="opencreateGroupModal(item)"></app-message-action-menu>
+</div>
+<div id="frame" *ngIf="message">
+    <div id="sidepanel">
+        <div class="bottom-bars">
+            <div style="position: relative">
+                <input class="form-control input-chat" [(ngModel)]="searchTextMenu" placeholder='{{"MESSAGE.NameList.SearchName" | translate}}'/>
+                <i class="fas fa-search search-plus"></i>
+                <i class="fa fa-user-plus icon-plus" (click)="findContactModal.show()"></i>
+            </div>
+        </div>
+        <div id="contacts" class="scroll scrollbar-cyan" style="position: relative">
+            <ul>
+                <ng-container *ngFor="let thread of message.threads; let threadIndex = index;">
+                    <ng-container *ngIf="checkSearchName(thread)">
+                        <li [class]="'contact' + ((thread.active === true) ? ' active' : '')">
+                            <div class="wrap">
+                                <span [class]="'contact-status' + ((thread.status) ? (' ' + thread.status) : '')"></span>
+                                <img
+                                        (click)="activeThread(thread, threadIndex)"
+                                        class="img-chat" [src]="(thread.actor && thread.actor.avatarURL) ? thread.actor.avatarURL : ''" alt=""/>
+                                <p class="number" *ngIf="thread.unSeenCount">{{(thread.unSeenCount < 100) ? thread.unSeenCount : '99'}}</p>
+                                <i *ngIf="thread.unSeenCount > 99" class="fas fa-plus plus-number"></i>
+                                <div class="meta">
+                                    <p
+                                            (click)="activeThread(thread, threadIndex)"
+                                            title="{{(thread.actor && thread.actor.name) ? thread.actor.name : ('MESSAGE.EMPTY' | translate)}}"
+                                            class="name">
+                                        {{(thread.actor && thread.actor.name) ? shortString(thread.actor.name, 20) : ('MESSAGE.EMPTY' | translate)}}
+                                    </p>
+                                    <p
+                                            (click)="activeThread(thread, threadIndex)"
+                                            class="date-online" *ngIf="thread.message && thread.message.lastMsgDate && thread.message.timeSpentMore === ''">
+                                        {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(thread.message.lastMsgDate).st, 'day': getCreateDateInfo(thread.message.lastMsgDate).day})  + '/' +
+                                        ('DATEFORMAT.' + getCreateDateInfo(thread.message.lastMsgDate).month | translate) + '/' +
+                                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(thread.message.lastMsgDate).year})}}
+                                    </p>
+                                    <p
+                                            (click)="activeThread(thread, threadIndex)"
+                                            class="date-online" *ngIf="thread.message && thread.message.lastMsgDate && thread.message.timeSpentMore !== ''">
+                                        {{('MESSAGE.last' | translate) + ' ' + thread.message.timeSpent + ' ' + (thread.message.timeSpentMore |  translate)}}
+                                    </p>
+                                    <i
+                                            [class]="(thread.actorType ===2) ? 'fas fa-user-minus icon-trash' : 'fas fa-trash icon-trash'"
+                                            title="{{(thread.actorType ===2) ? ('MESSAGE.NameList.ExitGroup' | translate) : ('MESSAGE.NameList.Delete' | translate)}}"
+                                            (click)="removeGroupModalConfirm(thread)"></i>
+                                    <p
+                                            (click)="activeThread(thread, threadIndex)"
+                                            class="preview" [innerHTML]="(thread.message && thread.message.msg) ? thread.message.msg : ((thread.message && thread.message.message.length > 0 && thread.message.message[thread.message.message.length - 1].msg) ? thread.message.message[thread.message.message.length - 1].msg : ('MESSAGE.EMPTY' | translate))"></p>
+                                </div>
+                            </div>
+                        </li>
+                    </ng-container>
+                </ng-container>
+            </ul>
+            <ng-container *ngIf="uploadResponse && uploadResponse.status === 'progress'">
+                <mdb-spinner spinnerColor="blue" style="width: 100px; position: absolute; left: 50%; top: 50%; display: block;">
+                    <p class="sr-only loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+                </mdb-spinner>
+            </ng-container>
+        </div>
+        <div *ngIf="enableMore" class="show-more">
+            <span class="show-more-records" (click)="loadMoreRecords()">
+                {{'MESSAGE.More' | translate}}
+            </span>
+        </div>
+    </div>
+    <div class="content">
+        <ng-container *ngIf="selectedThread && selectedThread.actorType === 2">
+            <div class="middle" (click)="initEditGroupForm()">
+                <img class="rounded-circle"
+                     [src]="(selectedThread.actor && selectedThread.actor.avatarURL) ?  selectedThread.actor.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                     alt="">
+                <div class="russ-font">
+                    <p class="russ-ti">{{selectedThread?.actor?.name}}</p>
+                    <p class="russ-minutes" *ngIf="selectedThread.memCount">{{(selectedThread.memCount | number)  + ' ' + ((selectedThread.memCount > 1) ? ('MESSAGE.NameList.members' | translate) : ('MESSAGE.NameList.member' | translate))}}</p>
+                    <p class="russ-minutes" *ngIf="!selectedThread.memCount">{{0 + ' ' + ('MESSAGE.NameList.member' | translate)}}</p>
+                </div>
+            </div>
+            <div *ngIf="enableMoreMessages" class="show-more-message">
+                    <span class="show-more-records" (click)="loadMoreMessagesRecords()">
+                        {{'MESSAGE.More' | translate}}
+                    </span>
+            </div>
+            <div id="chat-group-mode-area" class="messages scroll scrollbar-cyan">
+                <ul *ngFor="let dataMessage of selectedThreadData.reverse(); let messageIndex = index;">
+                    <li class="sent">
+                        <img
+                                (click)="loadUserInfo2(dataMessage.user)"
+                                class="img-chat my-auto" [src]="(dataMessage.user.avatarURL) ? dataMessage.user.avatarURL : 'http://emilcarlsson.se/assets/mikeross.png'" alt=""/>
+                        <div>
+                            <span>{{dataMessage?.user?.name}}</span>
+                            <ng-container *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore === ''">
+                                <span class="pl-2">
+                                {{
+                                    ("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(dataMessage.lastMsgDate).st, 'day': getCreateDateInfo(dataMessage.lastMsgDate).day})  + '/' +
+                                    ('DATEFORMAT.' + getCreateDateInfo(dataMessage.lastMsgDate).month | translate) + '/' +
+                                    ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(dataMessage.lastMsgDate).year})
+                                }}
+                                </span>
+                            </ng-container>
+                            <ng-container *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore !== ''">
+                                <span class="pl-2">
+                                {{
+                                    ('MESSAGE.last' | translate) + ' ' + dataMessage.timeSpent + ' ' + (dataMessage.timeSpentMore |  translate)
+                                }}
+                                </span>
+                            </ng-container>
+                        </div>
+                        <ng-container *ngIf="dataMessage.msg">
+                            <p [class]="(dataMessage.user.email === userProfile.email) ? 'content-chat2' : 'content-chat'">{{dataMessage.msg}}</p>
+                            <app-message-chat-action-menu
+                                    *ngIf="dataMessage.user.email === userProfile.email"
+                                    class="app-menu-chat"
+                                    [item]="dataMessage"
+                                    (editEmitter)="loadEditMessage($event)"
+                                    (seenEmitter)="openseenList($event)">
+                            </app-message-chat-action-menu>
+                        </ng-container>
+                        <div class="files-list">
+                            <ng-container *ngFor="let messageFile of dataMessage.files; let messageImageIndex = index;">
+                                <div style="position: relative; display: inline-block">
+                                    <img
+                                            (click)="showImage(dataMessage.files, messageImageIndex)"
+                                            [class]="(messageImageIndex === 0) ? 'mr-4' : 'mr-4'"
+                                            [src]="(messageFile.url) ?
+                                                     messageFile.url : '../../../assets/img/user-avatar.png'"
+                                            height="81px" width="81px"
+                                            alt="">
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="!dataMessage.msg">
+                                <app-message-chat-action-menu
+                                        *ngIf="dataMessage.user.email === userProfile.email"
+                                        class="app-menu-chat"
+                                        [item]="dataMessage"
+                                        (editEmitter)="loadEditMessage($event)"
+                                        (seenEmitter)="openseenList($event)">
+                                </app-message-chat-action-menu>
+                            </ng-container>
+                        </div>
+                        <div class="pl-5 pt-1 emoji-top" *ngIf="dataMessage.user.email !== userProfile.email">
+                            <span>216</span>
+                            <app-emoji-action-menu [item]="{}"></app-emoji-action-menu>
+                            <i class="pe-7s-back pl-3" (click)="replyThisMessage(dataMessage)"></i><span>{{"MESSAGE.Reply" | translate}}</span>
+                        </div>
+                    </li>
+                    <ng-container *ngFor="let reply of dataMessage.reply.reverse(); let replyIndex = index;">
+                        <li class="sent sent-chat">
+                            <img
+                                    (click)="loadUserInfo2(reply.user)"
+                                    class="img-chat my-auto"
+                                    [src]="(reply.user.avatarURL) ? reply.user.avatarURL : 'http://emilcarlsson.se/assets/mikeross.png'" alt=""/>
+                            <div>
+                                <span>{{reply?.user?.name}}</span>
+                                <ng-container *ngIf="reply.lastMsgDate && reply.timeSpentMore === ''">
+                                    <span class="pl-2">
+                                    {{
+                                        ("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(reply.lastMsgDate).st, 'day': getCreateDateInfo(reply.lastMsgDate).day})  + '/' +
+                                        ('DATEFORMAT.' + getCreateDateInfo(reply.lastMsgDate).month | translate) + '/' +
+                                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(reply.lastMsgDate).year})
+                                    }}
+                                    </span>
+                                </ng-container>
+                                <ng-container *ngIf="reply.lastMsgDate && reply.timeSpentMore !== ''">
+                                    <span class="pl-2">
+                                    {{
+                                        ('MESSAGE.last' | translate) + ' ' + reply.timeSpent + ' ' + (reply.timeSpentMore |  translate)
+                                    }}
+                                    </span>
+                                </ng-container>
+                            </div>
+                            <ng-container *ngIf="reply.msg">
+                                <p [class]="(reply.user.email === userProfile.email) ? 'content-chat2' : 'content-chat'">{{reply.msg}}</p>
+                                <app-message-chat-action-menu
+                                        *ngIf="reply.user.email === userProfile.email"
+                                        class="app-menu-chat"
+                                        [item]="reply"
+                                        (editEmitter)="loadEditReplyMessage(dataMessage, $event)"
+                                        (seenEmitter)="openseenList($event)">
+                                </app-message-chat-action-menu>
+                            </ng-container>
+                            <div class="files-list scroll scrollbar-cyan">
+                                <ng-container *ngFor="let file of reply.files; let replyImageIndex = index;">
+                                    <div style="position: relative; display: inline-block">
+                                        <img
+                                                (click)="showReplyImage(reply.files, replyImageIndex)"
+                                                [class]="(replyImageIndex === reply.files.length - 1) ? '' : 'mr-4'"
+                                                [src]="(file.url) ?
+                                                     file.url : '../../../assets/img/user-avatar.png'"
+                                                height="81px" width="81px"
+                                                alt="">
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="!reply.msg">
+                                    <app-message-chat-action-menu
+                                            *ngIf="reply.user.email === userProfile.email"
+                                            class="app-menu-chat"
+                                            [item]="reply"
+                                            (editEmitter)="loadEditReplyMessage(dataMessage, $event)"
+                                            (seenEmitter)="openseenList($event)">
+                                    </app-message-chat-action-menu>
+                                </ng-container>
+                            </div>
+                        </li>
+                    </ng-container>
+                    <div *ngIf="enableMoreReplies && dataMessage.reply.length > 0" class="show-more-message">
+                        <span class="show-more-records reply-show-more" (click)="loadMoreReplyRecords(dataMessage, dataMessage.reply[dataMessage.reply.length - 1])">
+                            {{'MESSAGE.More' | translate}}
+                        </span>
+                    </div>
+                </ul>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="selectedThread && selectedThread.actorType !== 2">
+            <div class="middle" *ngIf="selectedThread.actorType === 3">
+                <img class="rounded-circle"
+                     [src]="(selectedThread.actor && selectedThread.actor.avatarURL) ?  selectedThread.actor.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                     alt="">
+                <div class="russ-font">
+                    <p class="russ-ti">{{selectedThread?.actor?.name}}</p>
+                    <p class="russ-minutes" [style.color]="(selectedThread.color) ? selectedThread.color : statusList[0].color">{{selectedThread.status}}</p>
+                </div>
+            </div>
+            <div class="middle" (click)="loadUserInfo(selectedThread)" *ngIf="selectedThread.actorType === 1">
+                <img class="rounded-circle"
+                     [src]="(selectedThread.actor && selectedThread.actor.avatarURL) ?  selectedThread.actor.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                     alt="">
+                <div class="russ-font">
+                    <p class="russ-ti">{{selectedThread?.actor?.name}}</p>
+                    <p class="russ-minutes" [style.color]="(selectedThread.color) ? selectedThread.color : statusList[0].color">{{selectedThread.status}}</p>
+                </div>
+            </div>
+            <div *ngIf="enableMoreMessages" class="show-more-message">
+                    <span class="show-more-records" (click)="loadMoreMessagesRecords()">
+                        {{'MESSAGE.More' | translate}}
+                    </span>
+            </div>
+            <div id="chat-single-mode-area" class="messages scroll scrollbar-cyan" *ngIf="selectedThreadData">
+                <ng-container *ngFor="let dataMessage of selectedThreadData.reverse(); let messageIndex = index;">
+                    <ul>
+                        <li [class]="(dataMessage.user.email === userProfile.email) ? 'replies my-auto' : 'sent my-auto'">
+                            <img
+                                    (click)="loadUserInfo2(dataMessage.user)"
+                                    class="img-chat my-auto"
+                                    [src]="(dataMessage.user.avatarURL) ? dataMessage.user.avatarURL : 'http://emilcarlsson.se/assets/mikeross.png'"
+                                    alt=""/>
+                            <p *ngIf="dataMessage.msg" [class]="(dataMessage.user.email === userProfile.email) ? 'replies-before my-auto' : 'sent-before my-auto'" [innerHTML]="dataMessage.msg"></p>
+                            <div [class]="(dataMessage.user.email === userProfile.email) ? 'chat-single-message' : ''" *ngIf="!dataMessage.msg">
+                                <div>
+                                    <ng-container *ngFor="let messageFile of dataMessage.files; let messageImageIndex = index;">
+                                        <div style="position: relative; display: inline-block">
+                                            <img
+                                                    (click)="showImage(dataMessage.files, messageImageIndex)"
+                                                    [class]="(messageImageIndex === dataMessage.files.length - 1) ? '' : 'mr-4'"
+                                                    [src]="(messageFile.url) ?
+                                                         messageFile.url : '../../../assets/img/user-avatar.png'"
+                                                    height="81px" width="81px"
+                                                    alt="">
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div [class]="(dataMessage.user.email === userProfile.email) ? 'font-time-right2' : 'font-time-left'" *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore === ''">
+                                    {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(dataMessage.lastMsgDate).st, 'day': getCreateDateInfo(dataMessage.lastMsgDate).day})  + '/' +
+                                    ('DATEFORMAT.' + getCreateDateInfo(dataMessage.lastMsgDate).month | translate) + '/' +
+                                    ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(dataMessage.lastMsgDate).year})}}
+                                </div>
+                                <div [class]="(dataMessage.user.email === userProfile.email) ? 'font-time-right2' : 'font-time-left'" *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore !== ''">
+                                    {{('MESSAGE.last' | translate) + ' ' + dataMessage.timeSpent + ' ' + (dataMessage.timeSpentMore |  translate)}}
+                                </div>
+                            </div>
+                        </li>
+                        <div [class]="(dataMessage.user.email === userProfile.email) ? 'chat-single-message' : 'chat-single-message1'" *ngIf="dataMessage.msg">
+                            <div [class]="(dataMessage.user.email === userProfile.email) ? 'files-list3' : 'files-list2'" >
+                                <ng-container *ngFor="let messageFile of dataMessage.files; let messageImageIndex = index;">
+                                    <div style="position: relative; display: inline-block">
+                                        <img
+                                                (click)="showImage(dataMessage.files, messageImageIndex)"
+                                                [class]="(messageImageIndex === dataMessage.files.length - 1) ? '' : ''"
+                                                [src]="(messageFile.url) ?
+                                                         messageFile.url : '../../../assets/img/user-avatar.png'"
+                                                height="81px" width="81px"
+                                                alt="">
+                                    </div>
+                                </ng-container>
+                            </div>
+                            <div [class]="(dataMessage.user.email === userProfile.email) ? 'font-time-right' : 'font-time-left'" *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore === ''">
+                                {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(dataMessage.lastMsgDate).st, 'day': getCreateDateInfo(dataMessage.lastMsgDate).day})  + '/' +
+                                ('DATEFORMAT.' + getCreateDateInfo(dataMessage.lastMsgDate).month | translate) + '/' +
+                                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(dataMessage.lastMsgDate).year})}}
+                            </div>
+                            <div [class]="(dataMessage.user.email === userProfile.email) ? 'font-time-right' : 'font-time-left'" *ngIf="dataMessage.lastMsgDate && dataMessage.timeSpentMore !== ''">
+                                {{('MESSAGE.last' | translate) + ' ' + dataMessage.timeSpent + ' ' + (dataMessage.timeSpentMore |  translate)}}
+                            </div>
+                        </div>
+                    </ul>
+                </ng-container>
+            </div>
+        </ng-container>
+        <form class="new-message-form" [formGroup]="newMessageForm" *ngIf="selectedThread">
+            <div class="card-footer">
+                <ng-container *ngIf="showPreviewArea">
+                    <form class="form-upImage" [formGroup]="uploadImageForm">
+                        <ng-container *ngIf="urlUpdate && urlUpdate.length > 0">
+                            <ng-container style="display: block" formArrayName="files" *ngIf="uploadImageForm['controls']['files']['controls'].length >= 0">
+                                <ng-container style="display: block" *ngFor="let file of uploadImageForm['controls']['files']['controls']; let indexG = index;">
+                                    <ng-container [formGroupName]="indexG">
+                                       <div class="up-images">
+                                            <img [src]="uploadImageForm['controls']['files']['controls'][indexG].get('url').value" alt="">
+                                            <i class="fas fa-remove" (click)="removeUploadImage(indexG)"></i>
+                                            <input type="hidden" formControlName="url">
+                                            <input type="hidden" formControlName="data">
+                                            <input type="hidden" formControlName="fileExt">
+                                       </div>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </form>
+                </ng-container>
+                <div class="input-group">
+                    <div class="input-group-append">
+                        <span class="input-group-text attach_btn" (click)="chooseFileUploadImage()">
+                            <i class="fas fa-paperclip"
+                               [style.opacity]="(isEdit) ? '0' : '1'"
+                            ></i>
+                            <input type="file" multiple style="display: none" accept="image/*" id="fileInputUploadImage" (change)="previewFileUploadImage($event)">
+                        </span>
+                    </div>
+                    <div class="chat-msg-outside">
+                        <p style="display: none" class="my-auto text-message-chat" #senderRef></p>
+                    <input #messageElement (keyup)="onKeySendMessage($event)" placeholder="{{'MESSAGE.NameList.WriteAMessage' | translate}}" formControlName="msg" class="form-control type_msg" >
+                    </div>
+                    <input type="hidden" formControlName="threadSig">
+                    <div class="input-group-append">
+                        <span (click)="sendMessage()" class="input-group-icon send_btn"><i class="fas fa-location-arrow"></i></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <app-chat-emoji-action-menu
+                *ngIf="selectedThread"
+                [style.opacity]="(isEdit) ? '0' : '1'"
+                [disabled]="showPreviewArea"
+                (emotionEmit)="sendEmotion($event)"
+                class="app-smile"></app-chat-emoji-action-menu>
+    </div>
+</div>
+<div mdbModal #userInfoModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog find-contact" role="document">
+        <div class="modal-content" *ngIf="memberToView">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.UserInfo" | translate}}
+                    <i (click)="userInfoModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+
+            <div class="middle" id="notificationNail">
+                <img class="rounded-circle"
+                     [src]="(memberToView.avatarURL) ? memberToView.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                     alt="">
+                <div class="russ-font">
+                    <p class="russ-ti"><span>{{memberToView?.name}}</span></p>
+                    <p class="russ-minutes" *ngIf="memberToView.birthday">
+                        {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(memberToView.birthday).st, 'day': getCreateDateInfo(memberToView.birthday).day})  + '/' +
+                        ('DATEFORMAT.' + getCreateDateInfo(memberToView.birthday).month | translate) + '/' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(memberToView.birthday).year})}}
+                    </p>
+                    <p *ngIf="!memberToView.birthday">
+                        <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td width="30%"><p class="font-absolute">{{"MESSAGE.NameList.Email" | translate}}</p></td>
+                        <td colspan="2">{{memberToView?.email}}</td>
+                    </tr>
+                    <tr>
+                        <td width="30%"><p class="font-absolute">{{"BUSINESS.phone" | translate}}</p></td>
+                        <td width="55%">{{memberToView?.phone}}</td>
+                        <td class="text-center" width="15%" *ngIf="memberToView.phone && memberToView.email !== userProfile.email">
+                            <a href="tel:{{memberToView.phone.split().join('')}}" *ngIf="memberToView.phone">
+                                <span class="pe-7s-call"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    </thead>
+                </table>
+                <div
+                        (click)="chatWithUser(memberToView, userInfoModal)"
+                        class="form-relative-message"
+                        *ngIf="memberToView.email !== userProfile.email && selectedThread.actorType !== 1">
+                    <a class="font-message">{{"MESSAGE.NameList.Send_message" | translate}}</a>
+                </div>
+                <div class="form-relative-message">
+                    <p class="mb-0">{{"MESSAGE.NameList.Notification" | translate}}</p>
+                    <p class="font-enable" *ngIf="memberToView.settings === 1">{{"MESSAGE.NameList.Followed" | translate}}</p>
+                    <app-user-notification-chat-action-menu
+                            (followEmitter)="followMe($event)"
+                            (unFollowEmitter)="unFollowMe($event)"
+                            [item]="memberToView">
+                    </app-user-notification-chat-action-menu>
+                </div>
+            </div>
+            <div class="text-center pt-2 pb-2 font-ban" *ngIf="memberToView.email !== userProfile.email && selectedThread.actorType === 2">
+                <ng-container *ngIf="memberToView.settings !== 2">
+                    <span class="fas fa-user"></span>
+                    <span (click)="openConfirmBan_Unban(memberToView, true)">
+                        {{"Courses.Ban" | translate}}
+                    </span>
+                </ng-container>
+
+                <ng-container *ngIf="memberToView.settings === 2">
+                    <span class="fas fa-user-alt-slash"></span>
+                    <span (click)="openConfirmBan_Unban(memberToView, false)">
+                        {{"Courses.Un-ban" | translate}}
+                    </span>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #seenListModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false, keyboard: false}'>
+    <div class="modal-dialog find-contact" role="document">
+        <div class="modal-content" *ngIf="itemsSeen">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.SeenList" | translate}}
+                    <i (click)="seenListModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+            <div class="cv-sieries square scrollbar-cyan">
+                <ng-container *ngFor="let item of itemsSeen">
+                    <div class="row ml-2 mr-2">
+                        <div class="col-2 my-auto">
+                            <img class="img-chat" [src]="(item.avatarURL) ? item.avatarURL : 'http://emilcarlsson.se/assets/louislitt.png'" alt=""/>
+                        </div>
+                        <div class="col-10 chat-bottom">
+                            <div class="meta">
+                                <div style="line-height: 20px;margin-top:5px;" class="name no-mb">{{item?.name}}</div>
+                                <span class="status-chat">Online</span>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div mdbModal #createGroupModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false, keyboard: false}'>
+    <div class="modal-dialog find-contact" role="document">
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.Create_group" | translate}}
+                    <i (click)="createGroupModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+            <form [formGroup]="newGroupForm" class="newGroupForm">
+                <div class="row">
+                    <div class="col-2" (click)="chooseNewGroupFileUploadImage()">
+                        <img class="create-img" [src]="(newGroupForm.get('logoURL').value) ? newGroupForm.get('logoURL').value : '../../../assets/img/user-avatar.png'" alt="">
+                        <i class="fas fa-camera up-camera"></i>
+                        <input type="file" #newGroupFileInput style="display: none" accept="image/*" (change)="previewNewGroupFileUploadImage($event)">
+                        <input type="hidden" formControlName="logoData">
+                        <input type="hidden" formControlName="logoFileExt">
+                    </div>
+                    <div class="col-10">
+                        <input (keyup)="checkCreatable()" placeholder="{{'MESSAGE.Enter_a_group_name' | translate}}" formControlName="name" class="create_group" type="text"/>
+                    </div>
+                </div>
+                <div class="create_group_info" #selectedGroupMembers title="">
+                </div>
+                <div class="modal-bg-search">
+                    <label><i class="fa fa-search search-text" aria-hidden="true"></i></label>
+                    <input
+                            [(ngModel)]="searchTextCreateGroup"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder='{{"MESSAGE.EnterEmailOrName" | translate}}'
+                            class="form-control searchbars"/>
+                </div>
+                <div class="cv-sieries square scrollbar-cyan modal-group-chat">
+                    <ng-container *ngFor="let item of items; let memberIndex = index">
+                        <ng-container *ngIf="checkSearchCreateGroup(item);">
+                            <div class="row ml-2 mr-2 mt-1">
+                                <label for="newGroupMember_{{memberIndex}}" class="chat-bottom">
+                                    <div class="col-2 my-auto">
+                                        <input
+                                                id="newGroupMember_{{memberIndex}}"
+                                                (change)="updateNewGroupMembers(memberIndex)"
+                                                type="checkbox"
+                                                value="{{item.signature}}"/>
+                                        <span class="checkmark"></span>
+                                        <img class="img-chat mr-1 ml-2" [src]="(item.avatarURL) ? item.avatarURL : 'http://emilcarlsson.se/assets/louislitt.png'" alt=""/>
+                                    </div>
+                                    <div class="col-10">
+                                        <div style="line-height: 20px;margin-top:5px;" class="name no-mb">{{item.name}}</div>
+                                        <span class="status-chat">Online</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </form>
+            <div class="bg-gray text-right" style="text-transform: uppercase">
+                <button class="button-save2" [disabled]="!createNewGroupAble" (click)="createNewGroup()">{{"LAYOUT.CREATE" | translate}}</button>
+                <button (click)="cancelCreateNewGroup();" class="button-cancel2">{{"LAYOUT.CANCEL" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #editGroupModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div #editGroupElementRef class="modal-dialog find-contact" role="document">
+        <div class="modal-content group-content" *ngIf="selectedThread">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.Edit_Group" | translate}}
+                    <i (click)="editGroupModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+            <div class="bg-top">
+                <form [formGroup]="editGroupForm" class="newGroupForm">
+                    <div class="middle middle-fex">
+                        <img class="rounded-circle"
+                             [src]="(editGroupForm.get('logoURL').value) ? editGroupForm.get('logoURL').value : '../../../../../assets/img/user-avatar.png'"
+                             alt="">
+                        <i
+                                (click)="chooseEditGroupFileUploadImage()"
+                                class="fas fa-camera edit-camera">
+                        </i>
+                        <input type="file" #editGroupFileInput style="display: none" accept="image/*" (change)="previewEditGroupFileUploadImage($event)">
+                        <input type="hidden" formControlName="logoData">
+                        <input type="hidden" formControlName="logoFileExt">
+                        <div class="russ-font font-width">
+                            <div class="form-relative">
+                                <input (keyup)="checkEditable()" placeholder="{{'MESSAGE.Enter_a_group_name' | translate}}" formControlName="name" class="input-edit-group" type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="pd-l pb-2">
+                    <button class="font-save" (click)="updateGroup()" [disabled]="!editGroupAble">{{"LAYOUT.SAVE" | translate}}</button>
+                    <button class="font-cancel">{{"LAYOUT.CANCEL" | translate}}</button>
+                </div>
+            </div>
+            <div class="group-font">
+                <div class="add-group">
+                    <i class="fas fa-users pr-2"></i>
+                    <span class="font-blue-normal">{{"MESSAGE.MEMBERS" | translate}}</span>
+                </div>
+                <div class="group-delete" *ngIf="getRole() !== 3">
+                    <div (click)="removeGroupModalConfirm(selectedThread, editGroupModal)">
+                        <span class="fas fa-user-minus pr-1" title="{{'MESSAGE.NameList.Delete' | translate}}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-bg-search">
+                <label><i class="fa fa-search search-text" aria-hidden="true"></i></label>
+                <input
+                        [(ngModel)]="searchTextMembers"
+                        [ngModelOptions]="{standalone: true}"
+                        placeholder='{{"MESSAGE.EnterEmailOrName" | translate}}'
+                        class="form-control searchbars"/>
+            </div>
+            <div class="group-list square scrollbar-cyan">
+                <ng-container *ngFor="let item of groupMembersList; let memberEditIndex = index">
+                    <ng-container *ngIf="checkSearchEditGroup(item);">
+                        <div class="row" style="margin: 0">
+                            <div class="col-sm-2 my-auto">
+                                <img class="img-circle"
+                                     [src]="(item.avatarURL) ? item.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                                     alt="">
+                            </div>
+                            <div class="col-sm-10 border-bottom">
+                                <p class="russ-name"><span>{{item.name}}</span></p>
+                                <p class="russ-online" [style.color]="(item.role) ? ChatMemberRole.valueOf(item.role).getColor() : ChatMemberRole.GUEST.getColor()">{{(item.role) ? (ChatMemberRole.valueOf(item.role).getDisplay() | translate) : (ChatMemberRole.GUEST.getDisplay() | translate)}}</p>
+                                <app-message-group-edit-action-menu
+                                        class="menu-icon"
+                                        *ngIf="item.role !== 1"
+                                        (removeAdminEmitter)="updateAdmin($event, false)"
+                                        (setAdminEmitter)="updateAdmin($event, true)"
+                                        (removeMemberEmitter)="removeMember($event)"
+                                        (banEmitter)="openConfirmBan_Unban($event, true)"
+                                        (unBanEmitter)="openConfirmBan_Unban($event, false)"
+                                        [item]="item">
+                                </app-message-group-edit-action-menu>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div *ngIf="enableMoreMembers">
+                <div class="pb-2" style="text-align: right">
+                        <span class="show-more-records" (click)="loadMoreRecordsMembers()">
+                            {{'MESSAGE.More' | translate}}
+                        </span>
+                </div>
+            </div>
+            <div class="text-center bg-button pt-2 pb-2">
+                <div class="member-number" (click)="showGroupMember()">
+                    <span class="fas fa-user-plus icon-members"></span>
+                    <span class="font-member">{{"MESSAGE.MEMBERS" | translate}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #findContactModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog find-contact" role="document">
+
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.Find_contact" | translate}}
+                    <i (click)="findContactModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+            <div class="modal-bg-search">
+                <label><i class="fa fa-search search-text" aria-hidden="true"></i></label>
+                <input [(ngModel)]="searchTextFind" placeholder='{{"MESSAGE.EnterEmailOrName" | translate}}' class="form-control searchbars"/>
+            </div>
+            <div class="row header">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs find-contact" id="myTab" role="tablist">
+                        <li class="nav-item" [style.width]="'50%'" [style.text-align]="'center'">
+                            <div class="nav-link modal-step-title" (click)="gotoTab(1)"
+                                 [ngClass]="{ 'active': contactStep === 1 }"><span>{{"MESSAGE.Users" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item" [style.width]="'50%'" [style.text-align]="'center'">
+                            <div class="nav-link modal-step-title" (click)="gotoTab(2)"
+                                 [ngClass]="{ 'active': contactStep === 2 }"><span>{{"BUSINESS.Business" | translate}}</span></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content cv-sieries square scrollbar-cyan">
+                <div *ngIf="contactStep === 1">
+                    <ng-container *ngFor="let item of items">
+                        <ng-container *ngIf="checkSearch(item)">
+                            <div>
+                                <div class="row ml-2 mr-2">
+                                    <div class="col-2 my-auto">
+                                        <img class="img-chat" [src]="(item.avatarURL) ? item.avatarURL : 'http://emilcarlsson.se/assets/louislitt.png'" alt=""/>
+                                    </div>
+                                    <div class="col-10 chat-bottom">
+                                        <div class="meta">
+                                            <div style="line-height: 20px;margin-top:5px;" class="name no-mb">{{item.name}}</div>
+                                            <span class="status-chat">Online</span>
+                                            <i class="pe-7s-comment" (click)="chatWithUser(item, findContactModal)"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+                <div *ngIf="contactStep === 2">
+                    <ng-container *ngFor="let item of itemsBusiness">
+                        <ng-container *ngIf="checkSearch(item)">
+                            <div>
+                                <div class="row ml-2 mr-2">
+                                    <div class="col-2 my-auto">
+                                        <img class="img-chat" [src]="(item.avatarURL) ? item.avatarURL : 'http://emilcarlsson.se/assets/louislitt.png'" alt=""/>
+                                    </div>
+                                    <div class="col-10 chat-bottom">
+                                        <div class="meta">
+                                            <div style="line-height: 20px;margin-top:5px;" class="name no-mb">{{item.name}}</div>
+                                            <span class="status-chat">Online</span>
+                                            <i class="pe-7s-comment" (click)="chatWithOrg(item, findContactModal)"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #GroupMemberModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog group-member" role="document">
+        <div class="modal-content">
+            <div class="modal-bg-header">
+                <div class="text-center text-white title">{{"MESSAGE.Group_Members" | translate}}
+                    <i (click)="GroupMemberModal.hide();" class="fa fa-times text-right"></i>
+                </div>
+            </div>
+            <div class="modal-bg-search mb-2">
+                <label><i class="fa fa-search search-text" aria-hidden="true"></i></label>
+                <input placeholder='{{"MESSAGE.EnterEmailOrName" | translate}}' class="form-control searchbar"/>
+            </div>
+
+            <div class="cv-sieries square scrollbar-cyan modal-group-chat">
+                <ng-container *ngFor="let item of itemsGroupMembers; let memberIndex = index;">
+                    <ng-container *ngIf="checkSearch(item)">
+                        <div class="row ml-2 mr-2">
+                            <label for="GroupMember_{{memberIndex}}">
+                                <div class="col-2 my-auto">
+                                    <input
+                                            id="GroupMember_{{memberIndex}}"
+                                            (change)="updateGroupMembers(memberIndex)"
+                                            name="modal-create-group"
+                                            type="checkbox"
+                                            [value]="item.signature"/>
+                                    <span class="checkmark"></span>
+                                    <img class="img-chat mr-2" [src]="(item.avatarURL) ? item.avatarURL : 'http://emilcarlsson.se/assets/louislitt.png'" alt=""/>
+                                </div>
+                                <div class="col-10 chat-bottom">
+                                    <div style="line-height: 20px;margin-top:5px;" class="name no-mb">{{item.name}}</div>
+                                    <span class="status-chat">Online</span>
+                                </div>
+                            </label>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div class="bg-gray text-center">
+                <div class="member-number" (click)="updateSelectedItemsInGroupMember()">
+                    <span class="fas fa-user-plus icon-members"></span>
+                    <span class="font-member">{{"MESSAGE.AddMember" | translate}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #showImageModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false, keyboard: false}'>
+    <div class="modal-dialog showImgModal" role="document">
+        <div class="modal-content">
+            <div class="modal-body pt-3 text-center">
+                <h4 style="color: #fff">{{'MESSAGE.PreviewImages' | translate}}</h4>
+            </div>
+            <div class="modal-body pt-3 pb-3 text-center">
+                <div>
+                    <i class="pe-7s-angle-left-circle" (click)="addUpdateRunIndex(-1)" *ngIf="(selectedImages.length !== 1)"></i>
+                    <img [src]="selectedImages[autoRunIndex]" height="350px" width="270px" class="ml-3 mr-3">
+                    <i class="pe-7s-angle-right-circle" (click)="addUpdateRunIndex(1)" *ngIf="(selectedImages.length !== 1)"></i>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <button class="button-cancel" (click)="showImageModal.hide()">{{'LAYOUT.CLOSE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='error.text | translate : {"action": (error.action | translate)}'>
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmSetAdminModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="memberToView">
+            <div class="diaglog-title-confirm text-center">
+                <h4>{{ "BUSINESS.Confirm" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center"
+                 [innerHTML]='"MESSAGE.AreYouSureAction" | translate :
+                                {
+                                    action: ((isAdmin) ? ("MESSAGE.Set_admin" | translate) : ("MESSAGE.Remove_admin" | translate)),
+                                    color : ((isAdmin) ? "action-set-admin" : "action-remove-admin")
+                                }'>
+            </div>
+            <div class="text-center pb-3 mt-3">
+                <button (click)="(isAdmin) ? ConfirmSetAdmin() : ConfirmUnSetAdmin()" class="button-save">{{"MESSAGE.NameList.OK" | translate}}</button>
+                <button class="button-cancel" (click)="confirmSetAdminModal.hide();">{{"MESSAGE.NameList.Cancel" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmBanUnBanModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="memberToView">
+            <div class="diaglog-title-confirm text-center">
+                <h4>{{ "BUSINESS.Confirm" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center"
+                 [innerHTML]='"MESSAGE.AreYouSureAction" | translate :
+                                {
+                                    action: ((isBan) ? ("Courses.Ban" | translate) : ("Courses.Un-ban" | translate)),
+                                    color : ((isBan) ? "action-ban" : "action-unban")
+                                }'>
+            </div>
+            <div class="text-center pb-3 mt-3">
+                <button (click)="(isBan) ? ConfirmBan() : ConfirmUnBan()" class="button-save">{{"MESSAGE.SEND" | translate}}</button>
+                <button class="button-cancel" (click)="confirmBanUnBanModal.hide();">{{"LAYOUT.CANCEL" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #removeGroupModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true, keyboard: false}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="selectedThread">
+            <div class="diaglog-title-confirm text-center">
+                <h4>{{ "BUSINESS.Confirm" | translate}}</h4>
+            </div>
+            <div
+                    class="modal-body confirmDialog ml-3 mr-3 text-center"
+                    [innerHTML]='"MESSAGE.AreYouSureAction" | translate :
+                                {
+                                    action: ((selectedThread.actorType === 2) ? ("MESSAGE.NameList.ExitGroup" | translate) : ("MESSAGE.NameList.Delete" | translate)),
+                                    color : "action-delete"
+                                }'
+            >
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-save" (click)="removeGroup()">{{ "MESSAGE.NameList.Yes" | translate}}</button>
+                <button class="button-cancel" style="margin-right: 0;" (click)="removeGroupModal.hide()">{{ "MESSAGE.NameList.No" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

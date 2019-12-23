@@ -1,0 +1,323 @@
+<div class="full-bg-img mask pt-2 pb-3" *ngIf="profiles">
+  <div class="profiles-father">
+    <div class="breadcrums-title mt-2">{{ "BUSINESS.business_profile" | translate}}</div>
+
+    <form [formGroup]="profileForm" class="background-form">
+      <div class="taskbar info-title pl-3">
+          <p class="font-he">{{ "BUSINESS.profile" | translate}}</p>
+        <button [class]="(isEdit) ? 'dont-show' : 'edit fas fa-edit'"  (click)="isEdit = !isEdit">{{(isEdit) ? '' : (' ' + ('LAYOUT.EDIT' | translate))}} </button>
+      </div>
+      <div class="row p-2" *ngIf="!isEdit">
+        <div class="col-sm-4">
+          <table class="table">
+            <tbody>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.bussiness_name" | translate}}</td>
+              <td width="65%">{{(profiles.name) ? profiles.name : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.short_name" | translate}}</td>
+              <td width="65%">{{profiles.shortName}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.email_name" | translate}}</td>
+              <td width="65%">{{(profiles.email) ? profiles.email : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.phone" | translate}}</td>
+              <td width="65%">{{(profiles.phone) ? profiles.phone : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.hotline" | translate}}</td>
+              <td width="65%">{{(profiles.hotline) ? profiles.hotline : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.category" | translate}}</td>
+              <td width="65%">{{transformCategories(profiles.category)}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-3">
+          <table class="table table-form">
+            <tbody>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.country" | translate}}</td>
+              <td width="65%">{{(profiles.country) ? toPropperCase(profiles.country) : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.region" | translate}}</td>
+              <td width="65%">{{(profiles.region) ? toPropperCase(profiles.region) : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.city" | translate}}</td>
+              <td width="65%">{{(profiles.city) ? toPropperCase(profiles.city) : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.address" | translate}} 1</td>
+              <td width="65%">{{(profiles.line1) ? profiles.line1 : ''}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-color">{{ "BUSINESS.address" | translate}} 2</td>
+              <td width="65%">{{(profiles.line2) ? profiles.line2 : ''}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-5">
+          <img [src]="(profiles.logoURL) ? profiles.logoURL : '../../../../assets/img/user-avatar.png'" class="avatar mx-auto d-block">
+        </div>
+      </div>
+      <div *ngIf="isEdit">
+        <div class="row p-2">
+          <div class="col-sm-4">
+            <table class="table table-form">
+              <tbody>
+              <tr>
+                <td width="35%" class="font-color">{{ "BUSINESS.bussiness_name" | translate}}</td>
+                <td width="65%"> <input type="text" id="about" class="form-control mb-2" placeholder='{{ "MESSAGE.bussiness_name_holder" | translate}}' formControlName="name"></td>
+              </tr>
+              <tr>
+                <td width="35%" class="font-color">{{ "BUSINESS.short_name" | translate}}</td>
+                <td width="65%"><input type="text" id="" class="form-control mb-2" placeholder="" formControlName="shortName"></td>
+              </tr>
+              <tr>
+                <td width="35%" class="font-color">{{ "BUSINESS.email_name" | translate}}</td>
+                <td width="65%"><input type="text" id="email" class="form-control mb-2" placeholder='{{ "MESSAGE.email_holder" | translate}}' formControlName="email"></td>
+              </tr>
+              <tr>
+                <td width="35%" class="font-color">{{ "BUSINESS.phone" | translate}}</td>
+                <td width="65%"><input type="text" id="phone" class="form-control mb-2" placeholder='{{ "MESSAGE.phone_holder" | translate}}' formControlName="phone"></td>
+              </tr>
+              <tr>
+                <td width="35%" class="font-color">{{ "BUSINESS.hotline" | translate}}</td>
+                <td width="65"><input type="text" class="form-control mb-2" placeholder='{{ "MESSAGE.hotline_holder" | translate}}' formControlName="hotline"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-5">
+            <table class="table">
+              <tbody>
+              <tr>
+                <td width="30%" class="font-color">{{ "BUSINESS.country" | translate}}</td>
+                <td width="70%"> <select class="form-control mb-2" (change)="updateCountry()" formControlName="country">
+                  <option [selected]="country.code === selectedCountry" *ngFor="let country of countriesList" value="{{country.code}}">{{country.name}}</option>
+                </select></td>
+              </tr>
+              <tr>
+                <td width="30%" class="font-color">{{ "BUSINESS.region" | translate}}</td>
+                <td width="70%"><select class="form-control mb-2" (change)="updateRegion()" formControlName="region">
+                  <option [selected]="region.region === selectedRegion" *ngFor="let region of regionList" value="{{region.region}}">{{region.region}}</option>
+                </select></td>
+              </tr>
+              <tr>
+                <td width="30%" class="font-color">{{ "BUSINESS.city" | translate}}</td>
+                <td width="70%"><select class="form-control mb-2" formControlName="city">
+                  <option [selected]="city.code === selectedCity" *ngFor="let city of citiesList" value="{{city.code}}">{{city.name}}</option>
+                </select></td>
+              </tr>
+              <tr>
+                <td width="30%" class="font-color">{{ "BUSINESS.address" | translate}} 1</td>
+                <td width="70%"> <input class="form-control mb-2"  type="text" formControlName="line1"></td>
+              </tr>
+              <tr>
+                <td width="30%" class="font-color">{{ "BUSINESS.address" | translate}} 2</td>
+                <td width="70%"> <input class="form-control mb-2"  type="text" formControlName="line2"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-sm-3 avatar-img">
+            <div class="font-color">
+              <img width="16px" height="107px" [src]="(profiles.logoURL) ? profiles.logoURL : '../../../../assets/img/user-avatar.png'" class="avatars mx-auto d-block">
+              <i class="fas fa-camera mx-auto d-block" (click)="openFile()"></i>
+              <input type="file" style="display: none" accept="image/*" #fileInput (change)="previewFile($event)">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+           <table class="table">
+            <tbody>
+            <tr>
+              <td width="11.5%" class="font-color">{{ "BUSINESS.category" | translate}}</td>
+              <td width="88.5%">
+                <div class="form-row" id="category_area">
+                  <ng-container style="display: block" formArrayName="categories" *ngIf="profileForm['controls']['categories']['controls'].length >= 0">
+                    <ng-container style="display: block" *ngFor="let category_item of profileForm['controls']['categories']['controls']; let i = index;">
+                      <div [style.display]="(profileForm['controls']['categories']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="category-font mb-3" [formGroupName]="i">
+                        <input id="input_{{i}}" type="text" [style.display]="(profileForm['controls']['categories']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="form-control" formControlName="category">
+                        <input type="hidden" style="display: none" class="form-control" formControlName="category_id">
+                        <input type="hidden" class="form-control" formControlName="onEdit">
+                        <span id="span_{{i}}" [style.display]="(profileForm['controls']['categories']['controls'][i].get('onEdit').value) ? 'block' : 'none'"><i (click)="removeCategory(i)" class="fas fa-times-circle text-danger" style="top: -3px;right: 5px; position: absolute;box-shadow:none"></i></span>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                  <span><i (click)="addCategory()" class="fas fa-plus"></i></span>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+      <div class="pl-3 pb-3 text-center" *ngIf="isEdit">
+        <button class="button-cancel" (click)="reloadProfile(); isEdit = !isEdit;">{{ 'LAYOUT.CANCEL' | translate }}</button>
+        <button class="button-save" (click)="saveOrgProfile(); isEdit = !isEdit;">{{ 'LAYOUT.SAVE' | translate }}</button>
+      </div>
+      <div class="taskbars info-title pl-3">
+          <p class="font-he">{{ "BUSINESS.about" | translate}}</p>
+        <button [class]="(editAbout) ? 'dont-show' : 'edit fas fa-edit'"  (click)="editAbout = !editAbout">{{(editAbout) ? '' : (' ' + ('LAYOUT.EDIT' | translate))}} </button>
+      </div>
+      <div class="pl-3 pt-3 pr-3" *ngIf="editAbout">
+        <div class="form-group">
+          <textarea class="form-control" rows="2" formControlName="about"></textarea>
+        </div>
+      </div>
+      <div class="pl-3 pb-3" *ngIf="editAbout">
+        <button class="button-cancel" (click)="reloadAbout(); editAbout = !editAbout">{{ 'LAYOUT.CANCEL' | translate }}</button>
+        <button class="button-save" (click)="saveOrgAbout(); editAbout = !editAbout">{{ 'LAYOUT.SAVE' | translate }}</button>
+      </div>
+      <div class="background-font">
+        <div class="p-3 text-justify" *ngIf="!editAbout">
+          {{(profiles.about) ? profiles.about : ''}}
+        </div>
+      </div>
+    </form>
+    <div class="taskbars info-title pl-3">
+        <p class="font-he">{{ "BUSINESS.partner" | translate}}</p>
+      <button [class]="'edit fas fa-plus-circle'"  (click)="addPartner()"> {{"BUSINESS.ADD" | translate}}</button>
+    </div>
+    <div class="background-font scrollbar-cyan-bar">
+      <ng-container *ngFor="let partner of partnerItems">
+        <div class="row p-3">
+          <div class="col-sm-1">
+            <img class="img-user mx-auto d-block" src="{{(partner.logoURL) ? partner.logoURL : '../../../../assets/img/user-avatar.png'}}" />
+          </div>
+          <div class="col-sm-10 text-justify">
+            <label>{{partner.name}}</label>
+            <p>{{((partner.line1) ? (partner.line1 + ', ') : '') + ((partner.line2) ? (partner.line2 + ', ') : '') + ((toPropperCase(partner.region)) ? (toPropperCase(partner.region) + ', ') : '') + ((toPropperCase(partner.city)) ? (toPropperCase(partner.city) + ', ') : '') + toPropperCase(partner.country)}}</p>
+            <label> {{partner.about}}</label>
+          </div>
+          <div class="col-sm-1">
+            <app-business-profile-partner-action-menu (editItem)="editPartner(partner)" (removeItem)="removePartner(partner.signature)" [item]="partner"></app-business-profile-partner-action-menu>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="taskbars info-title pl-3">
+      <p class="font-he">{{ "BUSINESS.staff" | translate}}</p>
+      <button [class]="'edit fas fa-plus-circle'" (click)="stafflist.show()"> {{"BUSINESS.ADD" | translate}}</button>
+    </div>
+    <div class="background-font scrollbar-cyan-bar">
+      <ng-container *ngFor="let staffProfile of staffProfilesItems">
+        <div class="row pt-3">
+          <div class="col-sm-1">
+            <img class="img-user mx-auto d-block"  src="{{(staffProfile.avatarURL) ? staffProfile.avatarURL : '../../../../assets/img/user-avatar.png'}}" />
+          </div>
+          <div class="col-sm-10 text-justify">
+            <label>{{staffProfile.name}}</label>
+            <p>{{((staffProfile.line1) ? (staffProfile.line1 + ', ') : '') + ((staffProfile.line2) ? (staffProfile.line2 + ', ') : '') + ((toPropperCase(staffProfile.region)) ? (toPropperCase(staffProfile.region) + ', ') : '') + ((toPropperCase(staffProfile.city)) ? (toPropperCase(staffProfile.city) + ', ') : '') + toPropperCase(staffProfile.country)}}</p>
+            <label> {{staffProfile.about}}</label>
+          </div>
+          <div class="col-sm-1 text-center">
+            <span class="pe-7s-look" title="{{'LAYOUT.VIEW' | translate}}" (click)="viewStaffProfile(staffProfile)"></span>
+            <span *ngIf="staffProfile.email !== loginUser.email" class="pe-7s-trash pl-1" title="{{'LAYOUT.REMOVE' | translate}}" (click)="removeStaffProfile(staffProfile)"></span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div mdbModal #stafflist="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <p class="modal-title w-100 font-weight-bold">{{'MESSAGE.StaffList' | translate}}</p>
+      <div *ngIf="staffItems.length > 0" class="modal-header text-center search-bar">
+        <input class="search pl-3 pr-3" placeholder="{{'STAFF.SearchMessage' | translate}}" type="text" [(ngModel)]="searchText"/>
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="modal-body staff-list square scrollbar-cyan-bar pl-3 pr-3">
+        <ng-container *ngFor="let staff of staffItems">
+          <div (click)="addToStaffProfileList(staff)" class="middle my-hover" *ngIf="searchText === '' || staff.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0">
+            <img class="rounded-circle" [src]="staff.avatarURL" alt="">
+            <div class="russ-font text-justify">
+              <p class="russ-ti">{{(staff.name) ? staff.name : ''}}</p>
+              <p class="russ-ti">{{((toPropperCase(staff.city)) ? (toPropperCase(staff.city) + ', ') : '') + ((toPropperCase(staff.region)) ? (toPropperCase(staff.region) + ', ') : '') + toPropperCase(staff.country)}}</p>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="staffItems.length < 1">
+          <div class="modal-body ml-3 mr-3 text-center">
+            {{'MESSAGE.EmptyStaff' | translate}}
+          </div>
+        </ng-container>
+      </div>
+      <div class="text-center pt-3 pb-3">
+        <button class="button-cancel" (click)="stafflist.hide()">{{ 'LAYOUT.CANCEL' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #categorylist="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <p class="modal-title w-100 font-weight-bold">{{ 'CREATOR.CURRICULUMS.QUOTE.Category_list' | translate }}</p>
+      <div class="modal-header text-center search-bar">
+        <input class="search pl-3 pr-3" placeholder="{{ 'CREATOR.CURRICULUMS.QUOTE.Search_term' | translate }}" type="text" [(ngModel)]="searchCategoryText"/>
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="modal-body staff-list square scrollbar-cyan">
+        <ng-container *ngFor="let category of categoryItems">
+          <div class="middle" *ngIf="searchCategoryText === '' || (category && category.name.toLowerCase().indexOf(searchCategoryText.toLowerCase()) >= 0)">
+            <img (click)="showCategory(category);" class="rounded-circle" [src]="(category) ? category.url : '../../../../../assets/img/user-avatar.png'" alt="">
+            <div (click)="showCategory(category);" class="russ-font">
+              <p class="russ-ti">{{category.name}}</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="text-center pt-3">
+        <button class="button-cancel" (click)="categorylist.hide()">{{ 'LAYOUT.CANCEL' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #removePartnerModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+           aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <p class="confirm">{{'MESSAGE.Confirmation' | translate}}</p>
+        <div class="modal-body ml-3 mr-3 text-center">
+          {{'MESSAGE.RemovePartnerConfirm' | translate}}
+        </div>
+        <div [class]="'btn-button mt-2'">
+          <button class="button-cancel" (click)="removePartnerModal.hide()">{{'LAYOUT.NO' | translate}}</button>
+          <button class="button-save" style="margin-right: 0;" (click)="removePartnerModal.hide(); removeSelectedPartner();">{{'LAYOUT.YES' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #removeStaffModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <p class="confirm">{{'MESSAGE.Confirmation' | translate}}</p>
+        <div class="modal-body ml-3 mr-3 text-center">
+          {{'MESSAGE.RemoveStaffConfirm' | translate}}
+        </div>
+        <div [class]="'btn-button mt-2'">
+          <button class="button-cancel" (click)="removeStaffModal.hide()">{{'LAYOUT.NO' | translate}}</button>
+          <button class="button-save" style="margin-right: 0;" (click)="removeStaffModal.hide(); removeSelectedStaff();">{{'LAYOUT.YES' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

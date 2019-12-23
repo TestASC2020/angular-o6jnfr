@@ -1,0 +1,100 @@
+<div class="row pd-top">
+  <div class="col-sm-12 my-auto breadcrums-title">
+    <a class="breadcrums mr-1" (click)="removePartnerInfoCookie()" title="View Business Profiles" routerLink="../profile">{{ 'BUSINESS.profile' | translate }}</a> / {{ 'BUSINESS.EditPartner' | translate }}
+  </div>
+</div>
+<div class="background-font">
+  <form [formGroup]="partnerForm" class="background-form">
+    <div class="taskbar info-title pl-3">
+      <div class="font-he text-white">{{ 'BUSINESS.profile' | translate }}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <table class="table">
+          <tbody>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.PartnerName' | translate }}</td>
+            <td width="65%"> <input type="text" id="name" class="form-control mb-2" placeholder="{{ 'BUSINESS.PartnerName' | translate }}" formControlName="name"></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">Email</td>
+            <td width="65%"><input type="text" id="email" class="form-control mb-2" placeholder="{{ 'BUSINESS.email_name' | translate }}" formControlName="email"></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.phone' | translate }}</td>
+            <td width="65%"><input type="text" id="phone" class="form-control mb-2" placeholder="{{ 'BUSINESS.phone' | translate }}" formControlName="phone"></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.hotline' | translate }}</td>
+            <td width="65%"><input type="text" id="hotline" class="form-control mb-2" placeholder="{{ 'BUSINESS.hotline' | translate }}" formControlName="hotline"></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.about' | translate }}</td>
+            <td width="65%"><textarea class="form-control" formControlName="about" placeholder="{{ 'BUSINESS.about' | translate }}" rows="2"></textarea></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-5">
+        <table class="table">
+          <tbody>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.country' | translate }}</td>
+            <td width="65%"> <select class="form-control mb-2" (change)="updateCountry()" formControlName="country">
+              <option [selected]="country.code === selectedCountry" *ngFor="let country of countriesList" value="{{country.code}}">{{country.name}}</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.region' | translate }}</td>
+            <td width="65%"><select class="form-control mb-2" (change)="updateRegion()" formControlName="region">
+              <option [selected]="region.region === selectedRegion" *ngFor="let region of regionList" value="{{region.region}}">{{region.region}}</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.city' | translate }}</td>
+            <td width="65%"><select class="form-control mb-2" formControlName="city">
+              <option [selected]="city.code === selectedCity" *ngFor="let city of citiesList" value="{{city.code}}">{{city.name}}</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.address' | translate }} 1</td>
+            <td width="65%"> <input class="form-control mb-2"  type="text" formControlName="line1"></td>
+          </tr>
+          <tr>
+            <td width="35%" class="font-color">{{ 'BUSINESS.address' | translate }} 2</td>
+            <td width="65%"> <input class="form-control mb-2"  type="text" formControlName="line2"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-3">
+        <div class="img-top"><img #avatar src="../../../assets/img/user-avatar.png" class="avatar mx-auto d-block">
+          <i class="fas fa-camera mx-auto d-block" (click)="openFile()"></i>
+          <input type="file" style="display: none" accept="image/*" #fileInput (change)="previewFile($event)">
+          <input type="hidden" formControlName="logoURL">
+        </div>
+      </div>
+    </div>
+      <div class="text-center" style="padding-bottom: 6px;">
+        <button class="button-cancel" title="Back to Business Profiles" routerLink="../profile">{{ 'LAYOUT.CANCEL' | translate }}</button>
+        <button class="button-save" title="Save Partner Info" (click)="confirmSaveDialog.show()">{{ 'LAYOUT.SAVE' | translate }}</button>
+      </div>
+  </form>
+</div>
+<div mdbModal #confirmSaveDialog="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <p class="confirm">Confirmation</p>
+        <div class="modal-body ml-3 mr-3 text-center">
+          Are you sure save current partner information ?
+        </div>
+        <div [class]="'btn-button mt-2'">
+          <button class="button-cancel" (click)="confirmSaveDialog.hide()">No</button>
+          <button class="button-save" style="margin-right: 0;" (click)="confirmSaveDialog.hide(); save();">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

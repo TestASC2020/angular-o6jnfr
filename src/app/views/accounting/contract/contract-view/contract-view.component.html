@@ -1,0 +1,172 @@
+<div class="row top-down">
+    <div class="col-sm-12 my-auto breadcrum-title">
+        <div class="mt-2 mb-3 about-top" *ngIf="toRouters && toRouters.length > 0">
+            <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+                <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+                <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+                <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white mt-2" *ngIf="contract">
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="table">
+                <tr>
+                    <td width="25%" class="font-contract">{{"Accounting.CONTRACT_DATE" | translate}}</td>
+                    <td width="75%" class="font-data">
+                        <ng-container *ngIf="contract.onDate">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(contract.onDate).st, 'day': getCreateDateInfo(contract.onDate).day}) + '/' +
+                            ('DATEFORMAT.' + getCreateDateInfo(contract.onDate).month | translate) + '/' +
+                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(contract.onDate).year})}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.onDate">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.CONTRACT_ID" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.no">
+                            {{contract.no}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.no">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.PROVIDER" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.providers">
+                            {{contract.providers}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.providers">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.DESCRIPTION" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.name">
+                            {{contract.name}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.name">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.TRANSACTION_FEE" | translate}}</td>
+                    <td class="font-data">{{contract?.transFee}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td width="25%" class="font-contract">{{"Accounting.STATUS" | translate}}</td>
+                    <td width="75%" class="font-data" [style.color]="(contract.status) ? ContractStatus.valueOf(contract.status).getColor() : ContractStatus.PENDING.getColor()">
+                        {{((contract.status) ? ContractStatus.valueOf(contract.status).getDisplay() : ContractStatus.PENDING.getDisplay()) | translate}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.START_DATE" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.startOn">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(contract.startOn).st, 'day': getCreateDateInfo(contract.startOn).day}) + '/' +
+                            ('DATEFORMAT.' + getCreateDateInfo(contract.startOn).month | translate) + '/' +
+                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(contract.startOn).year})}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.startOn">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.END_DATE" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.endOn">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(contract.endOn).st, 'day': getCreateDateInfo(contract.endOn).day}) + '/' +
+                            ('DATEFORMAT.' + getCreateDateInfo(contract.endOn).month | translate) + '/' +
+                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(contract.endOn).year})}}
+                        </ng-container>
+                        <ng-container *ngIf="!contract.endOn">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.SHARE_RATIO" | translate}}</td>
+                    <td class="font-data">{{contract?.shareRatio}}</td>
+                </tr>
+                <tr>
+                    <td class="font-contract">{{"Accounting.ATTACHMENTS" | translate}}</td>
+                    <td class="font-data">
+                        <ng-container *ngIf="contract.files && contract.files.length > 0">
+                            <ng-container *ngFor="let file of contract.files; let imageIndex = index;">
+                                <div class="col-inline mr-3">
+                                    <div style="margin-right: 10px; text-align: center; position: relative; left: 15px;">
+                                        <img [src]="file" style="width: 41px; height: 41px" alt="" (click)="showImage(imageIndex)">
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="!contract.files || (contract.files && contract.files.length === 0)">
+                            <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                        </ng-container>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <td width="10%" class="gray-title">{{"Accounting.TERMS" | translate}}</td>
+            <td width="90%" colspan="4" class="font-data">
+                <ng-container *ngIf="contract.terms">
+                    {{contract.terms}}
+                </ng-container>
+                <ng-container *ngIf="!contract.terms">
+                    <span style="color: green; font-style: italic">{{'MESSAGE.EMPTY' | translate}}</span>
+                </ng-container>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="scroll-button">
+        <div class="scroll">
+            <div class="text-center">
+                <button class="button-cancel">{{"Accounting.Decline" | translate}}</button>
+                <button class="button-save">{{"Accounting.Accept" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #showImageModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false}'>
+    <div class="modal-dialog showImgModal" role="document">
+        <div class="modal-content">
+            <div class="modal-body pt-3 text-center">
+                <h4 style="color: #fff">{{'MESSAGE.PreviewImages' | translate}}</h4>
+            </div>
+            <div class="modal-body pt-3 pb-3 text-center">
+                <div>
+                    <i class="pe-7s-angle-left-circle" (click)="addUpdateRunIndex(-1)" *ngIf="(selectedImages.length !== 1)"></i>
+                    <img [src]="selectedImages[autoRunIndex]" height="350px" width="270px" class="ml-3 mr-3">
+                    <i class="pe-7s-angle-right-circle" (click)="addUpdateRunIndex(1)" *ngIf="(selectedImages.length !== 1)"></i>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <button class="button-cancel" (click)="showImageModal.hide()">{{'LAYOUT.CLOSE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

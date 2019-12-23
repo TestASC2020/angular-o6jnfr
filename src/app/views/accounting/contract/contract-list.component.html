@@ -1,0 +1,111 @@
+<div class="row pd-top">
+  <div class="col-sm-8 my-auto breadcrum-title">
+    {{"Accounting.Contract" | translate}}
+  </div>
+  <div class="col-sm-4">
+    <div class="searchbar">
+      <div class="col-inline">
+        <button (click)="doAction()" class="form-control btn btn-export"><i class="fas fa-download mr-1"></i> {{"Accounting.Export" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<table class="table table-bordered table-striped table-wrapper-scroll-y" id="style-1">
+  <thead>
+  <tr>
+    <th width="16%">{{"Accounting.NO" | translate}}</th>
+    <th width="21%">{{"Accounting.NAME" | translate}}</th>
+    <th width="13%">{{"Accounting.START_DATE" | translate}}</th>
+    <th width="13%">{{"Accounting.END_DATE" | translate}}</th>
+    <th width="9%">{{"Accounting.SHARE_RATIO" | translate}}</th>
+    <th width="10%">{{"Accounting.TRANS_FEE" | translate}}</th>
+    <th width="10%">{{"Accounting.STATUS" | translate}}</th>
+    <th width="8%">{{"Accounting.ACTION" | translate}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let item of view_items">
+    <tr class="info-line">
+      <td width="16%">{{item.no}}</td>
+      <td width="21%">{{item.name}}</td>
+      <td width="13%">
+        <ng-container *ngIf="item.startOn">
+          {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.startOn).st, 'day': getCreateDateInfo(item?.startOn).day}) + '/' +
+          ('DATEFORMAT.' + getCreateDateInfo(item?.startOn).month | translate) + '/' +
+          ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.startOn).year})}}
+        </ng-container>
+        <ng-container *ngIf="!item.startOn">
+          {{'MESSAGE.EMPTY' | translate}}
+        </ng-container>
+      </td>
+      <td width="13%">
+        <ng-container *ngIf="item.endOn">
+          {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.endOn).st, 'day': getCreateDateInfo(item?.endOn).day}) + '/' +
+          ('DATEFORMAT.' + getCreateDateInfo(item?.endOn).month | translate) + '/' +
+          ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.endOn).year})}}
+        </ng-container>
+        <ng-container *ngIf="!item.endOn">
+          {{'MESSAGE.EMPTY' | translate}}
+        </ng-container>
+      </td>
+      <td width="9%">{{item.shareRatio}}</td>
+      <td width="10%">{{item.transFee}}</td>
+      <td width="10%" [style.color]="item.status.color">{{item.status}}</td>
+      <td width="8%"><app-cms-contact-action-menu [item]=item></app-cms-contact-action-menu></td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>
+<ng-container>
+  <div class="my-table-footer">
+    <div style="float: left">
+      <span>{{('MESSAGE.NameList.CurrentTotalItems' | translate) + ':'}}</span>
+      <span style="margin-left: 5px; font-weight: bold;">{{items.length}}</span></div>
+    <div class="my-select-area">
+      <div class="d-flex">
+        <span class="my-auto">{{'MESSAGE.NameList.NumRowsPerRequest' | translate}}</span>
+        <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadRecords()">
+          <option *ngFor="let size of pageSizes" [value]="size">{{size}}</option>
+        </select>
+      </div>
+      <div class="my-auto" style="text-align: right" *ngIf="enableMore">
+                    <span class="show-more-records" (click)="loadMoreRecords()">
+                        {{'MESSAGE.More' | translate}}
+                    </span>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<!--
+Export Madal
+-->
+<div mdbModal #exportModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                  (click)="exportModal.hide()">
+            <span aria-hidden="true" class="close-label">X</span>
+          </button>
+        </div>
+        <div class="modal-body mx-3 text-center">
+          <h4 class="modal-title w-100">{{"Accounting.Export_data" | translate}}</h4>
+          <div class="text-center mt-3">
+            <button class="btn btn-excel" type="button" (click)="exportModal.hide(); exportAsXLSX();">{{"Accounting.Excel" | translate}}</button>
+            <button class="btn btn-pdf" type="button" (click)="exportModal.hide(); exportAsPDF();">{{"Accounting.PDF" | translate}}</button>
+          </div>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+        bdColor="transparent"
+        color="#1E8EEB"
+        type="line-spin-clockwise-fade"
+        size="medium">
+  <p class="loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+</ngx-spinner>

@@ -1,0 +1,48 @@
+<div class="row pd-top">
+  <div class="my-auto breadcrums-title pt-2 pb-3">
+    <a class="breadcrums mr-1" routerLink="../">{{ "BUSINESS.Employees" | translate}}</a>/ {{ "BUSINESS.Feedback" | translate}}
+  </div>
+</div>
+<div class="row background-profile pt-2 pb-2 mb-3">
+  <div class="col-sm-6">
+    <div class="middle" *ngIf="employee">
+      <img class="rounded-circle" [src]="(employee.avatarURL) ? employee.avatarURL : '../../../../../assets/img/user-avatar.png'" alt="">
+      <div class="russ-font">
+        <p class="russ-ti">{{(employee.name) ? employee.name : ''}}</p>
+        <p class="russ-ti">{{generateAddress()}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <span class="number-day">{{currentDay + '/' + ('DATEFORMAT.' + currentMonth | translate) + '/' + currentYear}}</span><br>
+    <span class="number-day">{{currentHour + ':' + currentMinute + ':' + currentSecond + ' ' + (('DATEFORMAT.' + currentAMPM | translate))}}</span>
+  </div>
+</div>
+<div>
+  <div class="backgound-feedback">
+    <div class="course-p">
+      <div class="col-inline pl-3">
+        <p class="my-auto">{{ "Courses.Course" | translate}}</p>
+      </div>
+      <div class="col-inline ml-2">
+        <select class="form-control form-control-course" (change)="updateCourse($event)">
+          <option [selected]="course.signature === selectedCourse" *ngFor="let course of courseList" [value]="course.signature">{{course.name}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="background-feed feedback-list scroll scrollbar-cyan">
+    <ng-container *ngFor="let feedback of feedbackDetails; let feedbackIndex = index;">
+      <div class="row border-bottom border-1">
+          <div class="col-sm-1">
+            <img class="rounded mx-auto d-block rounded-circle" [src]="(feedback.avatarURL) ? feedback.avatarURL : '../../../../../assets/img/user-avatar.png'">
+          </div>
+          <div class="col-sm-11">
+            <p class="russ">{{(feedback.name) ? feedback.name : ''}}</p>
+            <app-business-star [rank]="(feedback.score) ? feedback.score : 0"></app-business-star>
+            <p>{{(feedback.text) ? feedback.text : ''}}</p>
+          </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

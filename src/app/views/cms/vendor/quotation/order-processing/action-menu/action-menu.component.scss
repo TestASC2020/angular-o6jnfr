@@ -1,0 +1,100 @@
+@import "../../../../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    width: 110px;
+    padding-right: 7px;
+  }
+}
+.pe-7s-note {
+  font-weight: bold;
+  vertical-align: text-bottom;
+  cursor: pointer;
+  color: #176F45;
+  font-size: 18px;
+  &:hover {
+    color: #727c2a;
+  }
+}
+.pe-7s-chat {
+  font-weight: bold;
+  vertical-align: text-bottom;
+  cursor: pointer;
+  color: #3570ef;
+  font-size: 18px;
+  &:hover {
+    color: #21237c;
+  }
+}
+.pe-7s-trash {
+  font-weight: bold;
+  vertical-align: text-bottom;
+  color: red;
+  font-size: 18px;
+  &:hover {
+    color: #ff4a6a;
+  }
+}
+:host /deep/ {
+  .popover.popover-left::after, .popover.bs-tether-element-attached-right::after {
+    right: -10px;
+    margin-top: -10px;
+    border-left-color: #fff;
+    border-left-color: rgba(0, 0, 0, 0.25);
+  }
+}
+:host /deep/ {
+  .popover.popover-left::before, .popover.popover-left::after, .popover.bs-tether-element-attached-right::before, .popover.bs-tether-element-attached-right::after {
+    top: 50%;
+    border-right-width: 0;
+  }
+  .popover::after {
+    margin: -10px -21px 0 0;
+  }
+}
+:host /deep/ {
+  .popover::after {
+    content: "";
+    border-width: 10px;
+  }
+}
+:host /deep/ {
+  .popover::before, .popover::after {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+}
+.list-group-item{
+  cursor: pointer;
+}

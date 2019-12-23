@@ -1,0 +1,120 @@
+<div class="row pd-top">
+  <div class="col-sm-4 my-auto breadcrum-title">
+    <a class="breadcrum mr-1" routerLink="../">{{"Accounting.Accounting" | translate}}</a> / {{"Accounting.Course_Balance" | translate}}
+  </div>
+  <div class="col-sm-8">
+    <div class="searchbar text-right">
+      <div class="col-inline">
+        <button (click)="doAction()" class="form-control btn btn-export"><i class="fas fa-download mr-1"></i> {{"Accounting.Export" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="background: #ffffff">
+  <div class="pt-2 pb-2 text-white bg-title">
+    <div class="text-center">
+      <div class="feature-info">
+        <p class="my-auto">{{"Accounting.From" | translate}}</p>
+        <input data-date="dd MMMM yyyy" data-date-format="DD MMMM YYYY" [max]="getToDate()" class="date-field" (change)="filterOpenedDays('date_from', $event)" type="date" name="date_from" id="date_from" onkeydown="return false">
+      </div>
+      <div class="feature-info">
+        <p class="my-auto">{{"Accounting.To" | translate}}</p>
+        <input data-date="dd MMMM yyyy" data-date-format="DD MMMM YYYY" class="date-field" [min]="getFromDate()" (change)="filterOpenedDays('date_to', $event)" type="date" name="date_to" id="date_to" onkeydown="return false">
+      </div>
+    </div>
+  </div>
+</div>
+<table class="table table-bordered table-striped table-wrapper-scroll-y" id="style-1">
+  <thead>
+  <tr>
+    <th class="head-title pb-2" width="35%">{{"Accounting.NAME" | translate}}</th>
+    <th class="head-title pb-2" width="20%">{{"Accounting.Opened_on" | translate}}
+      <div style="float: right">
+        <i *ngIf="sortOrder === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder = 2; sortBy = 1; reloadRecords()"></i>
+        <i *ngIf="sortOrder === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder = 0; sortBy = 0; reloadRecords()"></i>
+        <i *ngIf="sortOrder === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder = 1; sortBy = 1; reloadRecords()"></i>
+      </div>
+    </th>
+    <th class="head-title pb-2" width="15%">{{"Accounting.Total_users" | translate}}</th>
+    <th class="head-title pb-2 text-right" width="15%">{{"Accounting.Total_amount" | translate}}</th>
+    <th class="head-title pb-2 text-right" width="15%">{{"Accounting.Received_amt" | translate}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let item of items;">
+    <tr class="info-line">
+      <td>{{item.name}}</td>
+      <td>
+        {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.openedOn).st, 'day': getCreateDateInfo(item?.openedOn).day}) + '/' +
+        ('DATEFORMAT.' + getCreateDateInfo(item?.openedOn).month | translate) + '/' +
+        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.openedOn).year})}}
+      </td>
+      <td class="text-right">{{item.totalUser | number}}</td>
+      <td class="text-right">{{item.totalAmt | number}}</td>
+      <td class="text-right">{{item.receivedAmt | number}}</td>
+    </tr>
+  </ng-container>
+  </tbody>
+  <tfoot>
+  <tr>
+    <td colspan="2" class="footer-title pt-2">{{"Accounting.Total" | translate}}</td>
+    <td class="footer-title pt-2">{{totalUser | number}}</td>
+    <td class="footer-title pt-2">{{totalAmt | number}}</td>
+    <td class="footer-title pt-2">{{receivedAmt | number}}</td>
+  </tr>
+  </tfoot>
+</table>
+<ng-container>
+  <div class="my-table-footer">
+    <div style="float: left">
+      <span>{{('MESSAGE.NameList.CurrentTotalItems' | translate) + ':'}}</span>
+      <span style="margin-left: 5px; font-weight: bold;">{{items.length}}</span></div>
+    <div class="my-select-area">
+      <div class="d-flex">
+        <span class="my-auto">{{'MESSAGE.NameList.NumRowsPerRequest' | translate}}</span>
+        <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadRecords()">
+          <option *ngFor="let size of pageSizes" [value]="size">{{size}}</option>
+        </select>
+      </div>
+      <div class="my-auto" style="text-align: right" *ngIf="enableMore">
+                    <span class="show-more-records" (click)="loadMoreRecords()">
+                        {{'MESSAGE.More' | translate}}
+                    </span>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<!--
+Export Madal
+-->
+<div mdbModal #exportModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                  (click)="exportModal.hide()">
+            <span aria-hidden="true" class="close-label">X</span>
+          </button>
+        </div>
+        <div class="modal-body mx-3 text-center">
+          <h4 class="modal-title w-100">{{"Accounting.Export_data" | translate}}</h4>
+          <div class="text-center mt-3">
+            <button class="btn btn-excel" type="button" (click)="exportModal.hide(); exportAsXLSX();">{{"Accounting.Excel" | translate}}</button>
+            <button class="btn btn-pdf" type="button" (click)="exportModal.hide(); exportAsPDF();">{{"Accounting.PDF" | translate}}</button>
+          </div>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+        bdColor="transparent"
+        color="#1E8EEB"
+        type="line-spin-clockwise-fade"
+        size="medium">
+  <p class="loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+</ngx-spinner>

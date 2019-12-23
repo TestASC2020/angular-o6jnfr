@@ -1,0 +1,109 @@
+<div class="employees-top">
+    <div class="row pb-3 pt-3">
+        <div class="col-sm-8 my-auto breadcrum-title">
+            <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+                <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+                <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+                <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="background-for pl-3 pr-3">
+        <div class="row">
+            <div class="col-sm-1">
+                <p class="font-for">{{ "Courses.Course" | translate}}</p>
+            </div>
+            <div class="col-sm-11">
+                <p class="font-for">{{courseName}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="threads-list square scrollbar-cyan">
+        <ng-container *ngFor="let item of items; let itemIndex = index;">
+            <div class="background-tutors pl-3 pr-3">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <p class="font-tu" *ngIf="item.lesson">{{ ('MESSAGE.Lesson' | translate)}}</p>
+                    </div>
+                    <div class="col-sm-11">
+                        <p class="font-tu" *ngIf="item.lesson">{{item.lesson}}</p>
+                        <button class="edit" (click)="addNewLessonThread(itemIndex)">
+                            <i style="cursor: pointer" title="{{'MESSAGE.AddNewMessage' | translate}}" class="fa fa-plus-circle mr-1"></i>{{'MESSAGE.ADD' | translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="pt-2 pb-4">
+                    <div class="russ-pd">
+                        <ng-container *ngFor="let thread of item.threadList; let threadIndex = index;">
+                            <div [class]="(threadIndex === 0) ? 'middle pb-1 pt-1 border-1 border-bottom' : ((threadIndex === item.threadList.length - 1) ? 'middle pt-3': 'middle pb-1 pt-3 border-1 border-bottom')">
+                                <div class="russ-font">
+                                    <p class="russ-ti"><span style="cursor: pointer" (click)="discussionThread(item, thread)">{{(thread.title) ? thread.title : ''}}</span><i class="ml-1 fas fa-edit" title="{{'Courses.EditThreadName' | translate}}" (click)="renameDiscussionThread(itemIndex, threadIndex, thread);"></i></p>
+                                    <div class="middle">
+                                        <img style="cursor: pointer"
+                                             (click)="discussionThread(item, thread)"
+                                             class="rounded-circle"
+                                             [src]="(thread.message && thread.message.length > 0 && thread.message[0].user && thread.message[0].user.avatarURL) ? thread.message[0].user.avatarURL : '../../../../../assets/img/user-avatar.png'"
+                                             alt="">
+                                        <div class="russ-font">
+                                            <p class="russ-ti"><span style="cursor: pointer" (click)="discussionThread(item, thread)">{{(thread.message[0] && thread.message[0].msg) ? thread.message[0].msg : ''}}</span></p>
+                                            <p style="cursor: pointer" (click)="discussionThread(item, thread)" class="russ-minutes" *ngIf="thread.createOn && thread.timeSpentMore === ''">
+                                                {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(thread.createOn).st, 'day': getCreateDateInfo(thread.createOn).day})  + '/' +
+                                            ('DATEFORMAT.' + getCreateDateInfo(thread.createOn).month | translate) + '/' +
+                                            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(thread.createOn).year}) + ' ' + ', '+
+                                            getCreateDateInfo(thread.createOn).hour + ':' + getCreateDateInfo(thread.createOn).minute + ' ' +
+                                            (("DATEFORMAT." + getCreateDateInfo(thread.createOn).ampm) | translate)}}
+                                            </p>
+                                            <p style="cursor: pointer" (click)="discussionThread(item, thread)" class="russ-minutes" *ngIf="thread.createOn && thread.timeSpentMore !== ''">
+                                                {{('MESSAGE.last' | translate) + ' ' + thread.timeSpent + ' ' + (thread.timeSpentMore |  translate)}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+<div mdbModal #discussionModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-body mx-3">
+                    <h4 class="text-center mt-3 font-weight-bold">{{ "Courses.THREAD_RENAME" | translate}}</h4>
+                    <label for="exampleFormControlTextarea10">{{ "Courses.THREAD_NAME" | translate}}</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea10" rows="2" [(ngModel)]="title"></textarea>
+                    <div class="text-center pt-4 pb-4">
+                        <button class="button-cancel" (click)="discussionModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                        <button class="button-save" (click)="discussionModal.hide(); updateSelectedThread();">{{ "LAYOUT.SAVE" | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #addDiscussionModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-body mx-3">
+                    <h4 class="text-center mt-3 font-weight-bold">{{ "Courses.THREAD_NEW_NAME" | translate}}</h4>
+                    <label for="exampleFormControlTextarea1">{{ "Courses.THREAD_NAME" | translate}}</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" [(ngModel)]="title"></textarea>
+                    <div class="text-center pt-4 pb-4">
+                        <button class="button-cancel" (click)="addDiscussionModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                        <button class="button-save" (click)="addDiscussionModal.hide(); addNewThread();">{{ "LAYOUT.CREATE" | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

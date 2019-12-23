@@ -1,0 +1,84 @@
+@import "../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.fa-ellipsis-v{
+  padding-top: 13px !important;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 125px;
+    padding-right: 7px;
+  }
+  .fa-ellipsis-pl {
+    &:before {
+      padding-left: 0 !important;
+    }
+  }
+  .popover {
+    margin-left: -48px;
+  }
+  .popover::after {
+    margin: 0;
+    margin-top: -2.25rem !important;
+    border-width: 0;
+    border-color: unset;
+  }
+}
+.pe-7s-angle-right {
+  position: absolute;
+  right: 0;
+  top: 7px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  &:hover {
+    color: #c4c4c4;
+  }
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}
+.fa-bell{
+  cursor: pointer;
+  color: #0EA91C;
+  &:hover{
+    color: #0a7213;
+  }
+}
+.fa-bell-slash{
+  cursor: pointer;
+  color: #d61052;
+  &:hover{
+    color: #810a31;
+  }
+}

@@ -1,0 +1,96 @@
+<div class="mt-2 mb-3 about-top breadcrum-title" *ngIf="toRouters && toRouters.length > 0">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+        <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+        <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+        <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+</div>
+<div class="bg-blue" *ngIf="lesson && lessonGroup">
+    <div style="display: inline-flex">
+        <label class="my-auto pl-4 pr-2 font-he" for="lessonGroupId">{{"MESSAGE.Lessons" | translate}}</label>
+        <select id="lessonGroupId" class="form-control" (change)="lessonGroupChange($event)">
+            <option [selected]="less.signature === lesson.signature" *ngFor="let less of lessonGroup; let lessonIndex = index;" [value]="less.signature">{{less.name}}</option>
+        </select>
+    </div>
+</div>
+<div class="card lesson-area pl-4 pr-4 pt-3 pb-3 square scrollbar-cyan">
+    <form [formGroup]="lessonForm">
+        <ng-container style="display: block" formArrayName="items" *ngIf="lessonForm['controls']['items']['controls'].length > 0">
+            <ng-container style="display: block" *ngFor="let video_item of lessonForm['controls']['items']['controls']; let i = index;">
+                <div id="{{'videoArea_' + i.toString()}}" [style.display]="(lessonForm['controls']['items']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="mb-3"  [formGroupName]="i">
+                    <div [class]="'row ' + ((i < -1 + lessonForm['controls']['items']['controls'].length) ? 'pb-4 border border-left-0 border-right-0 border-top-0 border-bottom-1' : '')">
+                        <div class="col-sm-5">
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <video id="file_video_{{i}}" [src]="(lessonForm['controls']['items']['controls'][i].get('url').value) ? lessonForm['controls']['items']['controls'][i].get('url').value : '' " class="embed-responsive-item"
+                                       [poster]="(lessonForm['controls']['items']['controls'][i].get('thumbnail').value) ? lessonForm['controls']['items']['controls'][i].get('thumbnail').value : '../../../../../../assets/img/calendar.png'" alt="Preview">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <i [class]="'fas fa-play-circle play-video-btn'" (click)="(toRouters && toRouters.length > 0) ? openVideoPlayer(i) : doNothing()"></i>
+                                <input type="hidden" formControlName="no">
+                                <input type="hidden" formControlName="name">
+                                <input type="hidden" formControlName="url">
+                                <input type="hidden" formControlName="data">
+                                <input type="hidden" formControlName="fileExt">
+                                <input type="hidden" formControlName="lenSec">
+                                <input type="hidden" formControlName="defaultSub">
+                                <input type="hidden" formControlName="previewPerc">
+                                <input type="hidden" formControlName="allowPreview">
+                                <input type="hidden" formControlName="videoSig">
+                                <input type="hidden" formControlName="thumbnail">
+                                <input type="hidden" formControlName="onEdit">
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <p [class]="'title-font'">Name</p>
+                            <p >{{getName(i)}}</p>
+                            <div class="custom-control custom-checkbox check-input">
+                                <input type="checkbox" class="custom-control-input" [attr.disabled]="true" id="customCheck1_{{i}}" formControlName="allowPreview">
+                                <label class="custom-control-label" for="customCheck1_{{i}}">Allow to preview</label>
+                                <input class="form-control percent" [attr.disabled]="true" formControlName="previewPerc"><span>percent</span>
+                            </div>
+                            <div class="row pt-3">
+                                <ng-container style="display: block" formArrayName="subtitles" *ngIf="lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'].length >= 0">
+                                    <ng-container style="display: block" *ngFor="let sub_item of video_item.controls['subtitles']['controls']; let j = index;">
+                                        <div id="subArea_{{i + '_' + j}}" [style.display]="(lessonForm['controls']['items']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="col-md-3 mb-3" [formGroupName]="j" [style.padding-left]="'0'">
+                                            <div [style.display]="(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('onReady').value) ? 'block' : 'none'">
+                                                <!--<i class="fas fa-video fa-3x"></i>-->
+                                                <img class="img-mb"
+                                                     [src]="getLanguageFlag(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value)"
+                                                     id="subLanguageImg_{{i + '_' + j}}" width="80" height="50">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" class="custom-control-input" name="customCheck2_{{i}}" [checked]="(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value.toString() === lessonForm['controls']['items']['controls'][i].controls['defaultSub'].value.toString()) ? true: false" [attr.disabled]="true" id="customCheck2_{{i + '_' + j}}" [value]="lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value">
+                                                    <label class="custom-control-label" for="customCheck2_{{i + '_' + j}}">
+                                                        <span id="subLanguage_{{i + '_' + j}}">{{getLanguageName(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value)}}</span>
+                                                    </label>
+                                                </div>
+                                                <input type="hidden" formControlName="id">
+                                                <input type="hidden" formControlName="subtitle">
+                                                <input type="hidden" formControlName="lang">
+                                                <input type="hidden" formControlName="url">
+                                                <input type="hidden" formControlName="videoSig">
+                                                <input type="hidden" formControlName="onReady">
+                                                <input type="hidden" formControlName="fileExt">
+                                                <input type="hidden" formControlName="signature">
+                                                <input type="hidden" formControlName="data">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+    </form>
+</div>
+<!-- begin: Video player Popup -->
+<div id="light">
+    <a class="boxclose" id="boxclose" (click)="lightbox_close();"></a>
+    <video id="VisaChipCardVideo" width="600" controls>
+        <source src="" poster="">
+        <!--Browser does not support <video> tag -->
+    </video>
+</div>
+<div id="fade" (click)="lightbox_close();"></div>
+<!-- end: Video player Popup -->

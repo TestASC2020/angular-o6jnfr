@@ -1,0 +1,17 @@
+<div style="text-align: center; cursor:pointer;">
+  <button class="action-button">
+    <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+  </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+  <div class="pop-content">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" (click)="view">
+        <i class="fas fa-eye"></i><span class="pl-1">View</span>
+      </li>
+      <li class="list-group-item" (click)="remove()">
+        <i class="fas fa-trash"></i><span class="pl-1">Remove</span>
+      </li>
+    </ul>
+  </div>
+</popover-content>

@@ -1,0 +1,61 @@
+<div class="taskbar info-title pl-3">
+    <p class="font-he">{{ "BUSINESS.SETTINGS" | translate}}</p>
+</div>
+<div class="pl-3 pr-3">
+    <div class="row background-setting">
+        <div class="" *ngIf="settings">
+            <table class="table">
+                <tbody>
+                <ng-container>
+                <tr>
+                    <th width="40%" scope="row"><label class="max-font">{{ "BUSINESS.MAX_DAY_TO_LEARN" | translate}}</label></th>
+                    <td width="30%"> <input [(ngModel)]="settings.maxDayToLearn" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></td>
+                    <td width="30%">{{ "BUSINESS.Days_Course" | translate}}</td>
+                </tr>
+                <tr>
+                    <th width="40%" scope="row"><label class="max-font">{{ "BUSINESS.COST_PER_BLOCK" | translate}}</label></th>
+                    <td width="30%"> <input [(ngModel)]="settings.blkCost" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></td>
+                    <td width="30%">{{ "BUSINESS.Unit" | translate}}</td>
+                </tr>
+                <tr>
+                    <th width="40%" scope="row"><label class="max-font">{{ "BUSINESS.MINIMUM_PAYMENT" | translate}}</label></th>
+                    <td width="30%"> <input [(ngModel)]="settings.minPayment" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></td>
+                    <td width="30%">{{ "BUSINESS.Unit" | translate}}</td>
+                </tr>
+            </ng-container>
+                </tbody>
+            </table>
+            <div class="checkbox-r">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="customck" (change)="changeAllowSendMsg($event)" [(checked)]="settings.allowSendMsg" class="custom-control-input">
+                    <label class="custom-control-label" for="customck">{{ "BUSINESS.Allow_User_To_Send_Message" | translate}}</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="customck1" (change)="changeShowFeedback($event)" [(checked)]="settings.showFeedback" class="custom-control-input">
+                    <label class="custom-control-label" for="customck1">{{ "BUSINESS.Show_Feedback_In_Profile" | translate}}</label>
+                </div>
+                <div class="pt-3 pb-3" id="notif-neigbour">
+                    <button class="button-save" (click)="confirmSaveSettings.show()">{{ "BUSINESS.SAVE" | translate}}</button>
+                    <button class="button-cancel" (click)="restoreSettings()">{{ "MESSAGE.RESET" | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmSaveSettings="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+                <div class="modal-body ml-3 mr-3 text-center">
+                    {{ "BUSINESS.Are_You_Sure_Save_All_Settings" | translate}}
+                </div>
+                <div [class]="'btn-button mt-2'">
+                    <button class="button-save" (click)="confirmSaveSettings.hide(); saveSettings();">{{ "BUSINESS.Ok" | translate}}</button>
+                    <button class="button-cancel" style="margin-right: 0;" (click)="confirmSaveSettings.hide()">{{ "BUSINESS.CANCEL" | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

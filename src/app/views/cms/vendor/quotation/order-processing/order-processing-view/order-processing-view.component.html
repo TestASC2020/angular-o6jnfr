@@ -1,0 +1,433 @@
+<div class="row pd-top">
+  <div class="col-sm-12 my-auto breadcrums-title">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+      <a *ngIf="i !== toRouters.length - 1" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+      <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+      <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+  </div>
+</div>
+<form [formGroup]="thirdFormGroup">
+<div class="taskbar">
+  <div class="row m-1 feature-info text-white">
+    <div class="col-sm-5 my-auto" *ngIf="cvQuoteProgress">{{cvQuoteProgress.name}}</div>
+    <div class="col-sm-5 my-auto text-right" *ngIf="cvQuote">{{('MESSAGE.Buyer' | translate) + ': ' + ((cvQuote.createBy) ? cvQuote.createBy : '')}}</div>
+    <div class="col-sm-2">
+      <div class="searchbar text-right">
+        <div class="col-inline">
+          <button class="create relative btn" title="{{'CREATOR.CURRICULUMS.LIST.CREATE_NEW_UNIT' | translate}}"
+                  (click)="openUnitInfoModal()">
+            <i class="fas fa-plus"></i><span [style.color]="'#000000'">{{("LAYOUT.CREATE" | translate)}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="background: #ffffff">
+  <table class="table table-striped table-wrapper-scroll-y my-custom-scrollbar" id="style-1">
+    <thead>
+    <tr>
+      <th scope="col" width="5%">ID</th>
+      <th scope="col" width="50%">{{"CREATOR.CURRICULUMS.LIST.NAME" | translate}}</th>
+      <th scope="col" width="10%">{{"CREATOR.CURRICULUMS.LIST.TYPE" | translate}}</th>
+      <th scope="col" width="10%">{{"CREATOR.CURRICULUMS.LIST.Prerequisite" | translate}}</th>
+      <th scope="col" width="10%"></th>
+      <th scope="col" width="10%">{{"CREATOR.CURRICULUMS.LIST.STATUS" | translate}}</th>
+      <th scope="col" width="5%"></th>
+    </tr>
+    </thead>
+    <tbody *ngIf="cvQuoteProgress">
+    <ng-container *ngFor="let unit of cvQuoteProgress.units; let i = index;">
+        <tr class="info-line">
+          <td scope="row" width="5%" [style.vertical-align]="'top'" [style.color]="'#0B3FEB'" [style.padding-top]="(i !== 0) ? '15px' : ''">{{unit.no}}</td>
+          <td width="50%" [style.vertical-align]="'top'" [style.padding-top]="(i !== 0) ? '15px' : ''">
+            <span style="font-size: 14px; font-weight: bolder;">{{unit.name}}</span>
+            <p [style.color]="'#7B7B7B'" [style.font-size]="'13px'"
+               *ngIf="unit.description">{{unit.description}}</p>
+          </td>
+          <td width="10%"></td>
+          <td scope="row"
+              [style.vertical-align]="'top'"
+              width="10%"
+              [style.padding-top]="(i !== 0) ? '15px' : ''"
+              [style.font-style]="(unit.prerequisites.length > 0) ? 'normal' : 'italic'"
+              [style.color]="(unit.prerequisites.length > 0) ? '#000000' : '#239638'">
+            {{(unit.prerequisites.length > 0) ? ('[ ' + unit.prerequisites.join(', ') + ' ]') : ('MESSAGE.EMPTY' | translate)}}
+          </td>
+          <td width="10%" [style.vertical-align]="'top'" [style.padding-top]="(i !== 0) ? '15px' : ''">
+            <i
+                    *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                    class="fas fa-pen item-edit fa-pen-display"
+                    (click)="openUnitInfoEditModal(unit)" title="{{('CREATOR.CURRICULUMS.LIST.EDIT_UNIT_INFO' | translate)}}">
+
+            </i>
+            <i
+                    *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                    class="fas fa-trash item-delete fa-trash-display" (click)="confirmDeleteUnit(unit)"
+                    title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_UNIT' | translate)}}">
+            </i>
+          </td>
+          <td width="10%" (click)="logsUnit(unit)" [style.color]="TASKSTATUS.valueOf(unit.taskStatus).getColor()">
+            {{TASKSTATUS.valueOf(unit.taskStatus).getDisplay() | translate}}
+          </td>
+          <td width="5%" *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()">
+            <app-cms-vendor-order-processing-view-action-menu
+                    [item]="unit"
+                    (submitEvent)="submitUnit(unit)"
+                    (logsEvent)="logsUnit(unit)"
+            ></app-cms-vendor-order-processing-view-action-menu>
+          </td>
+        </tr>
+        <ng-container *ngFor="let lesson of unit.lessonGroup">
+          <tr class="info-line">
+            <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+            <td width="50%">
+                  <span
+                          *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                          [style.color]="'#000000'"
+                          [style.font-size]="'13px'">
+                    {{lesson.name}}
+                      <i class="fas fa-pencil-alt icon fa-display"  title="{{('CREATOR.CURRICULUMS.LIST.EDIT_LESSON_NAME' | translate)}}"
+                         (click)="openGroupModal(i, lesson, 'Lesson')"></i>
+                  </span>
+            </td>
+            <td width="10%">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</td>
+            <td width="10%"></td>
+            <td width="10%">
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      [class]="'fas fa-pen item-edit fa-pen-display'"
+                      (click)="editLesson(i, lesson)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.EDIT_LESSON' | translate)}}">
+              </i>
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      class="fas fa-trash item-delete fa-trash-display"
+                      (click)="removeLesson(i, lesson)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_LESSON' | translate)}}">
+              </i>
+            </td>
+            <td width="10%">
+            </td>
+            <td width="5%">
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container *ngFor="let exercise of unit.exerciseGroup">
+          <tr class="info-line">
+            <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+            <td width="50%">
+                  <span
+                          *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                          [style.color]="'#000000'"
+                          [style.font-size]="'13px'">{{exercise.name}}
+                      <i class="fas fa-pencil-alt icon fa-display" title="{{('CREATOR.CURRICULUMS.LIST.EDIT_EXERCISE_NAME' | translate)}}"
+                         (click)="openGroupModal(i, exercise, 'Exercise')"></i>
+                  </span>
+            </td>
+            <td width="10%">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</td>
+            <td width="10%"></td>
+            <td width="10%">
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      [class]="'fas fa-pen item-edit fa-pen-display'"
+                      (click)="editExercise(i, exercise)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.EDIT_EXERCISE' | translate)}}">
+              </i>
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      class="fas fa-trash item-delete fa-trash-display"
+                      (click)="removeExercise(i, exercise)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_EXERCISE' | translate)}}">
+              </i>
+            </td>
+            <td width="10%">
+            </td>
+            <td width="5%">
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container *ngFor="let quiz of unit.quizGroup">
+          <tr class="info-line">
+            <td scope="row" width="5%" [style.color]="'#0B3FEB'"></td>
+            <td width="50%">
+                  <span
+                          *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                          [style.color]="'#000000'"
+                          [style.font-size]="'13px'">{{quiz.name}}
+                      <i class="fas fa-pencil-alt icon fa-display" title="{{('CREATOR.CURRICULUMS.LIST.EDIT_QUIZ_NAME' | translate)}}"
+                         (click)="openGroupModal(i, quiz, 'Quiz')"></i>
+                  </span>
+            </td>
+            <td width="10%">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</td>
+            <td width="10%"></td>
+            <td width="10%">
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      [class]="'fas fa-pen item-edit fa-pen-display'"
+                      (click)="editQuestion(i, quiz)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.EDIT_QUIZ' | translate)}}">
+              </i>
+              <i
+                      *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()"
+                      class="fas fa-trash item-delete fa-trash-display"
+                      (click)="removeQuiz(i, quiz)"
+                      title="{{('CREATOR.CURRICULUMS.LIST.REMOVE_THIS_QUIZ' | translate)}}">
+              </i>
+            </td>
+            <td width="10%">
+            </td>
+            <td width="5%">
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="unit.taskStatus !== TASKSTATUS.ACCEPT.getValue() && unit.taskStatus !== TASKSTATUS.SUBMIT.getValue()">
+          <td style="vertical-align: middle" class="group-row"></td>
+          <td id="addGroupType_{{i}}" colspan="3" style="" class="group-row">
+          </td>
+          <td>
+            <i id="{{'createBtn_' + i}}" class="fas fa-plus item-create-group"
+               title="{{('CREATOR.CURRICULUMS.LIST.CREATE_NEW_GROUP' | translate)}}" (click)="openCreateArea(i)"></i>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+</form>
+<div mdbModal #send="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">{{'MESSAGE.TaskComplete.name' | translate}}</h4>
+        </div>
+        <div class="modal-body mx-3">
+            <p style="margin-bottom: 0">{{'MESSAGE.TaskComplete.title' | translate}}</p>
+          <label class="pt-2" for="exampleFormControlTextarea1">{{'MESSAGE.TaskComplete.message' | translate}}</label>
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" [(ngModel)]="message"></textarea>
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button (click)="send.hide();" class="button-cancel">{{'LAYOUT.CANCEL' | translate}}</button>
+          <button class="button-save" (click)="send.hide(); sendSubmitData();">{{'MESSAGE.CONFIRM' | translate}}</button>
+        </div>
+      </div>
+  </div>
+</div>
+<div mdbModal #curriculumUnitInfo="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div style="color:#000000" class="unit">{{('CREATOR.CURRICULUMS.LIST.UNIT_INFORMATION' | translate)}}</div>
+        <div class="info-card pl-4 pr-4 pt-3 pb-3">
+          <form [formGroup]="unitInfoForm">
+            <div class="row">
+              <div class="col-12 form-group">
+                <label for="name">{{('CREATOR.CURRICULUMS.LIST.UNIT_NAME' | translate)}}</label>
+                <input id="name" class="form-control no-pl" formControlName="name">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="description">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</label>
+                <textarea rows="2" id="description" class="form-control no-pl"
+                          formControlName="description"></textarea>
+              </div>
+            </div>
+            <div *ngIf="checkPrerequisites(unitInfoForm)">{{('CREATOR.CURRICULUMS.LIST.Prerequisite' | translate)}}</div>
+            <div class="bg-white box-check mb-3" *ngIf="checkPrerequisites(unitInfoForm)">
+              <div formGroupName="prerequisites" class="well well-lg row">
+                <div *ngFor="let item of unitInfoForm.get('prerequisites').value | keyvalue"
+                     class="col-6">
+                  <label class="checkbox_label">
+                    <input class="form-control inline checkbox" type="checkbox"
+                           [formControlName]="item.key" [value]="item.value"/>
+                    {{ getUnitNameFromPrerequisitesKey(item.key) }}
+                  </label>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </form>
+          <div class="text-center">
+            <button class="button-cancel" (click)="curriculumUnitInfo.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+            <button class="button-save" (click)="curriculumUnitInfo.hide(); createUnit();">{{'LAYOUT.CREATE' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #curriculumUnitInfoEdit="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div style="color:#000000" class="unit">{{('CREATOR.CURRICULUMS.LIST.UNIT_INFORMATION' | translate)}}</div>
+        <div class="info-card pl-4 pr-4 pt-3 pb-3 square scrollbar-cyan">
+          <form [formGroup]="unitInfoEditForm">
+            <div class="row">
+              <div class="col-12 form-group">
+                <label for="name2">{{('CREATOR.CURRICULUMS.LIST.UNIT_NAME' | translate)}}</label>
+                <input id="name2" class="form-control no-pl mb-3" formControlName="name"/>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="description2">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</label>
+                <textarea rows="2" id="description2" class="form-control no-pl mb-3"
+                          formControlName="description"></textarea>
+              </div>
+            </div>
+            <div *ngIf="checkPrerequisites(unitInfoEditForm)">{{('CREATOR.CURRICULUMS.LIST.Prerequisite' | translate)}}</div>
+            <div class="bg-white box-check mb-3" *ngIf="checkPrerequisites(unitInfoEditForm)">
+              <div formGroupName="prerequisites" class="well well-lg row">
+                <div *ngFor="let item of unitInfoEditForm.get('prerequisites').value | keyvalue"
+                     class="col-6">
+                  <label class="checkbox_label">
+                    <input class="form-control inline checkbox" type="checkbox"
+                           [formControlName]="item.key" [value]="item.value"/>
+                    {{ getUnitNameFromPrerequisitesKey(item.key) }}
+                  </label>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </form>
+          <div class="text-center">
+            <button class="button-cancel" (click)="curriculumUnitInfoEdit.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+            <button class="button-save" (click)="curriculumUnitInfoEdit.hide(); updateUnit();">{{'LAYOUT.SAVE' | translate}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #groupItemDescription="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel4" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form [formGroup]="groupForm">
+          <div class="row">
+            <div class="col-12 form-group">
+              <div class="unit">{{('CREATOR.CURRICULUMS.LIST.DESCRIPTION' | translate)}}</div>
+            </div>
+          </div>
+          <div class="info-card pl-4 pr-4 pt-3 pb-3 square scrollbar-cyan">
+            <input id="name3" class="form-control no-pl mb-3 mt-2" formControlName="name">
+            <div class="text-center">
+              <button class="button-cancel" (click)="groupItemDescription.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+              <button class="button-save" (click)="updateGroupItemName();">{{'LAYOUT.SAVE' | translate}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmDeleteUnitModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+        {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" (click)="confirmDeleteUnitModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;" (click)="confirmDeleteUnitModal.hide(); removeUnit()">{{ "LAYOUT.SAVE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #removeExerciseModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+        {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" (click)="removeExerciseModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;" (click)="removeExerciseModal.hide(); removeSelectedExercise()">{{ "LAYOUT.SAVE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #removeLessonModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+        {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" (click)="removeLessonModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;" (click)="removeLessonModal.hide(); removeSelectedLesson()">{{ "LAYOUT.SAVE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #removeQuizModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+      <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+        {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" (click)="removeQuizModal.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+        <button class="button-save" style="margin-right: 0;" (click)="removeQuizModal.hide(); removeSelectedQuiz()">{{ "LAYOUT.SAVE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #groupCreate="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel4" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body group-create">
+        <div class="row">
+          <div class="col-12 form-group" style="margin-bottom: 0">
+            <label for="{{'name_' + selectedUnitIndex}}">{{('CREATOR.CURRICULUMS.LIST.GROUP_NAME' | translate)}}</label><br>
+            <input id="{{'name_' + selectedUnitIndex}}" value="" class="form-control" type="text"
+                   placeholder="{{('CREATOR.CURRICULUMS.LIST.ENTER_GROUP_NAME' | translate)}}"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 form-group pt-3" style="margin-bottom: 0">
+            <label for="{{'type_' + selectedUnitIndex}}">{{('CREATOR.CURRICULUMS.LIST.GROUP_TYPE' | translate)}}</label><br>
+            <select id="{{'type_' + selectedUnitIndex}}"
+                    class="form-control browser-default custom-select">
+              <option value="Lesson">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</option>
+              <option value="Exercise">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</option>
+              <option value="Quiz">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 text-center" style="padding-top: 10px;">
+            <input type="button" class="button-cancel" style="margin-left: unset"
+                   (click)="groupCreate.hide()" value="{{('LAYOUT.CANCEL' | translate)}}">
+            <input type="button" class="button-save"
+                   (click)="addType(selectedUnitIndex);" value="{{('LAYOUT.CREATE' | translate)}}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

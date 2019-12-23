@@ -1,0 +1,36 @@
+<div class="row about-top" *ngIf="toRouters && toRouters.length > 0">
+    <div class="col-12">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div [class]="(toRouters && toRouters.length > 0) ? 'pb-3 mb-5 mt-4' : ''" *ngIf="questionDetail && question">
+    <div class="row pratice" *ngIf="toRouters && toRouters.length > 0">
+        <div class="col-sm-5">
+            <p class="font-exercises">{{question.name}}</p>
+        </div>
+    </div>
+    <div class="row info mb-3">
+        <div class="col-sm-12">
+            <p class="title-black">
+                {{"VENDOR.Practice" | translate}}:<strong>{{' ' + questionDetail.name}}</strong>
+            </p>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;">
+        <div class="row solution-editor">
+            <i *ngIf="editable" class="fas fa-image fa-2x" title="Insert Image" (click)="openImageChooser()"></i>
+            <input *ngIf="editable" type="file" style="display: none" accept="image/*" id="file_image" (change)="insertImage($event)">
+            <ckeditor [(ngModel)]="solutionContent" [editor]="Editor" [config]="configs" [disabled]="!editable" style="width: 100%"></ckeditor>
+        </div>
+        <div class="row action-area" *ngIf="editable">
+            <div class="col-sm-6">
+                <button class="button-cancel" (click)="restoreContent()">{{"LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" (click)="(toRouters && toRouters.length > 0 ) ? saveQuestionSolution() : saveQuestionEmitSolution()">{{"LAYOUT.SAVE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

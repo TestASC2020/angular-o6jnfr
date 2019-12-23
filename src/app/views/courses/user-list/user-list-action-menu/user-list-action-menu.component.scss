@@ -1,0 +1,63 @@
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 130px;
+    padding-right: 7px;
+  }
+}
+.pe-7s-chat {
+  cursor: pointer;
+  color: #3570ef;
+  font-size: 20px;
+}
+.pe-7s-bell {
+  color: #3BC7EF;
+}
+.pe-7s-graph1 {
+  color: #3afdff;
+}
+.pe-7s-id {
+  color: #007a00;
+}
+.pe-7s-alarm {
+  color: #cbb210;
+}
+.pe-7s-lock {
+  color: red
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}

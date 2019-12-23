@@ -1,0 +1,20 @@
+<div style="cursor:pointer;">
+  <button class="action-button">
+    <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+  </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+  <div class="pop-content">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" (click)="viewDetail()">
+        <i class="pe-7s-info font-icon"></i><span class="pl-2">{{"Accounting.View" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="viewChat()">
+        <i class="pe-7s-comment font-icon"></i><span class="pl-2">{{"Accounting.Chat" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="viewHistory()">
+        <i class="pe-7s-clock font-icon"></i><span class="pl-2">{{"Accounting.History_log" | translate}}</span>
+      </li>
+    </ul>
+  </div>
+</popover-content>

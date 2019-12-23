@@ -1,0 +1,120 @@
+<div class="row pd-top">
+  <div class="col-sm-12 my-auto breadcrums-title">
+    <a class="breadcrums mr-1" title="View Business Profiles" routerLink="../">{{'AUTH.PROFILE' | translate}}</a> / {{'BUSINESS.business_profile' | translate}}
+  </div>
+</div>
+<div class="full-bg-img mask pt-3" *ngIf="staffProfile">
+  <div class="profiles-father" style="background-color: white">
+    <div class="taskbars pl-3">
+      <p class="font-he">{{'AUTH.PROFILE' | translate}}</p>
+    </div>
+    <div class="pl-3 pr-3">
+      <div class="row pg-blue pt-3">
+      <div class="col-sm-4">
+        <table class="table">
+          <tbody>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{'BUSINESS.LastName' | translate}}</td>
+            <td width="75%" [class]="(staffProfile.lastName) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.lastName) ? staffProfile.lastName : '[Empty field]'}}</td>
+          </tr>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{'BUSINESS.FirstName' | translate}}</td>
+            <td width="75%" [class]="(staffProfile.firstName) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.firstName) ? staffProfile.firstName : '[Empty field]'}}</td>
+          </tr>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{'AUTH.EMAIL' | translate}}</td>
+            <td width="75%" [class]="(staffProfile.email) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.email) ? staffProfile.email : '[Empty field]'}}</td>
+          </tr>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{'BUSINESS.phone' | translate}}</td>
+            <td width="75%" [class]="(staffProfile.phone) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.phone) ? staffProfile.phone : '[Empty field]'}}</td>
+          </tr>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{ 'AUTH.POSITION' | translate }}</td>
+            <td width="75%" [class]="(staffProfile.employer) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.employer) ? staffProfile.employer : '[Empty field]'}}</td>
+          </tr>
+          <tr>
+            <td width="25%" class="align-top pl-0 font-weight-bold">{{'BUSINESS.about' | translate}}</td>
+            <td width="75%" [class]="(staffProfile.about) ? 'text-justify font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.about) ? staffProfile.about : '[Empty field]'}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-sm-5">
+        <fieldset class="form-group mb-3">
+          <legend>{{'BUSINESS.address' | translate}}</legend>
+          <table class="table">
+            <tbody>
+            <tr>
+              <td width="35%" class="font-weight-bold">{{'BUSINESS.country' | translate}}</td>
+              <td width="65%" [class]="(staffProfile.country) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.country) ? ( ' ' + staffProfile.country) : '[Empty field]'}}</td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-weight-bold">{{'BUSINESS.region' | translate}}</td>
+              <td width="65%" [class]="(staffProfile.region) ? 'font-weight-normal' : 'font-italic empty-field'">
+                {{(staffProfile.region) ? ( ' ' + staffProfile.region) : '[Empty field]'}}
+              </td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-weight-bold">{{'BUSINESS.city' | translate}}</td>
+              <td width="65%" [class]="(staffProfile.city) ? 'font-weight-normal' : 'font-italic empty-field'">
+                {{(staffProfile.city) ? ( ' ' + staffProfile.city) : '[Empty field]'}}
+              </td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-weight-bold">{{'BUSINESS.address' | translate}} 1</td>
+              <td width="65%" [class]="(staffProfile.line1) ? 'font-weight-normal' : 'font-italic empty-field'">
+                {{(staffProfile.line1) ? ( ' ' + staffProfile.line1) : '[Empty field]'}}
+              </td>
+            </tr>
+            <tr>
+              <td width="35%" class="font-weight-bold">{{'BUSINESS.address' | translate}} 2</td>
+              <td width="65%" [class]="(staffProfile.line2) ? 'font-weight-normal' : 'font-italic empty-field'">{{(staffProfile.line2) ? ( ' ' + staffProfile.line2) : '[Empty field]'}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div class="col-sm-3">
+        <img class="avatar mx-auto d-block" title="Staff avatar" [src]="(staffProfile.avatarURL) ? staffProfile.avatarURL : '../../../../../assets/img/user-avatar.png'"/>
+      </div>
+    </div>
+    </div>
+    <div class="taskbars pl-3">
+      <p class="font-he">{{ 'AUTH.EDUCATION_EXPERIENCES' | translate }}</p>
+    </div>
+    <ng-container *ngIf="staffProfile.experiences && staffProfile.experiences.length > 0">
+      <div class="pg-blue" *ngFor="let experience of staffProfile.experiences; let i = index">
+        <div class="row pl-3 pr-3">
+          <div class="col-sm-6">
+            <p class="font-business"><strong class="mr-1">{{ 'BUSINESS.Business' | translate }}:</strong><span  [class]="(experience.business) ? 'font-weight-normal' : 'font-italic empty-field'">{{(experience.business) ? experience.business : '[Empty field]'}}</span></p>
+          </div>
+          <div class="col-sm-6">
+            <p class="font-business"><strong class="mr-1">{{ 'BUSINESS.ROLE' | translate }}:</strong><span  [class]="(experience.role) ? 'font-weight-normal' : 'font-italic empty-field'">{{(experience.role) ? experience.role : '[Empty field]'}}</span></p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!staffProfile.experiences || staffProfile.experiences.length < 1">
+      <div class="pg-blue">
+        <div class="pg-blue pl-3 pr-3">
+          <p class="font-business font-italic empty-field">{{'MESSAGE.DOES_NOT_HAVE_EXPERIENCE' | translate}}</p>
+        </div>
+      </div>
+    </ng-container>
+    <div class="taskbars pl-3">
+      <p class="font-he">{{ 'AUTH.SPECIALTIES' | translate }}</p>
+    </div>
+    <ng-container *ngIf="staffProfile.specialties && staffProfile.specialties.length > 0">
+      <div class="pg-blue pl-3 pr-3" *ngFor="let specialty of staffProfile.specialties; let i = index">
+        <p class="font-business" *ngIf="specialty.name"><strong class="mr-1">-</strong><span  [class]="'font-italic'">{{specialty.name}}</span></p>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!staffProfile.specialties || staffProfile.specialties.length < 1">
+      <div class="pg-blue pl-3 pr-3">
+        <p class="font-business font-italic empty-field">{{'MESSAGE.DOES_NOT_HAVE_SPECIALTY' | translate}}</p>
+      </div>
+    </ng-container>
+    <button title="Back to Profile" class="ml-3 mr-3 button-cancel" routerLink="../">{{'CREATOR.CURRICULUMS.PROOF.BACK' | translate}}</button>
+  </div>
+</div>

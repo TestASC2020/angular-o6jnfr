@@ -1,0 +1,52 @@
+.rounded-circle {
+  width: 60px;
+  height: 60px;
+}
+.education {
+  background-color: rgba(55, 199, 238, 0.5);
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.education1 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.font-education {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  font-size: 18px;
+  font-weight: bold;
+}
+.breadcrum-title {
+  color: #C3C3C3;
+  font-size: 14px;
+  .breadcrum {
+    color: #007bff;
+    font-size: 14px;
+    &:hover{
+      color: #0056b3;
+    }
+  }
+}
+.background-profile {
+  background-color: #fff;
+  height: 100%;
+}
+p {
+  color: black;
+}
+.icon-margin {
+  margin: 0 5px;
+
+}
+@media only screen and (max-width: 600px) {
+  .breadcrums-title {
+    padding-top: 25px;
+  }
+}
+@media only screen and (max-width: 320px) {
+  .breadcrums-title {
+    padding-top: 30px;
+  }
+}
+ul.square {list-style-type: square;}

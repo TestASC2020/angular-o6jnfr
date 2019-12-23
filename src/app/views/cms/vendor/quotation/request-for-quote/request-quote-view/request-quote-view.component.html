@@ -1,0 +1,115 @@
+<div class="row pd-top">
+  <div class="col-sm-12 my-auto breadcrums-title">
+    <a class="breadcrums mr-1" routerLink="../../../quotation">{{'VENDOR.QUOTATION.Quotations' | translate}}</a>/ {{'LAYOUT.VIEW' | translate}}
+  </div>
+
+</div>
+<div style="background: #ffffff" class="pl-3 pr-3 pt-3 pb-3 mt-3 " *ngIf="quoteDetails">
+  <div class="row pt-2">
+    <div class="col-sm-10">
+      <p class="color-font">{{'VENDOR.QUOTATION.Buyer' | translate}}</p>
+      <p>{{quoteDetails.createBy}}</p>
+    </div>
+    <div class="col-sm-2">
+      <p class="color-font">{{'VENDOR.QUOTATION.Status' | translate}}</p>
+      <p [style.color]="QUOTATIONSTATUS.valueOf(quoteDetails.status).getColor()">{{(QUOTATIONSTATUS.valueOf(quoteDetails.status).getDisplay()) | translate}}</p>
+    </div>
+  </div>
+  <p class="color-font">{{'VENDOR.QUOTATION.Description' | translate}}</p>
+  <p class="pt-2">{{quoteDetails.description}}</p>
+
+  <div class="row pt-2">
+    <div class="col-sm-4">
+      <p class="color-font">{{'CREATOR.CURRICULUMS.QUOTE.Service_fee' | translate}}</p>
+      <span>{{(quoteDetails.wishMinPrice | number) + ' - ' + (quoteDetails.wishMaxPrice | number)}}</span><span> TEN</span>
+    </div>
+    <div class="col-sm-4">
+      <p class="color-font">{{'CREATOR.CURRICULUMS.QUOTE.Be_done_within' | translate}}</p>
+      <p>{{(quoteDetails.wishDayEndOn | number) + ' ' + (('MESSAGE.day' + ((quoteDetails.wishDayEndOn > 1) ? 's' : '')) | translate)}}</p>
+    </div>
+    <div class="col-sm-4">
+      <p class="color-font">{{'CREATOR.CURRICULUMS.QUOTE.Expired_Date' | translate}}</p>
+      <p>{{quoteDetails.expireOn | date: 'dd/MM/yyyy'}}</p>
+    </div>
+  </div>
+</div>
+<div class="taskbar info-title pl-3">
+  <p class="font-he">{{'VENDOR.QUOTATION.SentQuotations' | translate}}</p>
+</div>
+<div style="background: #ffffff" class="pl-3 pr-3 pt-3 pb-3">
+  <div class="row pt-2">
+    <div class="col-sm-2">
+      <p class="color-font">{{'VENDOR.QUOTATION.DateTime' | translate}}</p>
+      <ng-container *ngFor="let senQuotation of quoteDetails.sentsQuotations">
+        <p>{{senQuotation.quoteDate | date: 'dd/MM/yyyy hh:mm:ss a'}}</p>
+      </ng-container>
+    </div>
+    <div class="col-sm-1">
+      <p class="color-font">{{'VENDOR.QUOTATION.PriceTEN' | translate}}</p>
+      <ng-container *ngFor="let senQuotation of quoteDetails.sentsQuotations">
+        <p>{{senQuotation.price | number}}</p>
+      </ng-container>
+    </div>
+    <div class="col-sm-9">
+      <p class="color-font">{{'VENDOR.QUOTATION.QuoteText' | translate}}</p>
+      <ng-container *ngFor="let senQuotation of quoteDetails.sentsQuotations">
+        <p>{{senQuotation.quoteMsg}}</p>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div class="taskbar info-title pl-3">
+  <p class="font-he">{{'VENDOR.QUOTATION.ReplyFromBuyer' | translate}}</p>
+</div>
+<div style="background: #ffffff" class="pl-3 pr-3 pt-3 pb-3">
+  <div class="row pt-2">
+    <div class="col-sm-2">
+      <p class="color-font">{{'VENDOR.QUOTATION.DateTime' | translate}}</p>
+      <ng-container *ngFor="let replyQuotation of quoteDetails.replyQuotations">
+        <p>{{replyQuotation.onDate | date: 'dd/MM/yyyy hh:mm:ss a'}}</p>
+      </ng-container>
+    </div>
+    <div class="col-sm-10">
+      <p class="color-font">{{'VENDOR.QUOTATION.Message' | translate}}</p>
+      <ng-container *ngFor="let replyQuotation of quoteDetails.replyQuotations">
+        <p>{{replyQuotation.replyMsg}}</p>
+      </ng-container>
+    </div>
+  </div>
+  <div class="pt-3">
+    <button class="btn-save" (click)="send.show();">{{'LAYOUT.SendAQuote' | translate}}</button>
+    <button class="btn-no" routerLink="../../../quotation">{{'CREATOR.CURRICULUMS.PROOF.BACK' | translate}}</button>
+  </div>
+</div>
+<div mdbModal #send="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold pt-5">{{'VENDOR.QUOTATION.SendQuote' | translate}}</h4>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="mb-0" [style.color]="'#979191'">{{'VENDOR.QUOTATION.LIST.PRICE' | translate}}</p>
+        <div class="my-auto" [style.display]="'-webkit-box'">
+          <input
+                  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                  class="form-control" [style.width]="'120px'"
+                  placeholder="1.200"
+                  id="quotePrice"
+                  type="text">
+          <p class="pl-2 my-auto name">TEN</p>
+        </div>
+        <div class="pt-2">
+          <label for="quoteMessage">{{'VENDOR.QUOTATION.Message' | translate}}</label>
+          <textarea class="form-control form-with" id="quoteMessage" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="text-center pb-2">
+        <button class="button-send" (click)="send.hide(); sendQuote()">{{'MESSAGE.SEND' | translate}}</button>
+        <button class="button-cancel" (click)="send.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,87 @@
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 160px;
+    padding-right: 7px;
+  }
+}
+.pe-7s-chat {
+   color: #3570ef;
+  &:hover {
+    color: #2e57af;
+  }
+
+}
+.pe-7s-comment{
+  color: #26a8ef;
+  &:hover {
+    color: #2079b0;
+  }
+}
+.pe-7s-angle-down-circle {
+  color: #176F45;
+  &:hover {
+    color: #05cf0c;
+  }
+}
+.pe-7s-id {
+  color: #007a00;
+  &:hover {
+    color: #00aa00;
+  }
+}
+.pe-7s-notebook {
+  color: #ffe212;
+  &:hover {
+    color: #c1a711;
+  }
+}
+.pe-7s-trash {
+  color: red;
+  &:hover {
+    color: #a70000;
+  }
+}
+.pe-7s-key {
+  color: #9c27b0;
+  &:hover {
+    color: #751d86;
+  }
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  text-align: center;
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}

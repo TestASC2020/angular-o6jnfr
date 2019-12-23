@@ -1,0 +1,110 @@
+<div class="text-back">
+    <div class="container">
+        <div class="row">
+            <div class="pl-3 pr-3 background-sign">
+                <form [formGroup]="signupForm">
+                    <p class="h4 font-size text-center"><strong>{{ 'AUTH.SIGN_UP' | translate }}</strong></p>
+                    <div class="form-group">
+                        <label>{{ 'AUTH.FIRSTNAME' | translate }} {{ 'AUTH.FIRSTNAME' | translate }} *</label>
+                        <input type="text" class="form-control mb-4" placeholder="{{ 'AUTH.FIRSTNAME' | translate }}"
+                               formControlName="firstName" [ngClass]="{ 'is-invalid': submitted && signupForm.get('firstName').errors }">
+                        <div *ngIf="submitted && signupForm.get('firstName').errors" class="invalid-feedback">
+                            <div *ngIf="signupForm.get('firstName').errors.required">{{'MESSAGE.FIRSTNAME_PLEASE_FILL' | translate}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ 'AUTH.LASTNAME' | translate }} {{ 'AUTH.LASTNAME' | translate }} *</label>
+                        <input type="text" class="form-control mb-4" placeholder="{{ 'AUTH.LASTNAME' | translate }}"
+                               formControlName="lastName" [ngClass]="{ 'is-invalid': submitted && signupForm.get('lastName').errors }">
+                        <div *ngIf="submitted && signupForm.get('lastName').errors" class="invalid-feedback">
+                            <div *ngIf="signupForm.get('lastName').errors.required">{{'MESSAGE.LASTNAME_PLEASE_FILL' | translate}}</div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label>{{ 'AUTH.EMAIL' | translate }} {{ 'AUTH.ADDRESS' | translate }} *</label>
+                        <input type="email" class="form-control mb-4" placeholder="{{ 'AUTH.EMAIL' | translate }}"
+                               formControlName="email" [ngClass]="{ 'is-invalid': submitted && signupForm.get('email').errors }">
+                        <div *ngIf="submitted && signupForm.get('email').errors" class="invalid-feedback">
+                            <div *ngIf="signupForm.get('email').errors.required">{{'MESSAGE.EMAIL_PLEASE_FILL' | translate}}</div>
+                            <div *ngIf="signupForm.get('email').errors.pattern">{{'MESSAGE.EMAIL_INVALID' | translate}}</div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label>{{ 'AUTH.PASSWORD' | translate }} *</label>
+                        <div [style.position]="'relative'">
+                            <input type="{{(showPass) ? 'text' : 'password'}}" id="defaultLoginFormPassword" class="form-control mb-4"
+                                   placeholder="{{ 'AUTH.PASSWORD' | translate }}" formControlName="password" [ngClass]="{ 'is-invalid': submitted && signupForm.get('password').errors }">
+                            <div *ngIf="submitted && signupForm.get('password').errors" class="invalid-feedback">
+                                <div *ngIf="signupForm.get('password').errors.required">{{'MESSAGE.PASSWORD_PLEASE_FILL' | translate}}</div>
+                                <div *ngIf="signupForm.get('password').errors.minlength">{{'MESSAGE.PASSWORD_INVALID' | translate}}</div>
+                            </div>
+                            <i class="fas fa-eye" *ngIf="!showPass" (click)="showPass = !showPass"></i>
+                            <i class="fas fa-eye-slash" *ngIf="showPass" (click)="showPass = !showPass"></i>
+                        </div>
+                    </div>
+                    <div class="justify-content-around">
+                        <!-- Remember me -->
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="inputRemember"
+                                   formControlName="remember">
+                            <label class="custom-control-label"
+                                   for="inputRemember">{{ 'AUTH.ACCEPT_OUR_START' | translate }}&nbsp;<span
+                                    style="color: #3BC7EF;cursor: pointer"
+                                    (click)="getServiceTermUrl()">{{ 'AUTH.TERMS_OF_USE_PRIVACY' | translate }}</span>&nbsp;{{ 'AUTH.ACCEPT_OUR_END' | translate }}
+                            </label>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && !JSON.parse(signupForm.get('remember').value.toString())" class="invalid-feedback">
+                      <div>{{'MESSAGE.MUST_ACCEPT' | translate : {name: ('AUTH.TERMS_OF_USE_PRIVACY' | translate) } }}</div>
+                    </div>
+                </form>
+                <div class="justify-content-around">
+                    <div class="text-center pt-3">
+                        <!-- Sign in button -->
+                        <button class="button-info"
+                                (click)="onSubmit()">{{ 'AUTH.CREATE_ACCOUNT' | translate }}</button>
+                        <button class="button-sign my-2"
+                                (click)="gotoSigninForm()">{{ 'AUTH.SIGN' | translate }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center"
+                 [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate : {"error": error.text}'>
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;"
+                        (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #policyModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog policyDialog" role="document">
+        <div class="modal-content policyDialog">
+            <div class="diaglog-title-policy text-center">
+                <h4>{{"MESSAGE.Terms_of_Use_and_Privacy" | translate}}</h4>
+            </div>
+            <ckeditor class="modal-body policyDialog" [editor]="Editor" [config]="configs" [innerHTML]="policyContent"
+                      disabled="disabled" style="width: 100%; border: 0"></ckeditor>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;"
+                        (click)="policyModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

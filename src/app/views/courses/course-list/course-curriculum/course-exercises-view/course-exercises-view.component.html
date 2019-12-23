@@ -1,0 +1,61 @@
+<div class="row mb-1 about-top" *ngIf="toRouters">
+    <div class="col-12 breadcrum-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div [class]="'pb-3 mb-5 mt-4'">
+    <div class="row pratice">
+        <div class="col-sm-5">
+            <p class="font-exercises">{{exercise.name}}</p>
+        </div>
+    </div>
+    <div class="row info mb-3">
+        <div class="col-sm-1"><p class="title-black">Name</p></div>
+        <div class="col-sm-4">
+            <select class="form-control form-chart" [(ngModel)]="selectedExercise" (change)="updateExercise($event)">
+                <option *ngFor="let exer of exerciseList" [value]="exer.signature">{{exer.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="row info">
+        <div class="col-sm-6">
+            <p class="font-exercises-info">Exercise Information</p>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;">
+        <div class="row" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-12">
+                Name:<span class="pl-1 pr-1">{{selectedName}}</span>
+            </div>
+            <div class="col-sm-3">
+                No:<span class="pl-1 pr-1">{{selectedNo}}</span>
+            </div>
+            <div class="col-sm-3">
+                Duration:<span class="pl-1 pr-1">{{selectedDuration}}</span>second<span>{{(selectedDuration > 1) ? 's' : ''}}</span>
+            </div>
+            <div class="col-sm-3">
+                Point:<span class="pl-1 pr-1">{{selectedPoint}}</span>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;">
+        <div class="row info ml-0 mr-0">
+            <div class="col-sm-6">
+                <p class="font-exercises-info">Exercise Content</p>
+            </div>
+        </div>
+        <div class="cover-content question-scroll square scrollbar-cyan">
+            <div class="row question-editor" id="question_area" [innerHTML]="selectedQuestion"></div>
+        </div>
+        <div class="row info ml-0 mr-0 mt-3">
+            <div class="col-sm-12"><p class="font-exercises-info">Solution</p></div>
+        </div>
+        <div class="cover-content solution-scroll square scrollbar-cyan">
+            <div class="row question-editor" id="solution_area" [innerHTML]="selectedSolution"></div>
+        </div>
+    </div>
+</div>

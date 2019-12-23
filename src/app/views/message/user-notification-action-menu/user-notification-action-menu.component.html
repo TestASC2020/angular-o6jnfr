@@ -1,0 +1,19 @@
+<div class="menu-icon">
+    <button class="action-button">
+        <i class="pe-7s-angle-right" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="bottom" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li *ngIf="item.settings !== 1" class="list-group-item" (click)="follow(item);">
+                <i class="fas fa-bell mr-2"></i>
+                <span>{{"MESSAGE.NameList.Follow_user" | translate}}</span>
+            </li>
+            <li *ngIf="item.settings === 1" class="list-group-item" (click)="unFollow(item)">
+                <i class="fas fa-bell-slash mr-2"></i>
+                <span>{{"MESSAGE.NameList.UnFollow_user" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

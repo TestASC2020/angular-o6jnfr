@@ -1,0 +1,76 @@
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 120px;
+    padding-right: 7px;
+  }
+}
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.font-icon {
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}
+.pe-7s-clock {
+  color: #cbb210;
+  &:hover {
+    color: #727728;
+  }
+}
+.pe-7s-info {
+  color: #39d3ef;
+  &:hover {
+    color: #4995bc;
+  }
+}
+.pe-7s-comment {
+  color: #3570ef;
+  &:hover {
+    color: #214eb4;
+  }
+}
+.font-icon {
+  vertical-align: bottom;
+}
+.font-like {
+  color: #01ff4c !important;
+  transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+}

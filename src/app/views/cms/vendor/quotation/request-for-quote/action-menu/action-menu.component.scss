@@ -1,0 +1,94 @@
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.font-icon {
+  font-size: 18px;
+  vertical-align: bottom;
+}
+.list-group-item{
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 130px;
+    padding-right: 7px;
+  }
+}
+
+.font-icon {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 18px;
+  vertical-align: bottom;
+}
+.pe-7s-look {
+  color: #0b7c0a;
+  &:hover {
+    color: #717c17;
+  }
+}
+.pe-7s-chat {
+  color: #0D24F5;
+  &:hover {
+    color: #2e2b7c;
+  }
+}
+.pe-7s-like2 {
+  color: #00b0ff;
+  &:hover {
+    color: #347c7b;
+  }
+}
+.pe-7s-paper-plane {
+  color: #8e24aa;
+  &:hover {
+    color: #76547c;
+  }
+}
+.pe-7s-notebook {
+  color: #8a8a00;
+  &:hover {
+    color: #497c1e;
+  }
+}
+.font-like {
+  color: #01ff4c !important;
+  transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  &:hover {
+    color: #217c57 !important;
+  }
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 120px !important;
+    padding-right: 7px;
+  }
+}

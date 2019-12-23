@@ -1,0 +1,86 @@
+<div>
+  <!-- Card -->
+  <form [formGroup]="infoForm">
+    <div class="row">
+      <div class="col-12 pl-5 pr-5 pt-3 pb-3 breadcrum-title" style="display: flex">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+          <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+          <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+          <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+      </div>
+    </div>
+    <div class="bg-white pl-4 pr-4 pt-3 pb-3">
+      <div class="row">
+        <div class="col-12 form-group" style="display: grid">
+          <label for="type">{{"CREATOR.CURRICULUMS.TYPE" | translate}}</label>
+          <select id="type" class="form-control short-type" formControlName="type">
+            <option *ngFor="let type of types" [value]="type.id">{{type.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="title">{{"CREATOR.CURRICULUMS.LIST.TITLE" | translate}}</label>
+          <input id="title" class="form-control short-type2" formControlName="title">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="objectives">{{"CREATOR.CURRICULUMS.LIST.LEARNING" | translate}}</label>
+          <ckeditor class='style-1' [editor]="Editor" [config]="configs" style="width: 100%" id="objectives" formControlName="objectives"></ckeditor>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="requirements">{{"CREATOR.CURRICULUMS.LIST.REQUIREMENTS" | translate}}</label>
+          <ckeditor class='style-1' [editor]="Editor" [config]="configs" style="width: 100%" id="requirements" formControlName="requirements"></ckeditor>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="expectations">{{"CREATOR.CURRICULUMS.LIST.GOALS" | translate}}</label>
+          <ckeditor class='style-1' [editor]="Editor" [config]="configs" style="width: 100%" id="expectations" formControlName="expectations"></ckeditor>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="description">{{"CREATOR.CURRICULUMS.LIST.DESCRIPTION" | translate}}</label>
+          <ckeditor class='style-1' [editor]="Editor" [config]="configs" style="width: 100%" id="description" formControlName="description"></ckeditor>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 form-group">
+          <!-- Card content -->
+          <label for="materials">{{"CREATOR.CURRICULUMS.LIST.MATERIALS" | translate}}</label>
+          <input id="materials" class="form-control" formControlName="materials">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div>{{"CREATOR.CURRICULUMS.LIST.SUB_TITLES" | translate}}</div>
+          <div class="bg-white box-check mb-3">
+              <div formGroupName="subtitles" class="well well-lg row">
+                  <div *ngFor="let item of infoForm.get('subtitles').value | keyvalue" class="col-2">
+                      <label class="checkbox_label">
+                        <input class="form-control inline checkbox" type="checkbox" [formControlName]="item.key" [value]="item.value" />
+                        {{ item.key }}
+                      </label>
+                  </div>
+              </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center pt-2">
+        <input type="button" class="button-cancel" (click)="goBack()" value='{{"CREATOR.CURRICULUMS.PROOF.BACK" | translate}}'>
+        <input type="button" class="button-save" (click)="updateCvInfo()" value='{{"LAYOUT.SAVE" | translate}}'>
+      </div>
+    </div>
+  </form>
+</div>

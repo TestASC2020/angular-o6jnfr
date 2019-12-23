@@ -1,0 +1,31 @@
+<div style="text-align: center; cursor:pointer;">
+  <button class="action-button">
+    <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+  </button>
+</div>
+
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+  <div class="pop-content">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" (click)="view(item)">
+        <i class="pe-7s-look font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.VIEW" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.status !== QUOTATIONSTATUS.TERMINATE.getValue() && item.status !== QUOTATIONSTATUS.ACCEPT.getValue()" (click)="chat(item)">
+        <i class="pe-7s-chat font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.CHAT" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.status !== QUOTATIONSTATUS.TERMINATE.getValue() && item.status !== QUOTATIONSTATUS.ACCEPT.getValue()" (click)="interest(item)">
+        <i class="pe-7s-like2 font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.INTEREST" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.status !== QUOTATIONSTATUS.TERMINATE.getValue() && item.status !== QUOTATIONSTATUS.ACCEPT.getValue()" (click)="ignore(item)">
+        <i class="pe-7s-like2 font-like font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.IGNORE" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.status !== QUOTATIONSTATUS.TERMINATE.getValue() && item.status !== QUOTATIONSTATUS.ACCEPT.getValue()" (click)="sendQuote(item)">
+        <i class="pe-7s-paper-plane font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.SEND_QUOTE" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.status !== QUOTATIONSTATUS.TERMINATE.getValue() && item.status !== QUOTATIONSTATUS.ACCEPT.getValue()" (click)="curriculum(item)">
+        <i class="pe-7s-notebook font-icon"></i><span class="pl-2">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.CURRICULUM" | translate}}</span>
+      </li>
+    </ul>
+
+  </div>
+</popover-content>

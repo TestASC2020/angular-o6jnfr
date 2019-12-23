@@ -1,0 +1,175 @@
+<div class="mt-2 mb-3 about-top">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+        <a *ngIf="i !== toRouters.length - 1" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+        <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+        <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+</div>
+<div>
+    <div class="row">
+        <div class="card col-12 pl-4 pr-4 pt-3 pb-3">
+            <form [formGroup]="quoteFormGroup" [style.font-size]="'14px'">
+                <div class="fourth-form-scroll square scrollbar-cyan">
+                    <!-- Card content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="pt-2">{{ "CREATOR.CURRICULUMS.QUOTE.Description" | translate}}</label>
+                        </div>
+                        <div class="col-12">
+                            <textarea class="form-control" style="width: 100%" rows="2"  formControlName="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="pt-3 pb-2">
+                        <span>{{ "CREATOR.CURRICULUMS.QUOTE.Attachment" | translate}}</span><span><i class="fas fa-plus text-success" title="{{'CREATOR.CURRICULUMS.QUOTE.ADD_ATTACHMENT_FILES' | translate}}" [style.margin-left]="'5px'" (click)="openFile()"></i></span>
+                        <input type="file" multiple="multiple" style="display: none" #fileInput (change)="previewFile($event)">
+                        <input type="hidden" formControlName="attachment">
+                    </div>
+                    <div #attachments_preview class="row">
+                    </div>
+                    <label class="mt-3">{{ "CREATOR.CURRICULUMS.QUOTE.Service_fee" | translate}}</label>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td width="10%"><input type="text" class="form-control form-with" formControlName="wishMinPrice" value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></td>
+                            <td width="2%">-</td>
+                            <td width="10%"><input type="text" class="form-control form-with" formControlName="wishMaxPrice" value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"></td>
+                            <td width="78%"><p class="ten-title">TEN</p></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-row">
+                        <div class="col-md-2 mb-3">
+                            <label>{{ "CREATOR.CURRICULUMS.QUOTE.Be_done_within" | translate}}</label>
+                            <select  class="form-control" formControlName="wishDayEndOn" style="font-family: 'Roboto Regular'; font-size: 14px;">
+                                <option *ngFor="let template of date_template" [value]="template.value">{{template.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="mb-0">{{ "CREATOR.CURRICULUMS.QUOTE.Expired_Date" | translate}}</label>
+                            <div class="feature-info">
+                                <input type="date" class="date-field" formControlName="expireOn" onkeydown="return false">
+                            </div>
+                        </div>
+                    </div>
+                    <div  class="pr-4 pt-3 pb-3">
+                        <span>{{ "CREATOR.CURRICULUMS.QUOTE.Category" | translate}}</span><span><i (click)="addCategory()" title="{{'CREATOR.CURRICULUMS.QUOTE.ADD_NEW_CATEGORY' | translate}}" class="fas fa-plus text-success" [style.margin-left]="'5px'"></i></span>
+                    </div>
+                    <div class="col-sm-10 form-categories">
+                        <div class="form-row" id="categories_area">
+                            <ng-container style="display: block" formArrayName="categories" *ngIf="quoteFormGroup['controls']['categories']['controls'].length >= 0">
+                                <ng-container style="display: block" *ngFor="let vendor_item of quoteFormGroup['controls']['categories']['controls']; let i = index;">
+                                    <div [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="col-md-2 mb-3" [formGroupName]="i">
+                                        <input id="category_input_{{i}}" type="text" [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="form-control" formControlName="category">
+                                        <span id="span_category_{{i}}" [style.display]="(quoteFormGroup['controls']['categories']['controls'][i].get('onLoad').value) ? 'block' : 'none'"><i (click)="removeCategory(i)" title="{{'CREATOR.CURRICULUMS.QUOTE.REMOVE_THIS_CATEGORY' | translate}}" class="fas fa-times-circle text-danger" style="top: -3px;right: 5px; position: absolute;box-shadow:none"></i></span>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div  class="pr-4 pt-3 pb-3">
+                        <span>{{"CREATOR.CURRICULUMS.QUOTE.To_Vendor" | translate}}</span><span><i (click)="addNotifyVendor()" title="{{'CREATOR.CURRICULUMS.QUOTE.ADD_NEW_VENDOR' | translate}}" class="fas fa-plus text-success" [style.margin-left]="'5px'"></i></span>
+                    </div>
+                    <div class="col-sm-10 form-vendors">
+                        <div class="form-row" id="vendors_area">
+                            <ng-container style="display: block" formArrayName="notify_vendors" *ngIf="quoteFormGroup['controls']['notify_vendors']['controls'].length >= 0">
+                                <ng-container style="display: block" *ngFor="let vendor_item of quoteFormGroup['controls']['notify_vendors']['controls']; let i = index;">
+                                    <div [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="col-md-2 mb-3" [formGroupName]="i">
+                                        <input id="input_{{i}}" type="text" [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="form-control" formControlName="vendor">
+                                        <input type="hidden" style="display: none" class="form-control" formControlName="vendor_sig">
+                                        <span id="span_{{i}}" [style.display]="(quoteFormGroup['controls']['notify_vendors']['controls'][i].get('onLoad').value) ? 'block' : 'none'"><i (click)="removeNotifyVendor(i)" title="{{'CREATOR.CURRICULUMS.QUOTE.REMOVE_THIS_VENDOR' | translate}}" class="fas fa-times-circle text-danger" style="top: -3px;right: 5px; position: absolute;box-shadow:none"></i></span>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="custom-control custom-checkbox pb-4">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1" formControlName="invitedOnly">
+                        <label class="custom-control-label" for="customCheck1">{{"CREATOR.CURRICULUMS.QUOTE.Only_show" | translate}}</label>
+                    </div>
+                </div>
+            </form>
+            <div [class]="'btn-button mt-2 ml-0'">
+                <button class="btn btn-iconed btn-rounded" (click)="backToCVList()"><i class="fas arrow-left"></i><span class="spn">{{'CREATOR.CURRICULUMS.PROOF.BACK' | translate}}</span></button>
+                <button class="button-save m-0" (click)="confirmSaveSettings.show();">{{ "LAYOUT.SAVE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #vendorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">{{ "CREATOR.CURRICULUMS.QUOTE.Vendor_list" | translate}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeVendorModal()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header text-center search-bar">
+                <input class="search pl-3 pr-3" placeholder="{{'CREATOR.CURRICULUMS.QUOTE.Search_term' | translate}}" type="text" [(ngModel)]="searchText"/>
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="modal-body vendor-list square scrollbar-cyan">
+                <ng-container *ngFor="let vendor of notify_vendors_list; let i = index;">
+                    <div class="row vendor-list-row" *ngIf="searchText === '' || vendor.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0">
+                        <div class="col-sm-3 vendor-list-item">
+                            <img src="{{(vendor) ? ((vendor.logoURL) ? ((vendor.logoURL.indexOf('http') < 0) ? ('http://' + vendor.logoURL) : vendor.logoURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}" width="40">
+                        </div>
+                        <div (click)="showVendor(vendor);" [class]="(i !== notify_vendors_list.length -1) ? 'col-sm-9 d-flex align-items-center border-bottom info-line vendor-list-info' : 'col-sm-9 d-flex align-items-center info-line vendor-list-info'">
+                            <div>
+                                <div class="vendor-list-infol-label1">{{(vendor) ? vendor.name : ''}}</div>
+                                <div class="vendor-list-infol-label2">{{(vendor) ? ((vendor.city) ? (vendor.city + ((vendor.country) ? (', ' + vendor.country) : '')) : ((vendor.country) ? vendor.country : '')) : ''}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #categoryModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">{{ "CREATOR.CURRICULUMS.QUOTE.Category_list" | translate}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeCategoryModal()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header text-center search-bar">
+                <input class="search pl-3 pr-3" placeholder="{{'CREATOR.CURRICULUMS.QUOTE.Search_term' | translate}}" type="text" [(ngModel)]="searchCategoryText"/>
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="modal-body vendor-list square scrollbar-cyan">
+                <ng-container *ngFor="let category of category_list; let j = index;">
+                    <div class="row vendor-list-row" *ngIf="searchCategoryText === '' || (category && category.name.toLowerCase().indexOf(searchCategoryText.toLowerCase()) >= 0)">
+                        <div class="col-sm-3 vendor-list-item">
+                            <img class="rounded-circle" [src]="(category) ? category.url : '../../../../../assets/img/user-avatar.png'" alt="" width="40">
+                        </div>
+                        <div (click)="showCategory(category)" [class]="(j !== category_list.length -1) ? 'col-sm-9 d-flex align-items-center border-bottom info-line vendor-list-info' : 'col-sm-9 d-flex align-items-center info-line vendor-list-info'">
+                            <div>
+                                <div class="vendor-list-infol-label1">{{(category) ? category.name : ''}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmSaveSettings="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.QUOTE.Are_You_Sure_Save_Quote" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-save" (click)="confirmSaveSettings.hide(); updateCvRqtQuote();">{{ "LAYOUT.SAVE" | translate}}</button>
+                <button class="button-cancel" style="margin-right: 0;" (click)="confirmSaveSettings.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

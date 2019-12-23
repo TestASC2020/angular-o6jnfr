@@ -1,0 +1,105 @@
+<div class="row mb-1 about-top" *ngIf="toRouters">
+    <div class="col-12 breadcrum-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div [class]="'pb-3 mb-5 mt-4'">
+    <div class="row pratice">
+        <div class="col-sm-5">
+            <p class="font-exercises">{{question.name}}</p>
+        </div>
+    </div>
+    <div class="row info mb-3">
+        <div class="col-sm-1"><p class="title-black">{{'CREATOR.CURRICULUMS.QUESTION.Name' | translate}}</p></div>
+        <div class="col-sm-4">
+            <select class="form-control form-chart" [(ngModel)]="selectedQuiz" (change)="updateQuiz($event)">
+                <option *ngFor="let quest of questionList" [value]="quest.signature">{{quest.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="row info">
+        <div class="col-sm-6">
+            <p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.QuestionInformation' | translate}}</p>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;">
+        <div class="row" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-12">
+                {{'CREATOR.CURRICULUMS.QUESTION.Name' | translate}}:<span class="pl-1 pr-1">{{selectedName}}</span>
+            </div>
+            <div class="col-sm-3">
+                No:<span class="pl-1 pr-1">{{selectedNo}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{'CREATOR.CURRICULUMS.QUESTION.AnswerIn' | translate}}:<span class="pl-1 pr-1">{{selectedDuration}}</span><span>{{(selectedDuration > 1) ? ('CREATOR.CURRICULUMS.QUESTION.Seconds' | translate) : ('CREATOR.CURRICULUMS.QUESTION.Second' | translate)}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{'CREATOR.CURRICULUMS.QUESTION.Point' | translate}}:<span class="pl-1 pr-1">{{selectedPoint}}</span>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;">
+        <div class="row info ml-0 mr-0">
+            <div class="col-sm-6">
+                <p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.QuestionContent' | translate}}</p>
+            </div>
+        </div>
+        <div class="cover-content question-scroll square scrollbar-cyan">
+            <div class="row question-editor" id="question_area" [innerHTML]="selectedQuestion"></div>
+        </div>
+        <div class="row info ml-0 mr-0 mt-3">
+            <div class="col-sm-6"><p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.Solution' | translate}}</p></div>
+        </div>
+        <div class="cover-content">
+            <div class="row question-editor" *ngIf="selectedQuizType === 1 || selectedQuizType === 2">
+                <label class="my-auto" for="inp_showselections"> {{'CREATOR.CURRICULUMS.QUESTION.ShowSelections' | translate}} </label>
+                <select class="form-control ml-2" type="text" [(ngModel)]="selectedShowPerRow" style="width: 165px; display: inline-block;"
+                        id="inp_showselections">
+                    <option *ngFor="let selection of showSelections" [value]="selection.value">
+                        {{selection.display + ' ' + ('CREATOR.CURRICULUMS.QUESTION.PerRow' | translate)}}
+                    </option>
+                </select>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 2">
+                <ng-container *ngFor="let ans of selectedAnswer; let run = index;">
+                    <div [class]="'custom-control custom-checkbox text-left col-md-' + getColMd()">
+                        <input type="checkbox" class="custom-control-input mr-1" id="answer_{{run}}" name="answerCheckbox" [attr.disabled]="true" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="answer_{{run}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 1">
+                <ng-container *ngFor="let ans of selectedAnswer; let run = index;">
+                    <div [class]="'custom-control custom-radio text-left col-md-' + getColMd()">
+                        <input type="radio" class="custom-control-input mr-1" id="answerRadio_{{run}}" name="answerRadio" [attr.disabled]="true" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="answerRadio_{{run}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 0">
+                <p>{{'CREATOR.CURRICULUMS.QUESTION.CorrectAnswer' | translate}}</p>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 3">
+                <p>{{('CREATOR.CURRICULUMS.QUESTION.Solution' | translate) + ': ' + selectedAnsValue}}</p>
+            </div>
+            <div class="row" *ngIf="selectedQuizType === 0">
+                <ng-container *ngFor="let ans of selectedAnswer; let run4 = index;">
+                    <div class="custom-control custom-radio mr-5">
+                        <input type="radio" class="custom-control-input mr-1" id="cra_{{run4}}" name="correct_answer" [attr.disabled]="!isSolutionContentEdit" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="cra_{{run4}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

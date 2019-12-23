@@ -1,0 +1,93 @@
+<div class="col-sm-8 breadcrum-title mt-2 pd-top">
+    <a class="breadcrum mr-1" routerLink="../">{{"MESSAGE.EMPLOYEES" | translate}}</a>/ {{"BUSINESS.SendInvite" | translate}}
+</div>
+
+<div class="mt-4 background-invite">
+    <div class="text-white pt-2 pb-1 pl-4 mt-1 mb-2 bg-title">
+        {{"BUSINESS.Invite" | translate}}
+    </div>
+
+    <table class="table-invite">
+        <tr>
+            <td width="20%" class="title-info text-right">{{"BUSINESS.SendInvite" | translate}}</td>
+            <td width="80%" class="title-info">
+                <form [formGroup]="inviteFormGroup">
+                    <div class="inline1 ml-4 mb-2">
+                        <span style="padding-right: 14px; width: 100%" >{{(inviteFormGroup.get('tutor').value) ? inviteFormGroup.get('tutor').value : ''}}</span>
+                        <i [style.display]="checkTutorExistReverse()" class="pe-7s-add-user ml-1" (click)="inviteModal.show()"></i>
+                        <i class="fas fa-times" (click)="removeTutor()" [style.display]="checkTutorExist()"></i>
+                        <input type="hidden" *ngIf="inviteFormGroup.get('tutor')" formControlName="tutor">
+                    </div>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td width="20%" class="title-info text-right">{{"BUSINESS.Join" | translate}}</td>
+            <td width="80%" class="title-info">
+                <select class="form-control mb-2 ml-4" (change)="changeSelectedStaffType($event)">
+                    <option [value]="type.staffType" *ngFor="let type of [{staffType: 1, text: 'MESSAGE.Tutor'}, {staffType: 2, text: 'MESSAGE.Admin'}, {staffType: 3, text: 'MESSAGE.User'}]">{{type.text | translate}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="title-info text-right">{{"MESSAGE.Message" | translate}}</td>
+            <td class="title-info">
+                <textarea [(ngModel)]="message" class="form-control mb-2 ml-4" rows="5"
+                          placeholder='{{"BUSINESS.JoinUs" | translate}}...'></textarea></td>
+        </tr>
+    </table>
+
+    <div class="row pt-2 pb-2">
+        <div class="col-12 text-center">
+            <button class="button-save" (click)="sendInvite()">{{"LAYOUT.SAVE" | translate}}</button>
+            <button class="button-cancel" (click)="backToEmployeesList()">{{"LAYOUT.CANCEL" | translate}}</button>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate'>
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #inviteModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog invite-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header1 text-center">
+                <h4 class="modal-title w-100 font-weight-bold">{{'STAFF.STAFF' | translate}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="inviteModal.hide()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header2 search-bar">
+                <input class="search pl-3 pr-4" placeholder="{{'STAFF.SearchMessage' | translate}}" type="text" [(ngModel)]="searchText" (keyup)="checkSearch($event)"/>
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="modal-body staff-list square style-1">
+                <ng-container *ngFor="let staff of staffList; let j = index;">
+                    <div (click)="updateAuthor(staff);" class="middle my-hover">
+                        <img class="rounded-circle" src="{{(staff) ? ((staff.avatarURL) ? ((staff.avatarURL.indexOf('http') < 0) ? ('http://' + staff.avatarURL) : staff.avatarURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}" width="40" height="40">
+                        <div [class]="(j !== staffs_list.length -1) ? 'russ-font' : 'russ-font'">
+                            <p class="russ-ti">{{(staff) ? staff.name : ''}}</p>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div *ngIf="enableMore" class="show-more">
+            <span class="show-more-records" (click)="loadMoreRecords()">
+                {{'MESSAGE.More' | translate}}
+            </span>
+            </div>
+        </div>
+    </div>
+</div>

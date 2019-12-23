@@ -1,0 +1,17 @@
+<div class="menu-icon pt-2 pb-2">
+    <button class="action-button breadcrum-title" [popover]="popContent">
+        <i class="fas fa-th pr-1" title="{{'MESSAGE.NameList.BackToHome' | translate}}" (click)="gotoHomePage()"></i><span class="breadcrum my-auto">{{"MESSAGE.Message" | translate}}</span>
+    </button>
+</div>
+<popover-content #popContent placement="bottom" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="create(item);">
+                <i class="fas fa-users padding-icon"></i><span class="pl-2">{{"MESSAGE.Create_group" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="find(item)">
+                <i class="fa fa-search padding-icon"></i><span class="pl-2">{{"MESSAGE.Find_contact" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

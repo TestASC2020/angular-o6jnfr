@@ -1,0 +1,34 @@
+.page-content {
+  vertical-align: middle;
+  display: flex;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
+.flex-centered {
+  position: relative;
+  margin: auto;
+  vertical-align: middle;
+  background-color: #ffffff;
+}
+
+.logo {
+  text-align: center;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  margin: auto;
+
+  img {
+    padding-bottom: 20px;
+    min-width: 200px;
+    cursor: pointer;
+  }
+}

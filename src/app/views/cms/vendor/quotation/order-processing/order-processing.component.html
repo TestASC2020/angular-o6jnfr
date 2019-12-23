@@ -1,0 +1,268 @@
+<div class="row pt-3 pb-3 breadcrums-title">
+  <div class="col-8 my-auto">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+      <a *ngIf="i !== toRouters.length - 1" class="breadcrums mr-1"
+        routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+      <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+      <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+  </div>
+  <div class="col-4 text-right">
+    <input class="form-control search" placeholder="Search" type="text" [(ngModel)]="searchText" />
+  </div>
+</div>
+<div class="pl-3 pr-3 bg-blue">
+  <div class="row education pt-2 pb-2">
+    <div class="col-sm-12" [style.display]="'inherit'">
+      <p class="my-auto" [style.color]="'#fff'">{{"VENDOR.QUOTATION.LIST.STATUS" | translate}}</p>
+      <select class="form-control ml-3" [(ngModel)]="selectedStatus" (change)="updateSelectedStatus()"
+        onchange="this.style.color = this.options[this.selectedIndex].style.color;">
+        <option value="-1" [style.color]="'#000000'">{{"MESSAGE.All" | translate}}</option>
+        <option *ngFor="let status of QUOTATIONSTATUS.toArray()" [style.color]="status.getColor()"
+          value="{{status.getValue()}}">{{status.getDisplay() | translate}}</option>
+      </select>
+    </div>
+  </div>
+</div>
+<table class="table table-striped table-wrapper-scroll-y" id="style-1">
+  <thead>
+    <tr>
+      <th width="15%">{{"VENDOR.QUOTATION.LIST.ON_DATE" | translate}}</th>
+      <th width="27%">{{"VENDOR.QUOTATION.LIST.DESCRIPTION" | translate}}</th>
+      <th width="10%">{{"VENDOR.QUOTATION.LIST.BUYER" | translate}}</th>
+      <th width="15%">{{"VENDOR.QUOTATION.LIST.PRICE" | translate}}</th>
+      <th width="13%">{{"VENDOR.QUOTATION.LIST.COMPLETED_IN" | translate}}</th>
+      <th width="12%">{{"VENDOR.QUOTATION.LIST.STATUS" | translate}}</th>
+      <th class="text-center" width="8%">{{"VENDOR.QUOTATION.LIST.ACTION" | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let item of items">
+      <ng-container *ngIf="checkSearch(
+        item,
+        ('DATEFORMAT.DayString' | translate: {'st': getCreateDateInfo(item?.createDate).st, 'day': getCreateDateInfo(item?.createDate).day}) + '/' +
+      ('DATEFORMAT.' + getCreateDateInfo(item?.createDate).month | translate) + '/' +
+      ('DATEFORMAT.YearString' | translate: {'year': getCreateDateInfo(item?.createDate).year}),
+      (item.wishMinPrice | number)  + ' - ' + (item.wishMaxPrice | number),
+      item.wishDayEndOn | number,
+       (QUOTATIONSTATUS.valueOf(item.status).getDisplay() | translate))">
+        <tr class="info-line">
+          <td>
+            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.createDate).st, 'day': getCreateDateInfo(item?.createDate).day}) + '/' +
+            ('DATEFORMAT.' + getCreateDateInfo(item?.createDate).month | translate) + '/' +
+            ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.createDate).year})}}
+          </td>
+          <td>{{item.description}}</td>
+          <td>{{item.createBy}}</td>
+          <td>{{(item.wishMinPrice | number)  + ' - ' + (item.wishMaxPrice | number)}}</td>
+          <td>{{item.wishDayEndOn | number}}</td>
+          <td [style.color]="QUOTATIONSTATUS.valueOf(item.status).getColor()">
+            {{(QUOTATIONSTATUS.valueOf(item.status).getDisplay()) | translate}}</td>
+          <td class="text-center">
+            <app-cms-vendor-order-processing-action-menu class="my-menu-list" [item]="item" (terminateEmitter)="terminate(item)">
+            </app-cms-vendor-order-processing-action-menu>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </tbody>
+</table>
+<ng-container>
+  <div class="my-table-footer" *ngIf="items">
+    <div style="float: left">
+      <span>{{('MESSAGE.NameList.CurrentTotalItems' | translate) + ':'}}</span>
+      <span style="margin-left: 5px; font-weight: bold;">{{items.length}}</span></div>
+    <div class="my-select-area">
+      <div class="d-flex">
+        <span class="my-auto">{{'MESSAGE.NameList.RowsPerPage' | translate}}</span>
+        <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadRecords()">
+          <option *ngFor="let size of pageSizes" [value]="size">{{size}}</option>
+        </select>
+      </div>
+      <div class="my-auto" style="text-align: right" *ngIf="enableMore">
+        <span class="show-more-records" (click)="loadMoreRecords()">
+          {{'MESSAGE.More' | translate}}
+        </span>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div mdbModal #cancelModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+        <div class="modal-body ml-3 mr-3 text-center">
+          {{ "MESSAGE.Are_you_sure" | translate}}
+        </div>
+        <div [class]="'btn-button mt-2'">
+          <button class="button-cancel"
+            (click)="cancelModal.hide()">{{ "BUSINESS.CANCEL" | translate}}</button>
+          <button style="margin-right: 0;" class="button-save" (click)="cancelModal.hide();">{{ "BUSINESS.Ok" | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #terminateQuoteModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog quoteModal" role="document">
+    <div class="modal-content">
+      <div class="row header">
+        <div class="col-md-12">
+          <ul class="nav nav-tabs" id="terminateTab" role="tablist">
+            <li class="nav-item">
+              <div class="nav-link modal-step-title" (click)="gotoTabTerminate(1)"
+                [ngClass]="{ 'active': stepTerminate==1 }">
+                <span>{{"CREATOR.CURRICULUMS.QUOTE.ApproveQuote" | translate}}</span></div>
+            </li>
+            <li class="nav-item">
+              <div class="nav-link modal-step-title" (click)="gotoTabTerminate(2)"
+                [ngClass]="{ 'active': stepTerminate==2 }">
+                <span>{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</span></div>
+            </li>
+            <li class="nav-item">
+              <div *ngIf="stepTerminate > 2" class="nav-link modal-step-title" (click)="gotoTabTerminate(3)"
+                [ngClass]="{ 'active': stepTerminate==3 }"><span>{{"CREATOR.CURRICULUMS.Details" | translate}}</span>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div *ngIf="stepTerminate > 3" class="nav-link modal-step-title" (click)="gotoTabTerminate(4)"
+                [ngClass]="{ 'active': stepTerminate==4 }">
+                <span (click)="gotoTabTerminate(4)" *ngIf="kind === 1 && lesson">{{shortString(lesson.name, 20)}}</span>
+                <span (click)="gotoTabTerminate(4)"
+                  *ngIf="kind === 2 && exercise">{{shortString(exercise.name, 20)}}</span>
+                <span (click)="gotoTabTerminate(4)" *ngIf="kind === 3 && quiz">{{shortString(quiz.name, 20)}}</span>
+              </div>
+            </li>
+            <li class="nav-item">
+              <div *ngIf="stepTerminate > 4" class="nav-link modal-step-title" (click)="gotoTabTerminate(5)"
+                [ngClass]="{ 'active': stepTerminate==5 }">
+                <span>Solution</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="tab-content quote-sieries square scrollbar-cyan">
+        <div *ngIf="stepTerminate === 1">
+          <form [formGroup]="quoteTerminateForm">
+            <div class="modal-body" *ngIf="quote">
+              <h4 class="modal-title w-100 font-weight-bold">
+                {{"CREATOR.CURRICULUMS.QUOTE.TerminateQuoteConfirmation" | translate}}</h4>
+              <div>
+                <table class="table">
+                  <tbody>
+                    <tr class="terminate-tr">
+                      <td width="30%" scope="row"><label
+                          class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Vendor" | translate}}</label></td>
+                      <td width="70%">
+                        <span class="font-crea">
+                          {{((quote.vendorName) ? quote.vendorName : '') + ' - ' + ((quote.vendorCountry) ? quote.vendorCountry : '')}}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr class="terminate-tr">
+                      <td scope="row">
+                        <label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Price" | translate}}</label>
+                      </td>
+                      <td>
+                        <span class="font-crea">
+                          {{(((quote.price) ? quote.price : 0) | number)}}
+                        </span>
+                        <span class="TEN_TITLE ml-1">TEN</span>
+                      </td>
+                    </tr>
+                    <tr class="terminate-tr">
+                      <td scope="row"><label
+                          class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Status" | translate}}</label></td>
+                      <td>
+                        <span
+                          [style.color]="(quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getColor() : QUOTATIONSTATUS.PENDING.getColor()">
+                          {{((quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getDisplay() : QUOTATIONSTATUS.PENDING.getDisplay()) | translate}}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr class="terminate-tr">
+                      <td scope="row"><label
+                          class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.QuoteMessage" | translate}}</label></td>
+                      <td>
+                        <span class="font-crea">
+                          {{(quote.quoteMsg) ? quote.quoteMsg : ''}}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr class="terminate-tr">
+                      <th scope="row"><label
+                          class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.ReasonToCancelTheDeal" | translate}}</label>
+                      </th>
+                      <td>
+                        <textarea class="form-control terminate-control" rows="2" formControlName="message"></textarea>
+                      </td>
+                    </tr>
+                    <tr class="terminate-tr">
+                      <th scope="row"></th>
+                      <td><span class="font-crea">{{"CREATOR.CURRICULUMS.QUOTE.TerminateMessage" | translate}}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div *ngIf="stepTerminate === 2">
+          <app-cms-vendor-curriculum-view (viewUnitsDetail)="showUnitsDetailForTerminateTab()" [editable]="false" [toRouters]="[]">
+          </app-cms-vendor-curriculum-view>
+        </div>
+        <div *ngIf="stepTerminate === 3">
+          <app-cms-vendor-curriculum-unit-list-edit [toRouters]="[]"
+            (lessonEmit)="showUnitsLessonDetailForTerminateTab()"
+            [editable]="false"
+            (exerciseEmit)="showUnitsExerciseDetailForTerminateTab()" (quizEmit)="showUnitsQuizDetailForTerminateTab()">
+          </app-cms-vendor-curriculum-unit-list-edit>
+        </div>
+        <div *ngIf="stepTerminate === 4" class="pl-3 pr-3">
+          <app-cms-vendor-curriculum-lesson-view *ngIf="kind === 1"
+                                                 [editable]="false"
+                                                 [toRouters]="[]">
+          </app-cms-vendor-curriculum-lesson-view>
+          <app-cms-vendor-curriculum-exercise-view *ngIf="kind === 2" [editable]="false" [toRouters]="[]"
+            (solutionEmit)="showUnitsExerciseDetailFullForTerminateTab()">
+          </app-cms-vendor-curriculum-exercise-view>
+          <app-cms-vendor-curriculum-quiz-tf-view *ngIf="kind === 3" [editable]="false" [toRouters]="[]"
+            (solutionEmit)="showUnitsQuizDetailFullForTerminateTab()">
+          </app-cms-vendor-curriculum-quiz-tf-view>
+        </div>
+        <div *ngIf="stepTerminate === 5">
+          <app-cms-vendor-exercise-solution-view *ngIf="kind === 2" [editable]="false" [toRouters]="[]">
+          </app-cms-vendor-exercise-solution-view>
+          <app-cms-vendor-question-solution-view *ngIf="kind === 3" [editable]="false" [toRouters]="[]">
+          </app-cms-vendor-question-solution-view>
+        </div>
+      </div>
+      <div class="text-center pb-2">
+        <div *ngIf="stepTerminate === 1">
+          <div class="text-center">
+            <button class="button-save"
+              (click)="terminateQuoteModal.hide(); terminateConfirmation();">{{'LAYOUT.YES' | translate}}</button>
+            <button class="button-cancel" (click)="terminateQuoteModal.hide()">{{'LAYOUT.NO' | translate}}</button>
+          </div>
+        </div>
+        <div *ngIf="stepTerminate === 2">
+          <button class="button-save" (click)="gotoTabTerminate(1)">{{ "LAYOUT.PREV" | translate}}</button>
+        </div>
+        <div *ngIf="stepTerminate === 3">
+          <button class="button-save" (click)="gotoTabTerminate(2)">{{ "LAYOUT.PREV" | translate}}</button>
+        </div>
+        <div *ngIf="stepTerminate === 4">
+          <button class="button-save" (click)="gotoTabTerminate(3)">{{ "LAYOUT.PREV" | translate}}</button>
+        </div>
+        <div *ngIf="stepTerminate === 5">
+          <button class="button-save" (click)="gotoTabTerminate(4)">{{ "LAYOUT.PREV" | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

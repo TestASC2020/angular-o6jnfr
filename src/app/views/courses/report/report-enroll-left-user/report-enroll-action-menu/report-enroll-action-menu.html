@@ -1,0 +1,32 @@
+<div style="cursor:pointer;">
+  <button class="action-button">
+    <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+  </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+  <div class="pop-content">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" (click)="userMessages(item)">
+        <i class="pe-7s-chat padding-icon"></i><span class="pl-2">{{"Accounting.Chat" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="sendNotifi(item)">
+        <i class="pe-7s-bell padding-icon"></i><span class="pl-2">{{"Courses.Send_notification" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="progress(item)">
+        <i class="pe-7s-graph1 padding-icon"></i><span class="pl-2">{{"Courses.Progress_details" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="userprofile(item)">
+        <i class="pe-7s-id padding-icon"></i><span class="pl-2">{{"Courses.View_profile" | translate}}</span>
+      </li>
+      <li class="list-group-item" (click)="Admin(item)">
+        <i class="pe-7s-alarm padding-icon"></i><span class="pl-2">{{"Courses.Adminstrative_logs" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.settings === 0" (click)="confirmBan(item)">
+        <i class="pe-7s-lock padding-icon"></i><span class="pl-2">{{"Courses.Ban" | translate}}</span>
+      </li>
+      <li class="list-group-item" *ngIf="item.settings !== 0" (click)="confirmUnBan(item)">
+        <i class="pe-7s-lock padding-icon"></i><span class="pl-2">{{"Courses.Un-ban" | translate}}</span>
+      </li>
+    </ul>
+  </div>
+</popover-content>

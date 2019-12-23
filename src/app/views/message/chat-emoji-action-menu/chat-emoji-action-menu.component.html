@@ -1,0 +1,20 @@
+<div class="menu-icon">
+    <button class="action-button" [disabled]="disabled" [popover]="popContent">
+        <i [class]="'fas fa-smile ' + ((disabled) ? 'smile-icon2' : 'smile-icon')"></i>
+    </button>
+</div>
+<popover-content #popContent placement="top" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush list-emoji square scrollbar-cyan">
+            <li class="list-group-item">
+                <div class="row">
+                    <ng-container *ngFor="let emotion of emotionsList; let emotionIndex = index;">
+                        <div [class]="'col-sm-4'">
+                            <img src="../../../../assets/icon-chat/{{emotion}}" alt="" (click)="emotionSend(emotionIndex)">
+                        </div>
+                    </ng-container>
+                </div>
+            </li>
+        </ul>
+    </div>
+</popover-content>

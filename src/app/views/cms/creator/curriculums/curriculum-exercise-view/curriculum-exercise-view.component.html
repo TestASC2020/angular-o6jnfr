@@ -1,0 +1,143 @@
+<div class="row mb-1 about-top" *ngIf="toRouters && toRouters.length > 0">
+    <div class="col-12">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div [class]="(editable) ? 'pb-3 mb-5 mt-4' : 'pb-3 mb-5'">
+    <div class="row pratice" *ngIf="toRouters && toRouters.length > 0">
+        <div class="col-sm-5">
+            <p class="font-exercises">{{exercise.name}}</p>
+        </div>
+    </div>
+    <div class="row info mb-3">
+        <div class="col-sm-1"><p class="title-black">{{"MESSAGE.Name" | translate}}</p></div>
+        <div class="col-sm-4">
+            <select class="form-control form-chart" [(ngModel)]="selectedExercise" (change)="updateExercise($event)">
+                <option *ngFor="let exer of exerciseList" [value]="exer.signature">{{exer.name | translate}}</option>
+            </select>
+        </div>
+        <div class="col-sm-7" *ngIf="editable">
+            <button class="create relative btn" title="Create new Practice/Question" (click)="createNewPractice()">
+                <i class="fas fa-plus"></i><span>{{"LAYOUT.CREATE" | translate}}</span>
+            </button>
+        </div>
+    </div>
+    <div class="row info" *ngIf="selectedExercise !== -1">
+        <div class="col-sm-6">
+            <p class="font-exercises-info">{{"VENDOR.Exercise_Information" | translate}}</p>
+        </div>
+        <div class="col-sm-6">
+            <button *ngIf="editable" (click)="isEdit = !isEdit" [class]="(isEdit) ? 'view' : 'view fas fa-edit'">{{(isEdit) ? 'View' : 'Edit'}}</button>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedExercise === -1">
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedExercise !== -1">
+        <div class="row" *ngIf="!isEdit && canSubmit" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-12">
+                {{"MESSAGE.NameList.Name" | translate}}:<span class="pl-1 pr-1">{{selectedName}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{"MESSAGE.NameList.No." | translate}}:<span class="pl-1 pr-1">{{selectedNo}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{"MESSAGE.NameList.Duration" | translate}}:<span class="pl-1 pr-1">{{selectedDuration}}</span>{{(selectedDuration > 1) ? ("MESSAGE.NameList.Seconds" | translate) : ("MESSAGE.NameList.Second" | translate)}}
+            </div>
+            <div class="col-sm-3">
+                {{"MESSAGE.NameList.Point" | translate}}:<span class="pl-1 pr-1">{{selectedPoint}}</span>
+            </div>
+        </div>
+        <div class="row" *ngIf="isEdit && canSubmit" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-3">
+                <label for="name"><strong>{{"MESSAGE.NameList.Name" | translate}}:</strong></label>
+                <input id="name" class="form-control" type="text" [(ngModel)]="selectedName" [value]="selectedName">
+            </div>
+            <div class="col-sm-3">
+                <label for="no"><strong>{{"MESSAGE.NameList.No." | translate}}:</strong></label>
+                <input id="no" class="form-control" type="text" [(ngModel)]="selectedNo" [value]="selectedNo" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+            <div class="col-sm-3">
+                <label for="duration"><strong>{{"MESSAGE.NameList.Duration" | translate}}:</strong></label>
+                <input id="duration" class="form-control" type="text" [(ngModel)]="selectedDuration" [value]="selectedDuration" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+            <div class="col-sm-3">
+                <label for="point"><strong>{{"MESSAGE.NameList.Point" | translate}}:</strong></label>
+                <input id="point" class="form-control" type="text" [(ngModel)]="selectedPoint" [value]="selectedPoint" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+        </div>
+        <div *ngIf="isEdit" class="row action-area">
+            <div class="col-sm-6">
+              <button class="button-cancel" [disabled]="!canSubmit" (click)="resetFromSelected()">{{"LAYOUT.CANCEL" | translate}}</button>
+              <button class="button-save" [disabled]="!canSubmit" (click)="saveExercise()">{{"LAYOUT.SAVE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedExercise !== -1">
+        <div class="row info ml-0 mr-0">
+            <div class="col-sm-6">
+                <p class="font-exercises-info">{{"VENDOR.Exercise_Content" | translate}}</p>
+            </div>
+            <div class="col-sm-6" *ngIf="editable">
+                <button (click)="updateContentEdit()" [class]="(isContentEdit) ? 'view' : 'view fas fa-edit'">{{(isContentEdit) ? 'View' : 'Edit'}}</button>
+            </div>
+        </div>
+        <div class="cover-content question-scroll square scrollbar-cyan">
+            <div class="row question-editor" *ngIf="!isContentEdit" id="question_area" [innerHTML]="selectedQuestion"></div>
+        </div>
+        <div class="cover-content-edit">
+            <div class="row question-editor" *ngIf="isContentEdit && canSubmit">
+                <i class="fas fa-image fa-2x" title="Insert Image" (click)="openImageChooser()"></i>
+                <input type="file" style="display: none" accept="image/*" id="file_image" (change)="insertImage($event)">
+                <ckeditor [editor]="Editor" [config]="configs" [(ngModel)]="selectedQuestion" style="width: 100%"></ckeditor>
+            </div>
+        </div>
+        <div *ngIf="isContentEdit" class="row action-area">
+            <div class="col-sm-6">
+              <button class="button-cancel" [disabled]="!canSubmit" (click)="restoreQuestion()">{{"LAYOUT.CANCEL" | translate}}</button>
+              <button class="button-save" [disabled]="!canSubmit" (click)="saveExerciseQuestion()">{{"LAYOUT.SAVE" | translate}}</button>
+            </div>
+        </div>
+        <div class="row info ml-0 mr-0 mt-3" *ngIf="!isContentEdit">
+            <div class="col-sm-12"><p class="font-exercises-info">{{"CREATOR.CURRICULUMS.QUESTION.Solution" | translate}}</p></div>
+        </div>
+        <div class="cover-content solution-scroll square scrollbar-cyan">
+            <div class="row question-editor" *ngIf="!isContentEdit && canSubmit" id="solution_area" [innerHTML]="selectedSolution"></div>
+            <div class="row action-area">
+                <div class="col-sm-12 text-right my-auto">
+                    <i class="fas fa-info"
+                       title="Edit Solution"
+                       *ngIf="canSubmit"
+                       (click)="(toRouters && toRouters.length > 0) ? viewSolution() : viewSolutionEmit()"
+                    ></i>
+                    <strong>{{"CREATOR.CURRICULUMS.QUESTION.Solution" | translate}}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="row action-area" *ngIf="canSubmit && editable">
+            <div class="col-sm-6">
+                <button class="button-delete" [disabled]="!canSubmit" (click)="confirmDeleteExercise.show()">
+                    <i _ngcontent-c3="" class="fas fa-trash mr-1"></i>
+                    {{"VENDOR.Delete_this_Practice" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmDeleteExercise="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+              <button class="button-cancel"(click)="confirmDeleteExercise.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+              <button class="button-save" style="margin-right: 0;" (click)="confirmDeleteExercise.hide(); deleteExercise();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

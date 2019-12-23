@@ -1,0 +1,212 @@
+<div class="row pb-3 pt-2 small-pd">
+    <div class="col-12 my-auto breadcrum-title">
+        <ng-container *ngFor="let toRouter of toRouters; let j = index;">
+            <a *ngIf="j !== toRouters.length - 1" class="mr-1 breadcrum" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="j !== toRouters.length - 1">></span>
+            <span *ngIf="j === toRouters.length - 1">{{(toRouter.display | translate) + ' > ' + (getTypeTitle() | translate)}}</span>
+        </ng-container>
+    </div>
+</div>
+<div class="bg-info-report">
+    <div class="gird">
+        <div>
+            <span class="title-align">{{"Courses.Report" | translate}}</span>
+            <div class="inline">
+                <select (change)="searchNow()" [style.color]="(ReportTypes.valueOf(selectedReportType)) ? ReportTypes.valueOf(selectedReportType).getColor() : ReportTypes.Enroll.getColor()" (change)="updateReportType()" [(ngModel)]="selectedReportType" class="form-control" onchange="this.style.color = this.options[this.selectedIndex].style.color;">
+                    <option
+                            [style.color]="(ReportTypes.valueOf(reportType.tag)) ? ReportTypes.valueOf(reportType.tag).getColor() : ReportTypes.Enroll.getColor()"
+                            *ngFor="let reportType of reportTypesList; let i1 = index;"
+                            [value]="reportType.tag">
+                        {{((ReportTypes.valueOf(reportType.tag)) ? ReportTypes.valueOf(reportType.tag).getDisplay() : ReportTypes.Enroll.getDisplay()) | translate}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <span class="title-align pl-2">{{"Courses.Period" | translate}}</span>
+            <div class="inline">
+                <select (change)="searchNow()" [style.color]="(ReportPeriods.valueOf(selectedReportPeriod)) ? ReportPeriods.valueOf(selectedReportPeriod).getColor() : ReportPeriods.Week.getColor()" [(ngModel)]="selectedReportPeriod" class="form-control" onchange="this.style.color = this.options[this.selectedIndex].style.color;">
+                    <option
+                            [style.color]="(ReportPeriods.valueOf(reportPeriod.tag)) ? ReportPeriods.valueOf(reportPeriod.tag).getColor() : ReportPeriods.Week.getColor()"
+                            *ngFor="let reportPeriod of reportPeriodsList; let i2 = index;"
+                            [value]="reportPeriod.tag">
+                        {{((ReportPeriods.valueOf(reportPeriod.tag)) ? ReportPeriods.valueOf(reportPeriod.tag).getDisplay() : ReportPeriods.Week.getDisplay()) | translate}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <form [formGroup]="tutorFormGroup">
+                <span class="title-align">{{"Courses.Tutor" | translate}}</span>
+                <div class="inline1">
+                    <span style="padding-right: 14px; width: 100%">{{(tutorFormGroup.get('tutor').value) ? tutorFormGroup.get('tutor').value : ''}}</span>
+                    <i [style.display]="tutorDisplay" class="pe-7s-add-user ml-1" (click)="tutorsModal.show()"></i>
+                    <i class="fas fa-times" (click)="removeTutor()" [style.display]="checkTutorExist()"></i>
+                    <input type="hidden" *ngIf="tutorFormGroup.get('tutor')" formControlName="tutor">
+                    <input type="hidden" *ngIf="tutorFormGroup.get('tutor_email')" formControlName="tutor_email">
+                </div>
+            </form>
+        </div>
+        <div>
+            <button class="btn btn-iconed btn-rounded">
+                <i class="fa fa-search mr-2"></i><span class="spn">{{"MESSAGE.Run" | translate}}</span>
+            </button>
+        </div>
+    </div>
+</div>
+<table class="table table-striped table-wrapper-scroll-y my-custom-scrollbar" id="style-1" *ngIf="selectedReportType && selectedReportType.toString() === '1'">
+    <tr>
+        <th class="header-title" width="30%">{{"Courses.COURSE_NAME" | translate}}</th>
+        <th class="header-title" width="20%">{{"Courses.OPENED_ON" | translate}}</th>
+        <th class="header-title" width="15%">{{"Courses.ENROLL_QTY" | translate}}</th>
+        <th class="header-title" width="15%">{{"Courses.LEFT_QTY" | translate}}</th>
+        <th class="header-title" width="10%">%</th>
+        <th class="header-title" width="10%">{{"Courses.ACTION" | translate}}</th>
+    </tr>
+    <ng-container *ngFor="let item of items">
+    <tr>
+        <td>{{item?.crsName}}</td>
+        <td>
+            <ng-container *ngIf="item.openOn">
+                {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.openOn).st, 'day': getCreateDateInfo(item?.openOn).day}) + '/' +
+                (('DATEFORMAT.' + getCreateDateInfo(item?.openOn).month) | translate) + '/' +
+                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.openOn).year})}}
+            </ng-container>
+        </td>
+        <td>{{item?.enrollQty}}</td>
+        <td>{{item?.leftQty}}</td>
+        <td>
+            <div class='progress-my' *ngIf="item.enrollQty !== undefined">
+                <div class='bar-my' [style.width]="getItemPercentage(item) + '%'"></div>
+                <div class='percent-my' [innerHTML]="getItemPercentage(item) + '%'" id='percent1'>0%</div>
+            </div>
+        </td>
+        <td>
+            <span class="pe-7s-look" (click)="switchToEnrollLeftUser(item)"></span>
+        </td>
+    </tr>
+    </ng-container>
+    <tr>
+        <td></td>
+        <td class="bold">{{"Courses.Total" | translate}}</td>
+        <td class="bold">{{totalEncrollQty | number}}</td>
+        <td class="bold">{{totalLeftQty | number}}</td>
+        <td class="bold">
+            <div class='progress-my'>
+                <div class='bar-my' [style.width]="getItemPercentage({enrollQty: totalEncrollQty, leftQty: totalLeftQty}) + '%'"></div>
+                <div class='percent-my' [innerHTML]="getItemPercentage({enrollQty: totalEncrollQty, leftQty: totalLeftQty}) + '%'">0%</div>
+            </div>
+        </td>
+        <td class="bold"></td>
+    </tr>
+</table>
+<table class="table table-striped table-wrapper-scroll-y my-custom-scrollbar" id="style-1" *ngIf="selectedReportType && selectedReportType.toString() === '3'">
+    <tr>
+        <th class="header-title" width="30%">{{"Courses.COURSE_NAME" | translate}}</th>
+        <th class="header-title" width="12.5%">{{"Accounting.Total_users" | translate}}</th>
+        <th class="header-title" width="12.5%">{{"Courses.INVOLVED" | translate}}</th>
+        <th class="header-title" width="10%">{{"Courses.SCORE" | translate}}</th>
+        <th class="header-title" width="7%">{{"Courses.EXCELLENT" | translate}}</th>
+        <th class="header-title" width="7%">{{"Courses.GOLD" | translate}}</th>
+        <th class="header-title" width="7%">{{"Courses.AVERAGE" | translate}}</th>
+        <th class="header-title" width="7%">{{"Courses.FAIR" | translate}}</th>
+        <th class="header-title" width="7%">{{"Courses.POOR" | translate}}</th>
+    </tr>
+    <ng-container *ngFor="let item of items">
+        <tr>
+            <td>{{item.crsName}}</td>
+            <td>{{item.totalUser}}</td>
+            <td>{{item.involved}}</td>
+            <td><i class="fas fa-star pr-1"></i>{{((item.rank) ? ((item.rank %1 == 0) ? item.rank : item.rank.toFixed(1)) : 0) | number}}</td>
+            <td>{{((item.ranks && item.ranks['5']) ? item.ranks['5'] : 0) | number}}</td>
+            <td>{{((item.ranks && item.ranks['4']) ? item.ranks['4'] : 0) | number}}</td>
+            <td>{{((item.ranks && item.ranks['3']) ? item.ranks['3'] : 0) | number}}</td>
+            <td>{{((item.ranks && item.ranks['2']) ? item.ranks['2'] : 0) | number}}</td>
+            <td>{{((item.ranks && item.ranks['1']) ? item.ranks['1'] : 0) | number}}</td>
+        </tr>
+    </ng-container>
+    <tr>
+        <td class="text-right">{{"Courses.Total" | translate}}</td>
+        <td class="bold">{{totalUsers | number}}</td>
+        <td class="bold">{{totalInvolved | number}}</td>
+        <td class="bold"><i class="fas fa-star pr-1"></i>{{((totalScore % 1 === 0) ? totalScore : totalScore.toFixed(1)) | number}}</td>
+        <td class="bold">{{((totalExcellent % 1 === 0) ? totalExcellent : totalExcellent.toFixed(1)) | number}}</td>
+        <td class="bold">{{((totalGood % 1 === 0) ? totalGood : totalGood.toFixed(1)) | number}}</td>
+        <td class="bold">{{((totalAverage % 1 === 0) ? totalAverage : totalAverage.toFixed(1)) | number}}</td>
+        <td class="bold">{{((totalFair % 1 === 0) ? totalFair : totalFair.toFixed(1)) | number}}</td>
+        <td class="bold">{{((totalPoor % 1 === 0) ? totalPoor : totalPoor.toFixed(1)) | number}}</td>
+    </tr>
+</table>
+<table class="table table-striped table-wrapper-scroll-y my-custom-scrollbar" id="style-1" *ngIf="selectedReportType && selectedReportType.toString() === '2'">
+    <tr>
+        <th class="header-title" width="30%">{{"Courses.COURSE_NAME" | translate}}</th>
+        <th class="header-title" width="20%">{{"Courses.OPENED_ON" | translate}}</th>
+        <th class="header-title" width="15%">{{"Courses.DISCUSSION" | translate}}</th>
+        <th class="header-title" width="15%">{{"Courses.TOTAL_USERS" | translate}}</th>
+        <th class="header-title" width="10%">{{"Courses.INVOLVED" | translate}}</th>
+        <th class="header-title" width="10%">%</th>
+    </tr>
+    <ng-container *ngFor="let item of items">
+        <tr>
+            <td>{{item?.crsName}}</td>
+            <td>
+                <ng-container *ngIf="item.openOn">
+                    {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.openOn).st, 'day': getCreateDateInfo(item?.openOn).day}) + '/' +
+                (('DATEFORMAT.' + getCreateDateInfo(item?.openOn).month) | translate) + '/' +
+                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.openOn).year})}}
+                </ng-container>
+            </td>
+            <td>{{item?.discussion}}</td>
+            <td>{{item?.totalUser}}</td>
+            <td>{{item?.involved}}</td>
+            <td>
+                <div class='progress-my'>
+                    <div class='bar-my' [style.width]="(item.involved * 100 / ((item.totalUser) ? item.totalUser : 1) | number : '1.0-2') + '%'"></div>
+                    <div class='percent-my' [innerHTML]="(item.involved * 100 / ((item.totalUser) ? item.totalUser : 1) | number : '1.0-2') + '%'">0%</div>
+                </div>
+            </td>
+        </tr>
+    </ng-container>
+    <tr>
+        <td></td>
+        <td class="bold">{{"Courses.Total" | translate}}</td>
+        <td class="bold">{{totalDiscussion | number}}</td>
+        <td class="bold">{{totalUsers | number}}</td>
+        <td class="bold">{{totalInvolved | number}}</td>
+        <td class="bold">
+            <div class='progress-my'>
+                <div class='bar-my' [style.width]="(totalInvolved * 100 / ((totalUsers) ? totalUsers : 1) | number : '1.0-2') + '%'"></div>
+                <div class='percent-my' [innerHTML]="(totalInvolved * 100 / ((totalUsers) ? totalUsers : 1) | number : '1.0-2') + '%'">0%</div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div mdbModal #tutorsModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">{{'STAFF.STAFF' | translate}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="tutorsModal.hide()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header2 search-bar">
+                <input class="search pl-3 pr-3" placeholder="{{'STAFF.SearchMessage' | translate}}" type="text" [(ngModel)]="searchText"/>
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="modal-body staff-list square scrollbar-cyan">
+                <ng-container *ngFor="let staff of staffs_list; let j = index;">
+                    <div (click)="updateAuthor(staff);" class="middle" *ngIf="searchText === '' || (staff.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || staff.email.toLowerCase().indexOf(searchText.toLowerCase()) >= 0)">
+                        <img class="rounded-circle" src="{{(staff) ? ((staff.avatarURL) ? ((staff.avatarURL.indexOf('http') < 0) ? ('http://' + staff.avatarURL) : staff.avatarURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}" width="40">
+                        <div [class]="(j !== staffs_list.length -1) ? 'russ-font' : 'russ-font'">
+                            <p class="russ-ti">{{(staff) ? staff.name : ''}}</p>
+                            <p class="russ-minutes">{{(staff) ? ((staff.city) ? (staff.city + ((staff.country) ? (', ' + staff.country) : '')) : ((staff.country) ? staff.country : '')) : ''}}</p>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

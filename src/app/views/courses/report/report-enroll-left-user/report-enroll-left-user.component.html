@@ -1,0 +1,178 @@
+<div class="row pb-3 small-pd">
+  <div class="col-sm-8 my-auto breadcrums-title">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+      <a *ngIf="i !== toRouters.length - 1" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+      <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+      <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+  </div>
+
+
+  <div class="col-sm-4">
+    <div class="searchbar text-right">
+      <div class="col-inline pr-1">
+        <button class="field-header form-control btn btn-export" (click)="exportAsXLSX()"><i class="fas fa-download mr-1"></i> {{"Accounting.Export" | translate}}</button>
+      </div>
+      <div class="col-inline"><input placeholder="Search" class="form-control search-bar" type="text"/></div>
+    </div>
+  </div>
+</div>
+<div class="bg-info-report">
+  <div class="row">
+    <div class="col-auto mr-auto mt-2 mb-2">
+      <span class="pl-3">{{"Courses.Course" | translate}} </span><span class="pl-4">{{reportInfo?.name}}</span>
+    </div>
+    <div class="col-auto mt-2 mb-2">
+      <span>{{usersList.length | number}}</span><span class="fas fa-user"></span>
+    </div>
+  </div>
+</div>
+<div class="pl-3 pr-3">
+  <div class="row">
+    <div class="bg-white full-width pb-5">
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+            <td class="header-title" width="22%">{{"Courses.NAME" | translate}}</td>
+            <td class="header-title" width="17%">{{"Courses.LOCATION" | translate}}</td>
+            <td class="header-title" width="17%">{{"Courses.ENROLLED" | translate}}</td>
+            <td class="header-title" width="22%">{{"Courses.LAST_ACTIVE" | translate}}</td>
+            <td class="header-title" width="14%">{{"Courses.PROGRESS" | translate}}</td>
+            <td class="header-title text-center" width="8%">{{"Courses.ACTION" | translate}}</td>
+          </tr>
+          <ng-container *ngFor="let item of items">
+            <tr>
+              <td>{{item.name}}</td>
+              <td>
+                <ng-container *ngIf="generateLocation(item).address || generateLocation(item).location">
+                  <ng-container *ngIf="generateLocation(item).address">
+                    {{generateLocation(item).address}}
+                  </ng-container>
+                  <ng-container *ngIf="generateLocation(item).location">
+                    <br *ngIf="generateLocation(item).address">
+                    {{generateLocation(item).location}}
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="!generateLocation(item).address && !generateLocation(item).location">
+                  <span style="color: green; font-style: italic;">{{'MESSAGE.EMPTY' | translate}}</span>
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="item.enrollOn">
+                  {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.enrollOn).st, 'day': getCreateDateInfo(item?.enrollOn).day})  + ', ' +
+                  (('DATEFORMAT.' + getCreateDateInfo(item?.enrollOn).month) | translate) + ', ' +
+                  ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.enrollOn).year})}}
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="item.lastActive">
+                  {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.lastActive).st, 'day': getCreateDateInfo(item?.lastActive).day})  + '/' +
+                  (('DATEFORMAT.' + getCreateDateInfo(item?.lastActive).month) | translate) + '/' +
+                  ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.lastActive).year})}}
+                </ng-container>
+              </td>
+              <td>
+                <div class='progress-my'>
+                  <div class='bar-my' [style.width]="((item.progress) ? (item.progress * 100 | number : '1.0-2') : 0) + '%'"></div>
+                  <div class='percent-my' [innerHTML]="((item.progress) ? (item.progress * 100 | number : '1.0-2') : 0) + '%'"></div>
+                </div>
+              </td>
+              <td>
+                <app-cms-report-enroll-left-user-action-menu
+                  [item]="item"
+                  [reportInfo]="reportInfo"
+                  (notification)="openNotifiModal(item)"
+                  (admin)="openadminModal(item)"
+                  (banEmitter)="openConfirmBan_Unban(item, true)"
+                  (unBanEmitter)="openConfirmBan_Unban(item, false)"
+                ></app-cms-report-enroll-left-user-action-menu>
+              </td>
+            </tr>
+          </ng-container>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #notificationModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body mx-3" *ngIf="itemToView">
+        <h4 class="modal-title w-100 text-center">{{"LAYOUT.NOTIFY" | translate}}</h4>
+        <div class="title-info">{{"LAYOUT.Send_notification" | translate}}</div>
+        <div class="bold large-title mt-1">{{itemToView.name}}</div>
+        <div class="medium-title mt-3 mb-2">{{"LAYOUT.Notification_text" | translate}}</div>
+        <div><textarea class="form-control full-width" [(ngModel)]="message"></textarea></div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="customCheck1" value="1" [(ngModel)]="warning">
+          <label class="custom-control-label" for="customCheck1">{{"LAYOUT.Log_this_as_a_warning" | translate}}</label>
+        </div>
+        <div class="text-center pb-3 mt-3">
+          <button (click)="notificationModal.hide();sendNotification()" class="button-save">{{"MESSAGE.SEND" | translate}}</button>
+          <button class="button-cancel" (click)="notificationModal.hide();">{{"LAYOUT.CANCEL" | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmBanUnBanModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" *ngIf="itemToView">
+      <div class="modal-body mx-3">
+        <h4 class="modal-title w-100 text-center">{{"BUSINESS.Confirm" | translate}}</h4>
+        <div class="title-info">{{"LAYOUT.Send_notification" | translate}}</div>
+        <div class="bold large-title mt-1">{{itemToView.name}}</div>
+        <div class="medium-title mt-3 mb-2">{{"LAYOUT.Notification_text" | translate}}</div>
+        <div><textarea class="form-control full-width" [(ngModel)]="reason"></textarea></div>
+        <div class="text-center pb-3 mt-3">
+          <button (click)="(isBan) ? ConfirmBan() : ConfirmUnBan()" class="button-save">{{"MESSAGE.SEND" | translate}}</button>
+          <button class="button-cancel" (click)="confirmBanUnBanModal.hide();">{{"LAYOUT.CANCEL" | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #ConfirmModal2="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body mx-3">
+        <h4 class="modal-title w-100 text-center">{{"BUSINESS.Confirm" | translate}}</h4>
+        <div class="title-info">{{"LAYOUT.Send_notification" | translate}}</div>
+        <div class="bold large-title mt-1">Phạm Mai Anh</div>
+        <div class="title-info mt-3 mb-2">The user was banned by Lê Minh Sơn  on 20-Aug-18 10:30 am. Reason for the ban :  Rules violations</div>
+      </div>
+      <div class="text-center pb-3">
+        <button class="button-save">{{"MESSAGE.SEND" | translate}}</button>
+        <button class="button-cancel" (click)="ConfirmModal2.hide();">{{"LAYOUT.CANCEL" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #adminModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body mx-3">
+        <h4 class="modal-title w-100 text-center">{{"MESSAGE.Activity_Log" | translate}}</h4>
+        <ng-container *ngFor="let log of selectedActiveLogs; let logIndex = index;">
+          <div class="title-info">
+            <span [class]="getLogTypeIconClass(log.logType) + ' icon-font'"></span>
+            <span class="pl-2 font-date">
+                            {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(log.onDate).st, 'day': getCreateDateInfo(log.onDate).day})  + ' / ' +
+                        ('DATEFORMAT.' + getCreateDateInfo(log.onDate).month | translate) + ' / ' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(log.onDate).year}) + ' ' + ', '+
+                        getCreateDateInfo(log.onDate).hour + ':' + getCreateDateInfo(log.onDate).minute}}
+                        </span>
+            <span class="pl-2 font-text">{{log.text}}</span>
+          </div>
+        </ng-container>
+      </div>
+      <div class="text-center pb-3">
+        <button class="button-cancel" (click)="adminModal.hide();">{{"LAYOUT.CLOSE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,255 @@
+<div class="mt-2 mb-3 about-top" *ngIf="toRouters && toRouters.length > 0">
+    <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+        <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+        <span class="breadcrum-title mr-1" *ngIf="i !== toRouters.length - 1">></span>
+        <span class="breadcrum-title" *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+    </ng-container>
+</div>
+<ng-container *ngIf="lesson">
+    <div class="lesson-title" *ngIf="!(toRouters && toRouters.length > 0)">
+        <div class="lesson-title-child1">
+            <p *ngIf="lesson.name">{{lesson.name}}</p>
+            <p *ngIf="!lesson.name">{{'MESSAGE.EMPTY' | translate}}</p>
+        </div>
+        <div class="lesson-title-child2" *ngIf="editable">
+            <button mdbBtn class="btn btn-iconed btn-rounded" (click)="addVideoComponent()"><i class="fas fa-plus-circle"></i><span class="spn">{{"MESSAGE.ADD_VIDEO" | translate}}</span></button>
+        </div>
+    </div>
+    <div class="row justify-content-between" *ngIf="toRouters && toRouters.length > 0">
+        <div class="col-6">
+            <p *ngIf="lesson.name">{{lesson.name}}</p>
+            <p *ngIf="!lesson.name">{{'MESSAGE.EMPTY' | translate}}</p>
+        </div>
+        <div class="col-6 my-auto" *ngIf="editable">
+            <button mdbBtn class="btn btn-iconed btn-rounded" style="margin-right: 5px" (click)="addVideoComponent()"><i class="fas fa-plus-circle"></i><span class="spn">{{"MESSAGE.ADD_VIDEO" | translate}}</span></button>
+        </div>
+    </div>
+
+    <div [class]="(toRouters && toRouters.length > 0 && editable) ? 'card lesson-area pl-4 pr-4 pt-3 pb-3 square scrollbar-cyan' : 'lesson-area pl-4 pr-4 pt-3 pb-3'">
+        <form [formGroup]="lessonForm">
+            <ng-container *ngIf="lessonForm['controls']['items']['controls'].length === 0">
+                <p>{{'MESSAGE.EMPTY' | translate}}</p>
+            </ng-container>
+            <ng-container style="display: block" formArrayName="items" *ngIf="lessonForm['controls']['items']['controls'].length > 0">
+                <ng-container style="display: block" *ngFor="let video_item of lessonForm['controls']['items']['controls']; let i = index;">
+                    <div id="{{'videoArea_' + i.toString()}}" [style.display]="(lessonForm['controls']['items']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="mb-3"  [formGroupName]="i">
+                        <div [class]="'row ' + ((i < -1 + lessonForm['controls']['items']['controls'].length) ? 'pb-4 border border-left-0 border-right-0 border-top-0 border-bottom-1' : '')">
+                            <div class="col-sm-5">
+                                <div style="position: relative">
+                                    <div class="embed-responsive embed-responsive-16by9">
+                                        <video id="file_video_{{i}}" [src]="(lessonForm['controls']['items']['controls'][i].get('url').value) ? lessonForm['controls']['items']['controls'][i].get('url').value : '' " class="embed-responsive-item"
+                                               [poster]="(lessonForm['controls']['items']['controls'][i].get('thumbnail').value) ? lessonForm['controls']['items']['controls'][i].get('thumbnail').value : '../../../../../../assets/img/calendar.png'" alt="Preview">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <i [class]="'fas fa-play-circle play-video-btn'" title="{{'MESSAGE.PreviewVideo' | translate}}" (click)="openVideoPlayer(i)"></i>
+                                        <input type="hidden" formControlName="no">
+                                        <input type="hidden" formControlName="name">
+                                        <input type="hidden" formControlName="url">
+                                        <input type="hidden" formControlName="data">
+                                        <input type="hidden" formControlName="fileExt">
+                                        <input type="hidden" formControlName="lenSec">
+                                        <input type="hidden" formControlName="defaultSub">
+                                        <input type="hidden" formControlName="previewPerc">
+                                        <input type="hidden" formControlName="allowPreview">
+                                        <input type="hidden" formControlName="videoSig">
+                                        <input type="hidden" formControlName="thumbnail">
+                                        <input type="hidden" formControlName="onEdit">
+                                    </div>
+                                    <i class="fas fa-times" id="delete-icon-{{i}}" *ngIf="editable" title="{{'MESSAGE.NameList.Delete' | translate}}" (click)="openDeleteDialog(i)"></i>
+                                    <i class="fas fa-camera" *ngIf="editable" title="{{'MESSAGE.NameList.ChangeThumbnail' | translate}}" (click)="openFileThumbnails(i)"></i>
+                                    <input type="file" style="display: none" accept="image/*" id="file_thumbnails_{{i}}" (change)="previewThumbnails(i, $event)">
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <p [class]="'title-font'">{{'MESSAGE.NameList.Name' | translate}}</p>
+                                <input type="{{editable ? 'text' : 'hidden'}}" id="inputIconEx3" class="form-control video-title" formControlName="name">
+                                <p *ngIf="!editable">{{getName(i)}}</p>
+                                <label *ngIf="editable" for="inputIconEx3"></label>
+                                <div class="custom-control custom-checkbox check-input">
+                                    <input type="checkbox" class="custom-control-input" *ngIf="editable" id="customCheck1_{{i}}" formControlName="allowPreview">
+                                    <input type="checkbox" class="custom-control-input" *ngIf="!editable" [attr.disabled]="true" id="customCheck1_{{i}}" formControlName="allowPreview">
+                                    <label class="custom-control-label" for="customCheck1_{{i}}">{{'MESSAGE.NameList.AllowToPreview' | translate}}</label>
+                                    <input class="form-control percent" *ngIf="editable" formControlName="previewPerc" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+                                    <input class="form-control percent" *ngIf="!editable" [attr.disabled]="true" formControlName="previewPerc" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"><span>{{'MESSAGE.NameList.Percent' | translate}}</span>
+                                </div>
+                                <div>
+                                    <input id="save-lesson-area-{{i}}" type="button" *ngIf="editable" class="button-save" (click)="updateLesson(i)" value="{{'MESSAGE.NameList.Save' | translate}}">
+                                </div>
+                                <div class="row pt-3">
+                                    <div *ngIf="editable" class="col-sm-3 pl-0">
+                                        <i class="fas fa-plus fa-2x text-center" title="Add new subtitle" (click)="addVideoSubTitlteComponent(i);"></i>
+                                        <p [style.width]="'80px'" [class]="'text-center'">{{'MESSAGE.NameList.Subtitle' | translate}}</p>
+                                    </div>
+                                    <ng-container style="display: block" formArrayName="subtitles" *ngIf="lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'].length >= 0">
+                                        <ng-container style="display: block" *ngFor="let sub_item of video_item.controls['subtitles']['controls']; let j = index;">
+                                            <div id="subArea_{{i + '_' + j}}" [style.display]="(lessonForm['controls']['items']['controls'][i].get('onEdit').value) ? 'block' : 'none'" class="col-md-3 mb-3" [formGroupName]="j" [style.padding-left]="(editable) ? '15px' : '0'">
+                                                <div [style.display]="(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('onReady').value) ? 'block' : 'none'">
+                                                    <!--<i class="fas fa-video fa-3x"></i>-->
+                                                    <img class="img-mb"
+                                                         [src]="getLanguageFlag(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value)"
+                                                         id="subLanguageImg_{{i + '_' + j}}" width="80" height="50">
+                                                    <i *ngIf="editable" (click)="unloadLanguageAt(i, j)" class="fas fa-times time-2"></i>
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" class="custom-control-input" name="customCheck2_{{i}}" [checked]="(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value.toString() === lessonForm['controls']['items']['controls'][i].controls['defaultSub'].value.toString()) ? true: false" *ngIf="editable" (change)="languageDefaultChange(i, $event)" id="customCheck2_{{i + '_' + j}}" [value]="lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value">
+                                                        <input type="radio" class="custom-control-input" name="customCheck2_{{i}}" [checked]="(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value.toString() === lessonForm['controls']['items']['controls'][i].controls['defaultSub'].value.toString()) ? true: false" *ngIf="!editable" [attr.disabled]="true" id="customCheck2_{{i + '_' + j}}" [value]="lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value">
+                                                        <label class="custom-control-label" for="customCheck2_{{i + '_' + j}}">
+                                                            <span id="subLanguage_{{i + '_' + j}}">{{getLanguageName(lessonForm['controls']['items']['controls'][i].controls['subtitles']['controls'][j].get('lang').value)}}</span>
+                                                        </label>
+                                                    </div>
+                                                    <input type="hidden" formControlName="id">
+                                                    <input type="hidden" formControlName="subtitle">
+                                                    <input type="hidden" formControlName="lang">
+                                                    <input type="hidden" formControlName="url">
+                                                    <input type="hidden" formControlName="videoSig">
+                                                    <input type="hidden" formControlName="onReady">
+                                                    <input type="hidden" formControlName="fileExt">
+                                                    <input type="hidden" formControlName="signature">
+                                                    <input type="hidden" formControlName="data">
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </form>
+    </div>
+</ng-container>
+<div mdbModal #subtitle="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <form [formGroup]="subtitleForm">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">{{'MESSAGE.NameList.Subtitles' | translate}}</h4>
+                </div>
+                <div class="modal-body mx-3">
+                    <p class="text-center">{{'MESSAGE.AcceptFormat' | translate : ({'name1': 'SRT, SSA, SBV, VTT, DFXP', 'name2': 'TTML'})}}</p>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <p>{{'MESSAGE.NameList.SubtitleFile' | translate}}</p>
+                            <p>{{'MESSAGE.NameList.Language' | translate}}</p>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <input type="text" formControlName="subtitle" class="file-input">
+                                <span><i class="far fa-folder-open file-input-i" title="{{'MESSAGE.NameList.Browser' | translate}}" (click)="openFile()"></i></span>
+                                <input id="subtitle_file" type="file" #fileInput style="display: none" (change)="previewFile($event)">
+                                <input type="hidden" formControlName="id">
+                                <input type="hidden" formControlName="lang">
+                                <input type="hidden" formControlName="fileExt">
+                                <input type="hidden" formControlName="signature">
+                                <input type="hidden" formControlName="url">
+                                <input type="hidden" formControlName="videoSig">
+                                <input type="hidden" formControlName="data">
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control form-select" formControlName="lang">
+                                    <option *ngFor="let language of view_languagesList" [value]="language.value">{{language.display}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <input type="button" class="button-cancel"  (click)="subtitle.hide(); unloadLanguage()" value='{{ "MESSAGE.NameList.Cancel" | translate}}'>
+                        <input type="button" class="button-save" (click)="subtitle.hide(); uploadLanguage();" value='{{ "MESSAGE.NameList.OK" | translate}}'>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div mdbModal #confirmDeleteDialog="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="diaglog-title-confirm text-center">{{ "MESSAGE.NameList.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{'MESSAGE.ConfirmDeleteActionThis' | translate: {'name': ('MESSAGE.NameList.Lesson' | translate)} }}
+            </div>
+            <div [class]="'btn-button mt-2'" style="text-align: center">
+                <button class="button-cancel" (click)="confirmDeleteDialog.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" style="margin-right: 0;" (click)="deleteSelectedVideo()">{{ "LAYOUT.OK" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorDialog="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.NameList.Warning" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate : {"error": error.text}'>
+            </div>
+            <div [class]="'btn-button mt-2'" style="text-align: center">
+                <button class="button-cancel" style="margin-right: 0;" (click)="errorDialog.hide()">{{ "MESSAGE.NameList.Close" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- begin: Video player Popup -->
+<div id="light">
+    <a class="boxclose" id="boxclose" (click)="lightbox_close();"></a>
+    <video id="VisaChipCardVideo" width="600" controls>
+        <source src="" poster="">
+        <!--Browser does not support <video> tag -->
+    </video>
+</div>
+<div id="fade" (click)="lightbox_close();"></div>
+<!-- end: Video player Popup -->
+
+<!-- begin: Add Video Popup -->
+<div id="lightAdd">
+    <a class="boxclose" id="boxcloseAdd" (click)="lightboxAdd_close();"></a>
+    <form [formGroup]="addVideoForm">
+        <div class="modal-content">
+            <div class="modal-body mx-3">
+                <div id="file-upload-form" class="uploader">
+                    <input id="file-upload" type="file" name="fileUpload" accept="video/mp4"/>
+                    <label for="file-upload" id="file-drag">
+                        <video id="AddVisaChipCardVideo" style="width: 100%; display: none">
+                            <source src="" poster="">
+                            <!--Browser does not support <video> tag -->
+                        </video>
+                        <div class='progress-my' id="progress_div" *ngIf="uploadResponse && uploadResponse.status === 'progress'">
+                            <div class='bar-my' id='bar1' [style.width]="uploadResponse.message + '%'"></div>
+                            <div class='percent-my' [innerHTML]="uploadResponse.message + '%'" id='percent1'>0%</div>
+                        </div>
+                        <div id="start">
+                            <i class="fas fa-cloud-upload-alt " aria-hidden="true"></i>
+                            <div>{{'MESSAGE.DragFile' | translate: {'name' : ('MESSAGE.NameList.Video' | translate)} }}</div>
+                            <div id="notvideo" class="hidden">
+                                {{'MESSAGE.PleaseSelect' | translate: {'name' : ('MESSAGE.NameList.Video' | translate)} }}</div>
+                        </div>
+                        <div id="response" class="hidden">
+                            <div id="messages"></div>
+                            <input type="hidden" formControlName="no">
+                            <input type="hidden" formControlName="url">
+                            <input type="hidden" formControlName="name">
+                            <input type="hidden" formControlName="defaultSub">
+                            <input type="hidden" formControlName="fileExt">
+                            <input type="hidden" formControlName="lenSec">
+                            <input type="hidden" formControlName="previewPerc">
+                            <input type="hidden" formControlName="allowPreview">
+                            <input type="hidden" formControlName="videoSig">
+                            <input type="hidden" formControlName="thumbnail">
+                            <input type="hidden" formControlName="onEdit">
+                        </div>
+                    </label>
+                </div>
+                <div style="text-align: center">
+                    <input type="button" class="button-cancel" (click)="lightboxAdd_close(); removeVideo();" value='{{ "MESSAGE.NameList.Cancel" | translate}}'>
+                    <input type="button" [disabled]="!canSaveVideo" [class]="'button-save' + ((canSaveVideo) ? '' : ' disabled')" (click)="saveVideo();" value='{{ "MESSAGE.NameList.Save" | translate}}'>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="fadeAdd" (click)="lightboxAdd_close();"></div>
+<!-- end: Add Video Popup -->

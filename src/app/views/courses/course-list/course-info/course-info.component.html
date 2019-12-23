@@ -1,0 +1,128 @@
+<div class="employees-top">
+    <div class="row pb-3 pt-3">
+        <div class="col-sm-12 my-auto breadcrum-title">
+            <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+                <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+                <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+                <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row pl-3 pr-3">
+        <div class="col-sm-6">
+            <table class="table" *ngIf="courseInfo">
+                <tbody>
+                <tr>
+                    <th scope="row">{{ "Accounting.NAME" | translate}}</th>
+                    <td>{{courseInfo.name}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "BUSINESS.category" | translate}}</th>
+                    <td>{{courseInfo.category}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "Courses.Curriculum" | translate}}</th>
+                    <td>{{(courseInfo.cvName) ? courseInfo.cvName : 'N/A'}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "Courses.Start" | translate}}</th>
+                    <td
+                            [style.font-style]="(courseInfo.openDate) ? 'normal' : 'italic'"
+                            [style.color]="(courseInfo.openDate) ? '#000000' : 'green'"
+                    >
+                        {{(courseInfo.openDate) ? (("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(courseInfo.openDate).st, 'day': getCreateDateInfo(courseInfo.openDate).day})  + '/' +
+                        ('DATEFORMAT.' + getCreateDateInfo(courseInfo.openDate).month | translate) + '/' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(courseInfo.openDate).year}) + ', ' +
+                        getCreateDateInfo(courseInfo.openDate).hour + ':' + getCreateDateInfo(courseInfo.openDate).minute + ' ' +
+                        (("DATEFORMAT." + getCreateDateInfo(courseInfo.openDate).ampm) | translate)) : ('MESSAGE.EMPTY' | translate)}}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "Courses.End" | translate}}</th>
+                    <td
+                            [style.font-style]="(courseInfo.closeDate) ? 'normal' : 'italic'"
+                            [style.color]="(courseInfo.closeDate) ? '#000000' : 'green'"
+                    >
+                        {{(courseInfo.closeDate) ? (("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(courseInfo.closeDate).st, 'day': getCreateDateInfo(courseInfo.closeDate).day})  + '/' +
+                        ('DATEFORMAT.' + getCreateDateInfo(courseInfo.closeDate).month | translate) + '/' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(courseInfo.closeDate).year}) + ', ' +
+                        getCreateDateInfo(courseInfo.closeDate).hour + ':' + getCreateDateInfo(courseInfo.closeDate).minute + ' ' +
+                        (("DATEFORMAT." + getCreateDateInfo(courseInfo.closeDate).ampm) | translate)) : ('MESSAGE.EMPTY' | translate)}}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "Courses.Price" | translate}}</th>
+                    <td>{{(courseInfo.listPrice) ? ( courseInfo.listPrice + ' TEN') : 'N/A'}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{{ "Courses.MinPayment" | translate}}</th>
+                    <td>{{(courseInfo.minUseAmt !== undefined) ? ( (courseInfo.minUseAmt | number) + ' TEN') : 'N/A'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-5" *ngIf="courseInfo">
+            <img class="avatar" [src]="(courseInfo.logoURL) ? courseInfo.logoURL : '../../../../../assets/img/user-avatar.png'" alt="">
+        </div>
+        <div class="col-sm-1">
+            <button class="edit fas fa-edit" (click)="infoedit()"> {{ "LAYOUT.EDIT" | translate}}</button>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="background-tutors pl-3 pr-3">
+        <p class="font-tu">{{ "Courses.Tutors" | translate}}</p>
+    </div>
+    <div class="container-fluid">
+        <div class="row pt-4 pb-4">
+            <ng-container *ngFor="let tutor of getTutorList(); let i = index">
+            <div class="col-sm-6 russ-pd">
+                <div class="middle" (click)="gotoStaffProfiles(tutor)">
+                    <img class="rounded-circle" [src]="(tutor.avatarURL) ? tutor.avatarURL : '../../../../../assets/img/user-avatar.png'">
+                    <div class="russ-font">
+                        <p class="russ-tit">{{(tutor.name)}}</p>
+                        <p class="russ-ti">{{ tutor.employer}}</p>
+                    </div>
+                </div>
+            </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="background-tutors pl-3 pr-3">
+        <p class="font-tu">{{ "Courses.AdministrativeStaff" | translate}}</p>
+    </div>
+    <div class="container-fluid">
+        <div class="pt-4 pb-4">
+            <ng-container *ngFor="let admin of getAdminList(); let i = index">
+                <div class="col-sm-6 russ-pd">
+                    <div class="middle" (click)="gotoStaffProfiles(admin)">
+                        <img class="rounded-circle" [src]="(admin.avatarURL) ? admin.avatarURL : '../../../../../assets/img/user-avatar.png'">
+                        <div class="russ-font">
+                            <p class="russ-tit">{{(admin.name)}}</p>
+                            <p class="russ-ti">{{ admin.employer}}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog" *ngIf="error">
+            <div class="diaglog-title-warning text-center">
+                <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+            </div>
+            <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate : {"error": error.text}'>
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

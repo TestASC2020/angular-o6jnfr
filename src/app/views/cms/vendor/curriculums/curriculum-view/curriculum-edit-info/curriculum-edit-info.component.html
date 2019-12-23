@@ -1,0 +1,73 @@
+<div>
+  <!-- Card -->
+    <div class="card" style="background: #1E8EEB; height: 55px;">
+      <div class="row">
+        <div class="col-12 pl-5 pr-5 pt-3 pb-3" style="display: flex">
+          <p class="font-info">{{"CREATOR.CURRICULUMS.Information" | translate}}</p>
+          <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="mr-1" routerLink="{{toRouter.link}}">{{toRouter.display}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display}}</span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="card pl-4 pr-4 pt-3 pb-3">
+      <form [formGroup]="infoForm">
+        <div class="row">
+          <div class="col-6">
+            <label for="type">{{("CREATOR.CURRICULUMS.LIST.TYPE" | translate)}}</label>
+            <select id="type" class="form-control" formControlName="type">
+              <option *ngFor="let type of types" [value]="type.id">{{type.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="title">{{("CREATOR.CURRICULUMS.LIST.TITLE" | translate)}}</label>
+            <input id="title" class="form-control" formControlName="title">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="learning_objective">{{("CREATOR.CURRICULUMS.LIST.LEARNING_OBJECTIVES" | translate)}}</label>
+            <textarea rows="2" id="learning_objective" class="form-control"
+                      formControlName="learning_objective"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="goals_and_expectations">{{("CREATOR.CURRICULUMS.LIST.GLOBAL_AND_EXPECTATIONS" | translate)}}</label>
+            <input id="goals_and_expectations" class="form-control"
+                   formControlName="goals_and_expectations">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <!-- Card content -->
+            <label for="materials">{{("CREATOR.CURRICULUMS.LIST.MATERIALS" | translate)}}</label>
+            <input id="materials" class="form-control" formControlName="materials">
+          </div>
+        </div>
+        <label class="align-top">{{("CREATOR.CURRICULUMS.LIST.SUB_TITLES" | translate)}}</label>
+        <div class="bg-white box-check mb-3">
+          <div class="row" formGroupName="subtitles">
+            <div *ngFor="let item of infoForm.get('subtitles').value | keyvalue"
+                 class="col-4 no-pd">
+              <div>
+                <label><input class="form-control inline checkbox" type="checkbox"
+                              name="sub-label" [formControlName]="item.key"
+                              [value]="item.value"/>{{ item.key }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="text-center pt-3">
+        <button class="button-save" (click)="updateCvInfo()">{{("LAYOUT.SAVE" | translate)}}</button>
+      </div>
+    </div>
+</div>

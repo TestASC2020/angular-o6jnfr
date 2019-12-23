@@ -1,0 +1,426 @@
+<div class="row pd-top">
+    <div class="col-sm-8 my-auto breadcrums-title no-pl">
+        <a class="breadcrums mr-1" routerLink="../../">{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</a> / {{"CREATOR.CURRICULUMS.QUOTE.TITLE" | translate}}
+    </div>
+</div>
+<div style="background: #ffffff" class="row mt-3">
+    <div class="Forex">
+        {{cv.name}}
+    </div>
+    <table class="table-responsive">
+        <thead>
+        <tr>
+            <th width="20%">{{"CREATOR.CURRICULUMS.QUOTE.Date" | translate}}</th>
+            <th width="45%">{{"CREATOR.CURRICULUMS.QUOTE.Vendor" | translate}}</th>
+            <th width="15%">{{"CREATOR.CURRICULUMS.QUOTE.Location" | translate}}</th>
+            <th width="15%">{{"CREATOR.CURRICULUMS.QUOTE.Price" | translate}}</th>
+            <th width="15%">{{"CREATOR.CURRICULUMS.QUOTE.Status" | translate}}</th>
+            <th width="5%"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let item of pagedItems">
+            <tr class="info-line">
+                <td width="20%" (click)="acceptDecline(item)">{{item.quoteDate | date: 'dd/MM/yyyy'}}</td>
+                <td width="45%" (click)="acceptDecline(item)">{{item.vendorName}}</td>
+                <td width="10%" (click)="acceptDecline(item)">{{item.vendorCountry}}</td>
+                <td width="10%" (click)="acceptDecline(item)">{{item.price | number}}</td>
+                <td (click)="acceptDecline(item)" width="10%" [style.color]="QUOTATIONSTATUS.valueOf(item.status).getColor()">{{(QUOTATIONSTATUS.valueOf(item.status).getDisplay()) | translate}}</td>
+                <td width="5%"><app-cms-vendor-curriculum-quotes-action-menu class="my-menu-list" [item]="item" (viewQuote)="viewQuote(item)" (chatQuote)="chatQuote(item)" (terminateQuote)="terminateQuote(item)"></app-cms-vendor-curriculum-quotes-action-menu></td>
+            </tr>
+        </ng-container>
+        </tbody>
+    </table>
+    <!-- pager -->
+    <div *ngIf="pager.pages && pager.pages.length" class="pagination col-12">
+        <div>
+            <a class="icon social angle-double-left" (click)="setPage(1)"><i class="fas fa-angle-double-left"></i></a>
+            <a class="iconA social angle-left" (click)="setPage(pager.currentPage - 1)"><i class="fas fa-angle-left"></i></a>
+            <a class="iconB social angle-center" (click)="setPage(page)" *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                <p class="number">{{page}}</p></a>
+            <a class="iconA social angle-right" (click)="setPage(pager.currentPage + 1)"><i class="fas fa-angle-right"></i></a>
+            <a class="icon social angle-double-right" (click)="setPage(pager.totalPages)"><i class="fas fa-angle-double-right"></i></a>
+        </div>
+    </div>
+</div>
+<div mdbModal #viewQuoteModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog quoteModal" role="document">
+        <div class="modal-content">
+            <div class="modal-body" *ngIf="quote">
+                <p class="modal-title w-100 font-weight-bold">{{"CREATOR.CURRICULUMS.QUOTE.QuotationInfo" | translate}}</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td width="30%" scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Vendor" | translate}}</label></td>
+                            <td width="70%">
+                            <span class="font-crea">
+                                {{((quote.vendorName) ? quote.vendorName : '') + ' - ' + ((quote.vendorCountry) ? quote.vendorCountry : '')}}
+                            </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Price" | translate}}</label></td>
+                            <td>
+                            <span class="font-crea">
+                                {{(((quote.price) ? quote.price : 0) | number)}}
+                            </span>
+                                <span class="TEN_TITLE ml-1">TEN</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Status" | translate}}</label></td>
+                            <td>
+                            <span [style.color]="(quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getColor() : QUOTATIONSTATUS.PENDING.getColor()">
+                                {{((quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getDisplay() : QUOTATIONSTATUS.PENDING.getDisplay()) | translate}}
+                            </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.QuoteMessage" | translate}}</label></td>
+                            <td>
+                            <span class="font-crea">
+                                {{(quote.quoteMsg) ? quote.quoteMsg : ''}}
+                             </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center pb-2">
+                    <button class="button-close" (click)="viewQuoteModal.hide();">{{'LAYOUT.CLOSE' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #terminateQuoteModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog quoteModal" role="document">
+        <div class="modal-content">
+            <div class="row header">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" id="terminateTab" role="tablist">
+                        <li class="nav-item">
+                            <div class="nav-link modal-step-title" (click)="gotoTabTerminate(1)" [ngClass]="{ 'active': stepTerminate==1 }"><span>{{"CREATOR.CURRICULUMS.QUOTE.ApproveQuote" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link modal-step-title" (click)="gotoTabTerminate(2)" [ngClass]="{ 'active': stepTerminate==2 }"><span>{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepTerminate > 2" class="nav-link modal-step-title" (click)="gotoTabTerminate(3)" [ngClass]="{ 'active': stepTerminate==3 }"><span>{{"CREATOR.CURRICULUMS.Details" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepTerminate > 3" class="nav-link modal-step-title" (click)="gotoTabTerminate(4)" [ngClass]="{ 'active': stepTerminate==4 }">
+                                <span (click)="gotoTabTerminate(4)" *ngIf="kind === 1 && lesson">{{shortString(lesson.name, 20)}}</span>
+                                <span (click)="gotoTabTerminate(4)" *ngIf="kind === 2 && exercise">{{shortString(exercise.name, 20)}}</span>
+                                <span (click)="gotoTabTerminate(4)" *ngIf="kind === 3 && quiz">{{shortString(quiz.name, 20)}}</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepTerminate > 4" class="nav-link modal-step-title" (click)="gotoTabTerminate(5)" [ngClass]="{ 'active': stepTerminate==5 }">
+                                <span>{{"MESSAGE.NameList.Solution" | translate}}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content quote-sieries square scrollbar-cyan">
+                <div *ngIf="stepTerminate === 1">
+                    <form [formGroup]="quoteTerminateForm">
+                        <div class="modal-body" *ngIf="quote">
+                            <h4 class="modal-title w-100 font-weight-bold">{{"CREATOR.CURRICULUMS.QUOTE.TerminateQuoteConfirmation" | translate}}</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td width="30%" scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Vendor" | translate}}</label></td>
+                                        <td width="70%">
+                                    <span class="font-crea">
+                                        {{((quote.vendorName) ? quote.vendorName : '') + ' - ' + ((quote.vendorCountry) ? quote.vendorCountry : '')}}
+                                    </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td scope="row">
+                                            <label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Price" | translate}}</label>
+                                        </td>
+                                        <td>
+                                    <span class="font-crea">
+                                        {{(((quote.price) ? quote.price : 0) | number)}}
+                                    </span>
+                                            <span class="TEN_TITLE ml-1">TEN</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Status" | translate}}</label></td>
+                                        <td>
+                                    <span [style.color]="(quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getColor() : QUOTATIONSTATUS.PENDING.getColor()">
+                                        {{((quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getDisplay() : QUOTATIONSTATUS.PENDING.getDisplay()) | translate}}
+                                    </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.QuoteMessage" | translate}}</label></td>
+                                        <td>
+                            <span class="font-crea">
+                                {{(quote.quoteMsg) ? quote.quoteMsg : ''}}
+                             </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.ReasonToCancelTheDeal" | translate}}</label></th>
+                                        <td>
+                                            <textarea class="form-control" rows="2" formControlName="message"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row"></th>
+                                        <td><span class="font-crea">{{"CREATOR.CURRICULUMS.QUOTE.TerminateMessage" | translate}}</span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div *ngIf="stepTerminate === 2">
+                    <app-cms-vendor-curriculum-view (viewUnitsDetail)="showUnitsDetailForTerminateTab()" [toRouters]="[]"></app-cms-vendor-curriculum-view>
+                </div>
+                <div *ngIf="stepTerminate === 3">
+                    <app-cms-vendor-curriculum-unit-list-edit
+                            [toRouters]="[]"
+                            (lessonEmit)="showUnitsLessonDetailForTerminateTab()"
+                            (exerciseEmit)="showUnitsExerciseDetailForTerminateTab()"
+                            (quizEmit)="showUnitsQuizDetailForTerminateTab()"
+                    ></app-cms-vendor-curriculum-unit-list-edit>
+                </div>
+                <div *ngIf="stepTerminate === 4">
+                    <app-cms-vendor-curriculum-lesson-view
+                            *ngIf="kind === 1"
+                            [toRouters]="[]"
+                    ></app-cms-vendor-curriculum-lesson-view>
+                    <app-cms-vendor-curriculum-exercise-view
+                            *ngIf="kind === 2"
+                            [toRouters]="[]"
+                            (solutionEmit)="showUnitsExerciseDetailFullForTerminateTab()"
+                    >
+                    </app-cms-vendor-curriculum-exercise-view>
+                    <app-cms-vendor-curriculum-quiz-tf-view
+                            *ngIf="kind === 3"
+                            [toRouters]="[]"
+                            (solutionEmit)="showUnitsQuizDetailFullForTerminateTab()"
+                    >
+                    </app-cms-vendor-curriculum-quiz-tf-view>
+                </div>
+                <div *ngIf="stepTerminate === 5">
+                    <app-cms-vendor-exercise-solution-view
+                            *ngIf="kind === 2"
+                            [toRouters]="[]"
+                    >
+                    </app-cms-vendor-exercise-solution-view>
+                    <app-cms-vendor-question-solution-view
+                            *ngIf="kind === 3"
+                            [toRouters]="[]"
+                    >
+                    </app-cms-vendor-question-solution-view>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <div *ngIf="stepTerminate === 1">
+                    <div class="text-center">
+                        <button class="button-save" (click)="terminateQuoteModal.hide(); terminateConfirmation();">{{'LAYOUT.YES' | translate}}</button>
+                        <button class="button-cancel" (click)="terminateQuoteModal.hide()">{{'LAYOUT.NO' | translate}}</button>
+                    </div>
+                </div>
+                <div *ngIf="stepTerminate === 2">
+                    <button class="button-save" (click)="gotoTabTerminate(1)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepTerminate === 3">
+                    <button class="button-save" (click)="gotoTabTerminate(2)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepTerminate === 4">
+                    <button class="button-save" (click)="gotoTabTerminate(3)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepTerminate === 5">
+                    <button class="button-save" (click)="gotoTabTerminate(4)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div mdbModal #acceptDeclineModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog quoteModal" role="document">
+        <div class="modal-content">
+            <div class="row header">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" id="AcceptDeclineTab" role="tablist">
+                        <li class="nav-item">
+                            <div class="nav-link modal-step-title" (click)="gotoTabAcceptDecline(1)" [ngClass]="{ 'active': stepAcceptDecline==1 }"><span>{{"CREATOR.CURRICULUMS.QUOTE.ApproveQuote" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-link modal-step-title" (click)="gotoTabAcceptDecline(2)" [ngClass]="{ 'active': stepAcceptDecline==2 }"><span>{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepAcceptDecline > 2" class="nav-link modal-step-title" (click)="gotoTabAcceptDecline(3)" [ngClass]="{ 'active': stepAcceptDecline==3 }"><span>{{"CREATOR.CURRICULUMS.Details" | translate}}</span></div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepAcceptDecline > 3" class="nav-link modal-step-title" (click)="gotoTabAcceptDecline(4)" [ngClass]="{ 'active': stepAcceptDecline==4 }">
+                                <span (click)="gotoTabAcceptDecline(4)" *ngIf="kind === 1 && lesson">{{shortString(lesson.name, 20)}}</span>
+                                <span (click)="gotoTabAcceptDecline(4)" *ngIf="kind === 2 && exercise">{{shortString(exercise.name, 20)}}</span>
+                                <span (click)="gotoTabAcceptDecline(4)" *ngIf="kind === 3 && quiz">{{shortString(quiz.name, 20)}}</span>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div *ngIf="stepAcceptDecline > 4" class="nav-link modal-step-title" (click)="gotoTabAcceptDecline(5)" [ngClass]="{ 'active': stepAcceptDecline==5 }">
+                                <span>{{"MESSAGE.NameList.Solution" | translate}}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content quote-sieries square scrollbar-cyan">
+                <div *ngIf="stepAcceptDecline === 1">
+                    <form [formGroup]="quoteApproveForm">
+                        <div class="table-responsive" *ngIf="quote">
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    <td width="30%" scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Vendor" | translate}}</label></td>
+                                    <td width="70%">
+                                        <span class="font-crea">
+                                            {{((quote.vendorName) ? quote.vendorName : '') + ' - ' + ((quote.vendorCountry) ? quote.vendorCountry : '')}}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td scope="row">
+                                        <label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Price" | translate}}</label>
+                                    </td>
+                                    <td>
+                                        <span class="font-crea">
+                                            {{(((quote.price) ? quote.price : 0) | number)}}
+                                        </span>
+                                        <span class="TEN_TITLE ml-1">TEN</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.Status" | translate}}</label></td>
+                                    <td>
+                                        <span [style.color]="(quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getColor() : QUOTATIONSTATUS.PENDING.getColor()">
+                                            {{((quote.status) ? QUOTATIONSTATUS.valueOf(quote.status).getDisplay() : QUOTATIONSTATUS.PENDING.getDisplay()) | translate}}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.QuoteMessage" | translate}}</label></td>
+                                    <td>
+                                <span class="font-crea">
+                                    {{(quote.quoteMsg) ? quote.quoteMsg : ''}}
+                                 </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td>
+                                        <div class="custom-control custom-radio">
+                                            <ng-container *ngFor="let decide of decideList">
+                                                <div>
+                                                    <input class="custom-control-input" id="decide_{{decide.value}}" type="radio" [checked]="decide.value === decideList[0].value" value="{{decide.value}}" name="decide" formControlName="decide">
+                                                    <label class="custom-control-label" for="decide_{{decide.value}}">{{(decide.display | translate) + ' : ' + (decide.message | translate)}}</label>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label class="font-vender">{{"CREATOR.CURRICULUMS.QUOTE.MessageToVendor" | translate}}</label></th>
+                                    <td> <textarea class="form-control" formControlName="message" rows="2"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div *ngIf="stepAcceptDecline === 2">
+                    <app-cms-vendor-curriculum-view (viewUnitsDetail)="showUnitsDetailForAcceptDeclineTab()" [toRouters]="[]"></app-cms-vendor-curriculum-view>
+                </div>
+                <div *ngIf="stepAcceptDecline === 3">
+                    <app-cms-vendor-curriculum-unit-list-edit
+                            [toRouters]="[]"
+                            (lessonEmit)="showUnitsLessonDetailForAcceptDeclineTab()"
+                            (exerciseEmit)="showUnitsExerciseDetailForAcceptDeclineTab()"
+                            (quizEmit)="showUnitsQuizDetailForAcceptDeclineTab()"
+                    ></app-cms-vendor-curriculum-unit-list-edit>
+                </div>
+                <div *ngIf="stepAcceptDecline === 4">
+                    <app-cms-vendor-curriculum-lesson-view
+                            *ngIf="kind === 1"
+                            [toRouters]="[]"
+                    ></app-cms-vendor-curriculum-lesson-view>
+                    <app-cms-vendor-curriculum-exercise-view
+                            *ngIf="kind === 2"
+                            [toRouters]="[]"
+                            (solutionEmit)="showUnitsExerciseDetailFullForAcceptDeclineTab()"
+                    >
+                    </app-cms-vendor-curriculum-exercise-view>
+                    <app-cms-vendor-curriculum-quiz-tf-view
+                            *ngIf="kind === 3"
+                            [toRouters]="[]"
+                            (solutionEmit)="showUnitsQuizDetailFullForAcceptDeclineTab()"
+                    >
+                    </app-cms-vendor-curriculum-quiz-tf-view>
+                </div>
+                <div *ngIf="stepAcceptDecline === 5">
+                    <app-cms-vendor-exercise-solution-view
+                            *ngIf="kind === 2"
+                            [toRouters]="[]"
+                    >
+                    </app-cms-vendor-exercise-solution-view>
+                    <app-cms-vendor-question-solution-view
+                            *ngIf="kind === 3"
+                            [toRouters]="[]"
+                    >
+                    </app-cms-vendor-question-solution-view>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <div *ngIf="stepAcceptDecline === 1">
+                    <button class="button-save" (click)="acceptDeclineModal.hide(); approve();">{{'LAYOUT.SAVE' | translate}}</button>
+                    <button class="button-cancel" (click)="acceptDeclineModal.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+                </div>
+                <div *ngIf="stepAcceptDecline === 2">
+                    <button class="button-save" (click)="gotoTabAcceptDecline(1)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepAcceptDecline === 3">
+                    <button class="button-save" (click)="gotoTabAcceptDecline(2)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepAcceptDecline === 4">
+                    <button class="button-save" (click)="gotoTabAcceptDecline(3)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+                <div *ngIf="stepAcceptDecline === 5">
+                    <button class="button-save" (click)="gotoTabAcceptDecline(4)">{{ "LAYOUT.PREV" | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #quoteWasTerminatedModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog quoteTerminatedModal" role="document">
+        <div class="modal-content">
+            <div class="modal-body" *ngIf="quote">
+                <p class="modal-title w-100 font-weight-bold">{{"CREATOR.CURRICULUMS.QUOTE.QuotationWasTerminated" | translate}}</p>
+                <div class="text-center" style="color: #ff3454; font-weight: bold">
+                    {{"CREATOR.CURRICULUMS.QUOTE.QuotationWasTerminatedMessage" | translate}}
+                </div>
+                <div class="text-center pb-2">
+                    <button class="button-close" (click)="quoteWasTerminatedModal.hide();">{{'LAYOUT.CLOSE' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

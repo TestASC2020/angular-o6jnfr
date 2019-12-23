@@ -1,0 +1,147 @@
+<div class="row mb-4 pd-top">
+    <div class="col-8 breadcrums-title">
+        <a class="breadcrums mr-1" routerLink="../../curriculums">{{"CREATOR.CURRICULUMS.LIST.Curriculums" | translate}}</a>/ {{"CREATOR.CURRICULUMS.PROOF.EditProof" | translate}}
+    </div>
+</div>
+<div class="card card-caption-container">
+    <div class="row">
+        <div class="col-12 pl-5 pr-5 pt-3 pb-3 card-caption">
+            <p class="font-proof">{{cv.name}}</p>
+        </div>
+    </div>
+</div>
+<form [formGroup]="proofForm">
+    <div class="card pl-4 pr-4 pt-3 pb-3">
+        <div class="row">
+            <div class="col-sm-2">
+                <p>{{"CREATOR.CURRICULUMS.PROOF.PrimaryAuthor" | translate}}</p>
+            </div>
+            <div class="col-sm-2">
+                <span>{{(proofForm.get('primary_author').value) ? proofForm.get('primary_author').value : ''}}</span><i class="fas fa-user ml-1" (click)="staffModal2.show()"></i>
+                <input type="hidden" *ngIf="proofForm.get('primary_author')" formControlName="primary_author">
+                <input type="hidden" *ngIf="proofForm.get('primary_author_email')" formControlName="primary_author_email">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <p>{{"CREATOR.CURRICULUMS.PROOF.CoAuthors" | translate}}</p>
+            </div>
+            <div class="col-sm-10 form-Co-authors">
+                <div class="form-row" id="co_authors_area">
+                    <ng-container style="display: block" formArrayName="co_authors" *ngIf="proofForm['controls']['co_authors']['controls'].length >= 0">
+                        <ng-container style="display: block" *ngFor="let co_author of proofForm['controls']['co_authors']['controls']; let i = index;">
+                            <div [style.display]="(proofForm['controls']['co_authors']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="col-md-3 mb-3" [formGroupName]="i">
+                                <input id="input_{{i}}" type="text" [style.display]="(proofForm['controls']['co_authors']['controls'][i].get('onLoad').value) ? 'block' : 'none'" class="form-control" formControlName="co_author">
+                                <input type="hidden" formControlName="onLoad">
+                                <input type="hidden" style="display: none" class="form-control" formControlName="co_author_email">
+                                <span id="span_{{i}}" [style.display]="(proofForm['controls']['co_authors']['controls'][i].get('onLoad').value) ? 'block' : 'none'"><i (click)="removeCoAuthor(i)" class="fas fa-times-circle text-danger" title="{{'CREATOR.CURRICULUMS.PROOF.RemoveThisCoAuthor' | translate}}"></i></span>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <span><i (click)="addCoAuthor()" title="{{'CREATOR.CURRICULUMS.PROOF.AddNewCoAuthor' | translate}}" class="fas fa-plus" [style.margin-left]="'5px'"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <p>{{'CREATOR.CURRICULUMS.PROOF.ProofSignature' | translate}}</p>
+            </div>
+            <div class="col-sm-9">
+                <textarea onc #proof_signature class="form-control" [style.margin-top]="'5px'" rows="2" formControlName="proof_signature"></textarea>
+            </div>
+            <div class="col-sm-1 pl-0">
+                <i class="far fa-copy signature" title="{{'CREATOR.CURRICULUMS.PROOF.COPY_SIGN' | translate}}" (click)="copyToClipBoard(proof_signature.value)"></i>
+            </div>
+        </div>
+        <div class="text-center pt-3">
+            <button class="button-cancel" (click)="backToCVList()">{{'CREATOR.CURRICULUMS.PROOF.BACK' | translate}}</button>
+            <button class="button-save" (click)="curriculumProofSign.show();"> {{'CREATOR.CURRICULUMS.PROOF.SignThisDocument' | translate}}</button>
+        </div>
+    </div>
+</form>
+<!--
+Curriculum-proof-sign
+-->
+<div mdbModal #curriculumProofSign="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">{{'CREATOR.CURRICULUMS.PROOF.Confirm' | translate}}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="curriculumProofSign.hide()">
+                        <span aria-hidden="true" class="close-label">X</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <p>{{'CREATOR.CURRICULUMS.PROOF.SignTitle' | translate}}</p>
+                    <div [style.text-align]="'center'">
+                        <span class="mr-1">{{'CREATOR.CURRICULUMS.PROOF.ServiceFee' | translate}}</span>
+                        <span class="mr-1 ten-num">10</span>
+                        <span class="ten-label">TEN</span>
+                    </div>
+                </div>
+                <div [class]="'btn-button'">
+                    <button class="btn-agree" (click)="curriculumProofSign.hide(); save();">{{'LAYOUT.AGREE' | translate}}</button>
+                    <button class="btn-cancel" (click)="curriculumProofSign.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #staffModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Staff</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeStaffModal()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header text-center search-bar">
+                <input class="search pl-3 pr-3" placeholder="Search email or name" type="text" [(ngModel)]="searchText"/>
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="modal-body staff-list square scrollbar-cyan">
+                <ng-container *ngFor="let staff of staffs_list; let i = index;">
+                    <div class="middle" *ngIf="searchText === '' || (staff.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || staff.email.toLowerCase().indexOf(searchText.toLowerCase()) >= 0)">
+                        <img class="rounded-circle" src="{{(staff) ? ((staff.avatarURL) ? ((staff.avatarURL.indexOf('http') < 0) ? ('http://' + staff.avatarURL) : staff.avatarURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}" width="40">
+                        <div (click)="showCoAuthor(staff);" [class]="(i !== staffs_list.length -1) ? 'russ-font' : 'russ-font'">
+                            <p class="russ-ti">{{(staff) ? staff.name : ''}}</p>
+                            <p class="russ-minutes">{{(staff) ? ((staff.city) ? (staff.city + ((staff.country) ? (', ' + staff.country) : '')) : ((staff.country) ? staff.country : '')) : ''}}</p>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #staffModal2="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">{{'STAFF.STAFF' | translate}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="staffModal2.hide()">
+                    <span aria-hidden="true" class="close-label">X</span>
+                </button>
+            </div>
+            <div class="modal-header text-center search-bar">
+                <input class="search pl-3 pr-3" placeholder="{{'STAFF.SearchMessage' | translate}}" type="text" [(ngModel)]="searchText"/>
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="modal-body staff-list square scrollbar-cyan">
+                <ng-container *ngFor="let staff of primary_staffs_list; let j = index;">
+                    <div class="middle" *ngIf="searchText === '' || (staff.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0 || staff.email.toLowerCase().indexOf(searchText.toLowerCase()) >= 0)">
+                        <img class="rounded-circle" src="{{(staff) ? ((staff.avatarURL) ? ((staff.avatarURL.indexOf('http') < 0) ? ('http://' + staff.avatarURL) : staff.avatarURL) : '../../../../../../assets/icons/staffs/staff1.png') : ''}}" width="40">
+                        <div (click)="updatePrimaryAuthor(staff);" [class]="(j !== primary_staffs_list.length -1) ? 'russ-font' : 'russ-font'">
+                            <p class="russ-ti">{{(staff) ? staff.name : ''}}</p>
+                            <p class="russ-minutes">{{(staff) ? ((staff.city) ? (staff.city + ((staff.country) ? (', ' + staff.country) : '')) : ((staff.country) ? staff.country : '')) : ''}}</p>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

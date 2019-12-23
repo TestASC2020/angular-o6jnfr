@@ -1,0 +1,145 @@
+<div class="full-bg-img mask pt-3 pb-3">
+  <div class="profiles-father">
+    <span><i class="fas fa-th" style="margin-left: 5px"></i></span><span class="title-active">{{'AUTH.PROFILE' | translate}}</span>
+    <form [formGroup]="profileForm" class="profiles square style-1" [style.background-color]="'#fff'">
+      <div  class="row pt-3 pl-3 pr-3 pb-3">
+        <div class="col-lg-6">
+          <label>{{"BUSINESS.About" | translate}}</label>
+          <!-- about-->
+          <input type="text" id="about" class="form-control mb-2" placeholder="Enter About" formControlName="about">
+
+          <label>{{"BUSINESS.LastName" | translate}}</label>
+          <!-- lastName-->
+          <input type="text" id="lastName" class="form-control mb-2" placeholder="Enter Last Name" formControlName="lastName">
+
+          <label>{{"BUSINESS.FirstName" | translate}}</label>
+          <!-- firstName-->
+          <input type="text" id="firstName" class="form-control mb-2" placeholder="Enter First Name" formControlName="firstName">
+
+            <!-- Position -->
+            <label>{{"BUSINESS.phone" | translate}}</label>
+            <input oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" type="text" id="phone" class="form-control mb-2" placeholder="Enter phone" formControlName="phone">
+
+          <!-- Position -->
+          <label>{{ 'AUTH.POSITION' | translate }}</label>
+          <input type="text" id="employer" class="form-control mb-2" placeholder="Enter position" formControlName="employer">
+        </div>
+
+        <div class="col-lg-6 avatar-area">
+          <img #avatar class="avatar mx-auto d-block"/>
+          <i class="fas fa-camera mx-auto d-block" (click)="openFile()"></i>
+          <input type="file" style="display: none" accept="image/*" #fileInput (change)="previewFile($event)">
+        </div>
+      </div>
+      <div class="pl-1 pr-1">
+        <fieldset class="form-group">
+        <legend>{{"BUSINESS.address" | translate}}:</legend>
+        <div class="row">
+          <div class="col-sm-6">
+            {{"BUSINESS.country" | translate}}:
+            <select class="form-control mb-2" (change)="updateCountry()" formControlName="country">
+              <option [selected]="country.code === selectedCountry" *ngFor="let country of countriesList" value="{{country.code}}">{{country.name}}</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            {{"BUSINESS.region" | translate}}:
+            <select class="form-control mb-2" (change)="updateRegion()" formControlName="region">
+              <option [selected]="region.region === selectedRegion" *ngFor="let region of regionList" value="{{region.region}}">{{region.region}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            {{"BUSINESS.city" | translate}}:
+            <select class="form-control mb-2" formControlName="city">
+              <option [selected]="city.code === selectedCity" *ngFor="let city of citiesList" value="{{city.code}}">{{city.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            {{"BUSINESS.address" | translate}} 1: <input class="form-control mb-2"  type="text" formControlName="line1">
+          </div>
+          <div class="col-sm-6">
+            {{"BUSINESS.address" | translate}} 2: <input class="form-control"  type="text" formControlName="line2">
+          </div>
+        </div>
+      </fieldset>
+      </div>
+      <div class="pb-3 pl-2">
+        <button class="save" (click)="updateUser()">{{ 'LAYOUT.SAVE' | translate }}</button>
+        <button class="cancel" id="notif-neigbour" (click)="cancelUser()">{{ 'LAYOUT.CANCEL' | translate }}</button>
+      </div>
+    </form>
+    <div style="background: #E5EBEB;height: 36px;padding-top: 7px">
+      <span><i class="fas fa-graduation-cap" style="margin-left: 5px"></i></span><span class="title-active" id="notif-exp-neigbour">{{ 'AUTH.EDUCATION_EXPERIENCES' | translate }}</span>
+    </div>
+    <form [formGroup]="experiencesForm" [style.background-color]="'#fff'">
+      <div class="table-style">
+      <ng-container *ngFor="let experience of experiencesForm.controls['experiences']['controls']; let i = index" formArrayName="experiences">
+        <ng-container [formGroupName]="i">
+           <table class="table">
+            <tr>
+              <td width="46%">
+                <p *ngIf="!getExperienceControlValue(i).isEdit">{{getExperienceControlValue(i).business}}</p>
+                <input type="{{getExperienceControlValue(i).isEdit ? 'text' : 'hidden'}}"  class="form-control mb-4" placeholder="Business" formControlName="business">
+                <input type="hidden" formControlName="id">
+                <input type="hidden" formControlName="isEdit">
+              </td>
+              <td width="46%">
+                <p *ngIf="!getExperienceControlValue(i).isEdit">{{getExperienceControlValue(i).role}}</p>
+                <input type="{{getExperienceControlValue(i).isEdit ? 'text' : 'hidden'}}"  class="form-control mb-4" placeholder="Roles" formControlName="role">
+              </td>
+              <td width="8%">
+                <div style="float: right">
+                  <div *ngIf="!getExperienceControlValue(i).isEdit">
+                    <i class="fas fa-pen icon" style="margin: 0 10px" data-toggle="tooltip" title="Edit" (click)="enableExperienceControl(i, true)"></i>
+                    <i class="fas fa-times icon-time" data-toggle="tooltip" title="{{'MESSAGE.NameList.Cancel' | translate}}" (click)="removeExperienceControl(i)"></i>
+                  </div>
+                  <div *ngIf="getExperienceControlValue(i).isEdit">
+                    <i class="fas fa-save icon-save" title="Save" (click)="saveExperienceControl(i)"></i>
+                    <i *ngIf="getExperienceControlValue(i).id !== ''" class="fas fa-history icon-history" title="Cancel" (click)="enableExperienceControl(i, false)"></i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </ng-container>
+      </ng-container>
+      </div>
+    </form>
+    <div style="background: #E5EBEB; height: 36px;padding-top: 7px">
+      <span><i class="fas fa-lightbulb" style="margin-left: 5px"></i></span><span class="title-active" id="notif-spec-neigbour">{{ 'AUTH.SPECIALTIES' | translate }}</span>
+    </div>
+    <form [formGroup]="specialtiesForm" [style.background-color]="'#fff'">
+      <div class="table-style">
+      <ng-container *ngFor="let specialty of specialtiesForm.controls['specialties']['controls']; let i = index" formArrayName="specialties">
+        <ng-container [formGroupName]="i">
+            <table class="table">
+            <tr>
+              <td width="92%">
+                <p *ngIf="!getSpecialtyControlValue(i).isEdit">{{getSpecialtyControlValue(i).name}}</p>
+                <input type="{{getSpecialtyControlValue(i).isEdit ? 'text' : 'hidden'}}"  class="form-control mb-4" placeholder="Specialty" formControlName="name">
+                <input type="hidden" formControlName="id">
+                <input type="hidden" formControlName="isEdit">
+              </td>
+              <td width="8%">
+                <div style="float: right">
+                  <div *ngIf="!getSpecialtyControlValue(i).isEdit">
+                    <i class="fas fa-pen icon" style="margin: 0 10px" data-toggle="tooltip" title="Edit" (click)="enableSpecialtyControl(i, true)"></i>
+                    <i class="fas fa-times icon-time" data-toggle="tooltip" title="Hủy" (click)="removeSpecialtyControl(i)"></i>
+                  </div>
+                  <div *ngIf="getSpecialtyControlValue(i).isEdit">
+                    <i class="fas fa-save icon-save" title="Save " (click)="saveSpecialtyControl(i)"></i>
+                    <i *ngIf="getSpecialtyControlValue(i).id !== ''" class="fas fa-history icon-history" title="Cancel" (click)="enableSpecialtyControl(i, false)"></i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </ng-container>
+      </ng-container>
+      </div>
+    </form>
+  </div>
+</div>

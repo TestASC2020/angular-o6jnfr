@@ -1,0 +1,56 @@
+<div class="pl-3 pr-3">
+  <div class="row justify-content-between">
+    <div class="col-6 top-display">
+      <div class="logo navbar-brand" routerLink="/cms">
+        <img src="./assets/logo/tentech-logo.png" class="logo-header">
+      </div>
+      <div class="nav-item active waves-light pd-home">
+        <div class="" routerLink="/about-us">{{ 'LAYOUT.ABOUT_US' | translate }}</div>
+      </div>
+      <div class="nav-item waves-light pd-home pl-4">
+        <div class="" routerLink="/support">{{ 'LAYOUT.SUPPORT' | translate }}</div>
+      </div>
+    </div>
+    <div class="col-6 top-display-right text-right">
+      <div class="nav-item dropdown btn-group" dropdown>
+        <div dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+          <img [src]="selectedLanguage.flag" class="flag-icon position-left" alt="">
+          {{selectedLanguage.description}}
+        </div>
+        <div class="dropdown-menu dropdown-primary dropdown-menu-left" role="menu">
+          <div class="dropdown-item" *ngFor="let language of languages" (click)="updateLanguage(language)">
+            <img [src]="language.flag" class="flag-icon position-left" alt="">
+            {{language.description}}
+          </div>
+        </div>
+      </div>
+      <div class="display-item" *ngIf="!isAuthenticated()">
+        <div class="waves-light pr-2" routerLink="/register">
+          <span class="clearfix d-sm-inline-block">{{ 'AUTH.SIGN_UP' | translate }}</span>
+        </div>
+      </div>
+      <div class="display-item" *ngIf="!isAuthenticated()">
+        <div class=" waves-light" routerLink="/login">
+          <mdb-icon far icon="user" class="mr-1"></mdb-icon>
+          <span class="clearfix d-sm-inline-block">{{ 'AUTH.LOG_IN' | translate }}</span>
+        </div>
+      </div>
+      <div class="nav-item avatar dropdown btn-group pl-2" dropdown *ngIf="isAuthenticated()">
+        <div dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+          <div class="media mr-3">
+            <img [src]="user?.avatarURL || './assets/img/user-avatar.png'" class="flag-icons">
+            <div class="media-body ml-2">
+              <!-- <div  class="nav-avatar-header">Hello,</div> -->
+              <div class="font-weight-bold nav-avatar-name">{{user?.name}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-menu dropdown-primary dropdown-menu-right menu-top" role="menu">
+          <div class="dropdown-item" (click)="openProfilePage()">{{ 'AUTH.PROFILE' | translate }}</div>
+          <div class="dropdown-item" (click)="switchBusiness()">{{ 'AUTH.BUSINESS' | translate }}</div>
+          <div class="dropdown-item" (click)="logout()">{{ 'AUTH.LOG_OUT' | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

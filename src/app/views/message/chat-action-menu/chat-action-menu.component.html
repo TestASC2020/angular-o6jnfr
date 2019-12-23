@@ -1,0 +1,17 @@
+<div class="menu-icon">
+    <button class="action-button">
+        <i class="fas fa-ellipsis-h fa-lg fa-ellipsis-pl" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="bottom" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="edit();">
+                <i class="pe-7s-note padding-icon"></i><span class="pl-2">{{"LAYOUT.EDIT" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="seenList()">
+                <i class="pe-7s-look padding-icon"></i><span class="pl-2">{{"LAYOUT.Seen_list" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

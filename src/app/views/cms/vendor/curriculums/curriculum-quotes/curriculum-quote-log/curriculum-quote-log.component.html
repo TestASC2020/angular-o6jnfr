@@ -1,0 +1,79 @@
+<div class="mb-4 pd-top">
+    <div class="col-sm-8 my-auto breadcrums-title">
+        <a class="breadcrums mr-1" routerLink="../../">Curriculums</a> / <a class="breadcrums mr-1" routerLink="../../../curriculum-quotes/{{cvSig}}">Forex trading</a> / <span>History</span>
+    </div>
+</div>
+<form [formGroup]="firstFormGroup">
+    <div class="taskbar">
+        <div class="feature-info pt-2 text-white">Forex trading</div>
+    </div>
+    <div class="bg-white">
+        <div class="row">
+            <div class="col-12">
+                <div class="feature-info mt-3 mb-3">
+                    <select id="type" class="form-control" formControlName="unit">
+                        <option *ngFor="let unit of unitsList" [value]="unit.value">{{unit.name}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="info-title pl-4 pr-4" scope="col">Date/Time</th>
+                    <th class="info-title" scope="col">Description</th>
+                    <th class="info-title" scope="col">Vendor</th>
+                    <th class="info-title pl-4 pr-4" scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *ngFor="let item of items">
+                    <tr class="info-line">
+                        <th [class]="'pl-4 pr-4'" scope="row">{{item.date}}</th>
+                        <td>{{item.description}}</td>
+                        <td>{{item.vendor}}</td>
+                        <td [class]="'pl-4 pr-4'" (click)="curriculumQuoteLogFeedback.show();">{{item.status}}</td>
+                    </tr>
+                </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<!--
+curriculum-quote-log-feedback.
+-->
+<div mdbModal #curriculumQuoteLogFeedback="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <form [formGroup]="taskForm">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="curriculumQuoteLogFeedback.hide()">
+                        <span [style.color]="'#000000'" aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3 text-center">
+                    <h4 class="font-weight-bold">Unit 1 : Introduction to Forex</h4>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="custom-control custom-radio">
+                        <ng-container *ngFor="let decide of decideList">
+                            <div>
+                                <input class="custom-control-input" id="decide_{{decide.value}}" type="radio" [checked]="decide.value === decideList[0].value" value="{{decide.value}}" name="decide" formControlName="decide">
+                                <label class="custom-control-label" for="decide_{{decide.value}}">{{decide.display + ' : ' + decide.message}}</label>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <label class="pt-4" for="exampleFormControlTextarea1">Message to vendor</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" formControlName="message"></textarea>
+                </div>
+                <div class="d-flex justify-content-center pb-3">
+                    <button mdbBtn [style.width]="'117px'" [style.height]="'36px'" [style.color]="'#ffffff'" [style.background]="'#3BC7EF'" class="btn" mdbWavesEffect (click)="curriculumQuoteLogFeedback.hide(); save();">Ok</button>
+                    <button mdbBtn [style.width]="'117px'" [style.height]="'36px'" [style.color]="'#3BC7EF'" [style.background]="'transparent'" class="btn" mdbWavesEffect (click)="curriculumQuoteLogFeedback.hide()">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

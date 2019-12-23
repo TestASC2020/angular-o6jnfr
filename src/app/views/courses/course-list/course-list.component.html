@@ -1,0 +1,133 @@
+<div class="employees-top small-pd pt-3">
+    <div class="row pb-3 justify-content-between">
+        <div class="col-sm-5 breadcrums-title">
+            <span class="breadcrum-title mr-1" routerLink="../course-list">{{"COURSES.LIST" | translate}}</span>
+        </div>
+        <div class="col-sm-7">
+            <div class="searchbar text-right">
+                <div class="col-inline">
+                    <button (click)="create()" class="mr-2 create"><i class="fas fa-plus-circle mr-2"></i>{{"LAYOUT.CREATE" | translate}}</button>
+                </div>
+                <div class="col-inline">
+                    <input [(ngModel)]="searchText" (keyup)="checkSearch($event)" placeholder='{{"MESSAGE.NameList.Enter_field" | translate : {field : ("Courses.NAME" | translate) } }}' class="form-control search-bar" type="text"/>
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-striped table-wrapper-scroll-y" id="style-1">
+    <thead>
+        <tr>
+            <th class="head-title pb-2" width="42%">{{"Courses.NAME" | translate}}</th>
+            <th class="head-title pb-2" width="14%">{{"Courses.Reg_User" | translate}}
+                <div style="float: right">
+                    <i *ngIf="sortOrder[3] === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder[3] = 2; sortOrder[2] = 0; sortOrder[4] = 0; sortOrder[1] = 0; sortBy = 3; refresh()"></i>
+                    <i *ngIf="sortOrder[3] === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder[3] = 0; sortOrder[2] = 0; sortOrder[4] = 0; sortOrder[1] = 0; sortBy = 3; refresh()"></i>
+                    <i *ngIf="sortOrder[3] === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder[3] = 1; ; sortOrder[2] = 0; sortOrder[4] = 0; sortOrder[1] = 0; sortBy = 3; refresh()"></i>
+                </div>
+            </th>
+            <th class="head-title pb-2" width="18%">{{"Courses.OPENED_ON" | translate}}
+                <div style="float: right">
+                    <i *ngIf="sortOrder[1] === 1" class="fas fa-arrow-down pr-2" (click)="sortOrder[1] = 2; sortOrder[2] = 0; sortOrder[3] = 0; sortOrder[4] = 0; sortBy = 1; refresh()"></i>
+                    <i *ngIf="sortOrder[1] === 2" class="fas fa-arrow-up pr-2" (click)="sortOrder[1] = 0; sortOrder[2] = 0; sortOrder[3] = 0; sortOrder[4] = 0; sortBy = 0; refresh()"></i>
+                    <i *ngIf="sortOrder[1] === 0" class="fas fa-arrows-alt-v pr-2" (click)="sortOrder[1] = 1; ; sortOrder[2] = 0; sortOrder[3] = 0; sortOrder[4] = 0; sortBy = 1; refresh()"></i>
+                </div>
+            </th>
+            <th class="head-title pb-2" width="18%">{{"Courses.Closed_ON" | translate}}</th>
+            <th class="head-title pb-2 text-center" width="8%">{{"Courses.ACTION" | translate}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="info-line" *ngIf="pagedItems && pagedItems.length < 1">
+            <td colspan="5">
+                {{"Courses.Not_existed_any_course" | translate}}
+            </td>
+        </tr>
+        <ng-container *ngIf="!(pagedItems && pagedItems.length < 1)">
+            <ng-container *ngFor="let item of pagedItems; let i = index;">
+                <tr class="info-line">
+                    <td width="42%">
+                        <img *ngIf="item.logoURL" [src]="item.logoURL"
+                             width="30px"
+                             height="30px"
+                             [style.border]="'1px solid #c4c4c4'"
+                             [style.border-radius]="'50%'">
+                        {{item.name}}
+                    </td>
+                    <td width="14%">{{item.enrollCount}}</td>
+                    <td
+                            [style.font-style]="(item.openDate) ? 'normal' : 'italic'"
+                            [style.color]="(item.openDate) ? '#000000' : 'green'"
+                            width="18%"
+                    >
+                        {{(item.openDate) ? (("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item.openDate).st, 'day': getCreateDateInfo(item.openDate).day})  + '/' +
+                        ('DATEFORMAT.' + getCreateDateInfo(item.openDate).month | translate) + '/' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item.openDate).year})) : ('MESSAGE.EMPTY' | translate)}}
+                    </td>
+                    <td
+                            [style.font-style]="(item.closeDate) ? 'normal' : 'italic'"
+                            [style.color]="(item.closeDate) ? '#000000' : 'green'"
+                            width="18%"
+                    >
+                        {{(item.closeDate) ? (("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item.closeDate).st, 'day': getCreateDateInfo(item.closeDate).day})  + '/' +
+                        ('DATEFORMAT.' + getCreateDateInfo(item.closeDate).month | translate) + '/' +
+                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item.closeDate).year})) : ('MESSAGE.EMPTY' | translate)}}
+                    </td>
+                    <td class="icon-edit index-{{i}}" width="8%">
+                        <app-course-list-action-menu class="my-menu-list" [item]="item" (delete)="removeCourse(item)"></app-course-list-action-menu>
+                    </td>
+                </tr>
+            </ng-container>
+        </ng-container>
+    </tbody>
+</table>
+<ng-container>
+    <div class="my-table-footer">
+        <div style="float: left">
+            <span>{{('MESSAGE.NameList.TotalItems' | translate) + ':'}}</span>
+            <span style="margin-left: 5px; font-weight: bold;">{{totalItems}}</span></div>
+        <div class="my-select-area">
+            <div class="d-flex">
+                <span class="my-auto">{{'MESSAGE.NameList.RowsPerPage' | translate}}</span>
+                <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadList()">
+                    <option *ngFor="let size of pageSize" [value]="size">{{size}}</option>
+                </select>
+            </div>
+            <div *ngIf="pager.pages && pager.pages.length" class="pagination">
+                <div style="width: 100%;">
+                    <a (click)="setPage(pager.totalPages)"><i class="fas fa-angle-double-right pd-icon"></i></a>
+                    <a (click)="setPage(pager.currentPage + 1)"><i class="fas fa-angle-right pd-icon"></i></a>
+                    <a (click)="setPage(page)" *ngFor="let page of pager.pages.slice()?.reverse()" [ngClass]="{active:pager.currentPage === page}">
+                        <div>
+                            <p class="mb-0 number">{{page}}</p>
+                        </div></a>
+                    <a (click)="setPage(pager.currentPage - 1)"><i class="fas fa-angle-left pd-icon"></i></a>
+                    <a (click)="setPage(1)"><i class="fas fa-angle-double-left pd-icon"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ngx-spinner
+        bdColor="transparent"
+        color="#1E8EEB"
+        type="line-spin-clockwise-fade"
+        size="medium">
+    <p class="loading" [innerHTML]="'MESSAGE.NameList.Loading' | translate"></p>
+</ngx-spinner>
+<div mdbModal #confirmDeleteCourseList="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" style="margin-right: 0;" (click)="confirmDeleteCourseList.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" (click)="confirmDeleteCourseList.hide(); deleteCourseList();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

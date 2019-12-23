@@ -1,0 +1,281 @@
+<!--Double navigation-->
+<header>
+
+  <!-- Sidebar navigation -->
+  <mdb-sidenav #sidenav class="fixed" [fixed]="true">
+
+    <logo>
+      <!-- Logo -->
+      <li>
+        <div class="logo-wrapper waves-light">
+          <img src="../../../../assets/logo/logo_white.png" width="40" height="40" class="rounded mx-auto d-block img-fluid  logo-nav">
+        </div>
+      </li>
+      <!--/. Logo -->
+    </logo>
+
+    <links>
+      <!--Search Form-->
+      <li class="padding-image dropdown" dropdown *ngIf="isAuthenticated()">
+        <div dropdownToggle>
+          <img [src]="user?.avatarURL || './assets/img/user-avatar.png'" class="rounded mx-auto d-block" alt="...">
+          <div class="media-body text-center">
+            <!-- <div  class="nav-avatar-header">Hello,</div> -->
+            <div class="font-weight-bold nav-avatar-name">{{user?.name}}</div>
+          </div>
+        </div>
+        <div class="dropdown-menu dropdown-primary dropdown-bottom user-popup" role="menu">
+          <a class="dropdown-item" (click)="openProfileModal()">{{ 'AUTH.PROFILE' | translate }}</a>
+          <a class="dropdown-item" (click)="changePassword()">{{ 'AUTH.CHANGE_PASSWORD' | translate }}</a>
+          <a class="dropdown-item" (click)="switchBusiness()">{{ 'MESSAGE.BUSINESS' | translate }}</a>
+          <a class="dropdown-item" (click)="settings()">{{'SIDEBAR.BUSINESS.SETTINGS.NAME' | translate}}</a>
+          <a class="dropdown-item" (click)="logout()">{{ 'AUTH.LOG_OUT' | translate }}</a>
+        </div>
+      </li>
+      <!--/.Search Form-->
+      <!-- Side navigation links -->
+      <li>
+        <ul class="collapsible collapsible-accordion">
+          <mdb-squeezebox [multiple]="false" aria-multiselectable="false">
+            <mdb-item *ngIf="isCMSCreator()">
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content">
+                  <span class="pe-7s-albums"></span><p class="text-icon">{{'SIDEBAR.CONTENTS.NAME' | translate}}</p>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body>
+                <ul>
+                  <li>
+                    <a routerLinkActive="active-link" [routerLink]="'cms/creator/curriculums'" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.CONTENTS.CURRICULUMS.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.CONTENTS.CURRICULUMS.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li *ngIf="isCMSCreator()">
+                    <a routerLinkActive="active-link" routerLink="cms/creator/new-curriculum"  mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.CONTENTS.NEW_CURRICULUM.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.CONTENTS.NEW_CURRICULUM.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </mdb-item-body>
+            </mdb-item>
+            <mdb-item *ngIf="isCMSVendor()">
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content">
+                  <span class="pe-7s-display2"></span><p class="text-icon">{{'SIDEBAR.QUOTATIONS.NAME' | translate}}</p>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body>
+                <ul>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="cms/vendor/quotation/request-for-quote" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.QUOTATIONS.REQUEST_FOR_QUOTE.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.QUOTATIONS.REQUEST_FOR_QUOTE.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="cms/vendor/quotation/order-processing" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.QUOTATIONS.ORDER_PROCESSING.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.QUOTATIONS.ORDER_PROCESSING.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </mdb-item-body>
+            </mdb-item>
+            <mdb-item *ngIf="isCMSCreator()">
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content">
+                  <span class="pe-7s-notebook"></span><p class="text-icon">{{'SIDEBAR.COURSES.NAME' | translate}}</p>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body>
+                <ul>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="courses/course-list" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.COURSES.COURSE_LIST.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.COURSES.COURSE_LIST.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="courses/report" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.COURSES.REPORT.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.COURSES.REPORT.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </mdb-item-body>
+            </mdb-item>
+            <mdb-item>
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content">
+                  <span class="pe-7s-cash img-content"></span><p class="text-icon">{{'SIDEBAR.BUSINESS.NAME' | translate}}</p>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body>
+                <ul>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="business-profile/profile" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.BUSINESS.PROFILE.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.BUSINESS.PROFILE.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="business-profile/employees" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.BUSINESS.EMPLOYEES.SHORTNAME' | translate}}
+                        </span><p class="text-icon2">{{'SIDEBAR.BUSINESS.EMPLOYEES.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </mdb-item-body>
+              <mdb-item-body></mdb-item-body>
+            </mdb-item>
+            <mdb-item class="no-collase">
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content" style="position: relative" (click)="openMessagePage()">
+                  <span class="pe-7s-mail"></span><p class="text-icon">{{'SIDEBAR.MESSAGE.NAME' | translate}}</p>
+                  <div class="circle" *ngIf="totalUnSeenMessages">
+                    <div>
+                      <p>{{(totalUnSeenMessages < 100) ? totalUnSeenMessages : '99'}}</p>
+                      <i *ngIf="totalUnSeenMessages > 99" class="fas fa-plus plus-number-message"></i>
+                    </div>
+                  </div>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body></mdb-item-body>
+            </mdb-item>
+            <mdb-item *ngIf="isCMSCreator()">
+              <mdb-item-head mdbWavesEffect>
+                <div class="background-content">
+                  <span class="pe-7s-graph1"></span><p class="text-icon">{{'SIDEBAR.ACCOUNTING.NAME' | translate}}</p>
+                </div>
+              </mdb-item-head>
+              <mdb-item-body>
+                <ul>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="accounting/accounting-journal" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.ACCOUNTING.JOURNAL.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.ACCOUNTING.JOURNAL.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="accounting/course-balance" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.ACCOUNTING.COURSE_BALANCE.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.ACCOUNTING.COURSE_BALANCE.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLinkActive="active-link" routerLink="accounting/contract" mdbWavesEffect>
+                      <div class="background-content1">
+                        <span class="img-content2">
+                          {{'SIDEBAR.ACCOUNTING.CONTRACT.SHORTNAME' | translate}}
+                        </span>
+                        <p class="text-icon2">{{'SIDEBAR.ACCOUNTING.CONTRACT.NAME' | translate}}</p>
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </mdb-item-body>
+            </mdb-item>
+          </mdb-squeezebox>
+        </ul>
+      </li>
+      <!--/. Side navigation links -->
+    </links>
+
+  </mdb-sidenav>
+  <!--/. Sidebar navigation -->
+
+  <!-- Navbar -->
+  <mdb-navbar SideClass="navbar navbar-expand-md scrolling-navbar double-nav" [containerInside]="false">
+    <navlinks class="navbar-container">
+      <!-- SideNav slide-out button -->
+      <div class="float-xs-left">
+        <a (click)="sidenav.show()" class="button-collapse-non-fixed">
+          <mdb-icon fas icon="bars"></mdb-icon>
+        </a>
+      </div>
+      <!--/. SideNav slide-out button -->
+    </navlinks>
+    <navlinks>
+      <ul class="nav navbar-nav nav-flex-icons mr-auto ie-double-nav">
+        <a class="logo navbar-brand my-auto" routerLink="/cms">
+          <img src="./assets/logo/tentech-logo.png" class="logo-header">
+        </a>
+        <li class="nav-item active waves-light my-auto" mdbWavesEffect>
+          <a class="nav-link" routerLink="/about-us">{{ 'LAYOUT.ABOUT_US' | translate }}</a>
+        </li>
+        <li class="nav-item waves-light my-auto" mdbWavesEffect>
+          <a class="nav-link" routerLink="/support">{{ 'LAYOUT.SUPPORT' | translate }}</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav nav-flex-icons ml-auto ie-double-nav">
+        <div>
+          <li class="nav-item ml-2" (click)="openMessagePage()">
+            <p data-count="" id="topNotifIcon" class="notification notify" title='{{"MESSAGE.notification" | translate}}'></p>
+            <i *ngIf="totalUnSeenMessages > 99" class="fas fa-plus plus-number"></i>
+            <span class="clearfix d-none d-sm-inline-block"></span>
+          </li>
+        </div>
+        <li class="nav-item dropdown btn-group my-auto" dropdown>
+          <a dropdownToggle type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+            <img [src]="selectedLanguage.flag" class="flag-icon position-left" alt="">
+            {{'LAYOUT.' + selectedLanguage.description.toString().toUpperCase() | translate}}
+          </a>
+          <div class="dropdown-menu dropdown-primary dropdown-menu-left" role="menu">
+            <a class="dropdown-item" *ngFor="let language of languages" (click)="updateLanguage(language)">
+              <img [src]="language.flag" class="flag-icon position-left" alt="">
+              {{'LAYOUT.' + language.description.toString().toUpperCase() | translate}}
+            </a>
+          </div>
+        </li>
+        <li class="nav-item my-auto">
+          <a class="nav-link waves-light">
+            <i class="fas fa-sign-out-alt" title='{{"MESSAGE.log_out" | translate}}' (click)="logout()"></i>
+          </a>
+        </li>
+      </ul>
+    </navlinks>
+  </mdb-navbar>
+  <!--/. Navbar -->
+</header>
+<!--/.Double navigation-->

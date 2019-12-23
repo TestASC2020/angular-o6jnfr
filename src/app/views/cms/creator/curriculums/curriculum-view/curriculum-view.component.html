@@ -1,0 +1,90 @@
+<div class="row pd-top" *ngIf="toRouters && toRouters.length > 0 && editable">
+    <div class="col-sm-8 my-auto breadcrum-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-2">
+        <div class="taskbar info-title pl-3">
+            <p class="font-he">{{"CREATOR.CURRICULUMS.LIST.INFORMATION" | translate}}</p>
+            <button *ngIf="toRouters && toRouters.length > 0 && editable" class="edit fas fa-edit" (click)="showCurriculumInfo()"> {{"LAYOUT.EDIT" | translate}}</button>
+        </div>
+        <div class="bg-white pt-2 pb-2">
+            <div class="green-title mt-2 pl-3">{{"CREATOR.CURRICULUMS.LIST.TITLE" | translate}}</div>
+            <div class="info-title pl-3">{{cv.name}}</div>
+            <div class="green-title mt-2 pl-3">{{"CREATOR.CURRICULUMS.LIST.OBJECTIVE" | translate}}</div>
+            <div class="info-title pl-3" [innerHTML]="cv?.objectives"></div>
+            <div class="green-title mt-2 pl-3">{{"CREATOR.CURRICULUMS.LIST.REQUIREMENTS" | translate}}</div>
+            <div class="info-title pl-3" [innerHTML]="cv?.requirements"></div>
+            <div class="green-title mt-2 pl-3">{{"CREATOR.CURRICULUMS.LIST.GOALS" | translate}}</div>
+            <div class="info-title pl-3" [innerHTML]="cv?.expectations"></div>
+        </div>
+        <div class="taskbar-noradius info-title pl-3">
+            <p class="font-he">{{"CREATOR.CURRICULUMS.LIST.UNIT" | translate}}</p>
+            <button [class]="(toRouters && toRouters.length > 0 && editable) ? 'edit fas fa-edit' : 'edit fas fa-eye'" (click)="(toRouters && toRouters.length > 0) ? openUnitsList(cv) : viewUnitsDetail.emit({})"> {{(toRouters && toRouters.length > 0 && editable) ? ("LAYOUT.EDIT" | translate) : ("LAYOUT.VIEW" | translate)}}</button>
+        </div>
+    </div>
+</div>
+<div [class]="'table-responsive bg-white pb-2 pl-3 pr-3' + ((toRouters && toRouters.length === 0 && editable) ? '' : ' scrollbar-cyan units-list')">
+    <table class="table">
+        <thead>
+        <tr>
+            <th width="10%">#</th>
+            <th width="60%">{{"CREATOR.CURRICULUMS.LIST.NAME" | translate}}</th>
+            <th width="15%">{{"CREATOR.CURRICULUMS.LIST.TYPE" | translate}}</th>
+            <th class="text-center pl-3" width="15%">{{"CREATOR.CURRICULUMS.LIST.Prerequisite" | translate}}</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let unit of cv.units; let i = index;">
+            <tr>
+                <td width="10%" [style.padding-top]="(i !== 0) ? '15px' : ''">{{unit.no}}</td>
+                <td width="60%" [style.padding-top]="(i !== 0) ? '15px' : ''" style="font-size: 14px; font-weight: bolder;">{{unit.name}}<span
+                        class="block-title">{{(unit.blockQty) ? '(' + unit.blockQty + ' block' + ((unit.blockQty > 1) ? 's' : '') + ')' : ''}}</span>
+                </td>
+                <td width="15%"></td>
+                <td class="text-center"
+                    [style.vertical-align]="'top'"
+                    width="15%"
+                    [style.padding-top]="(i !== 0) ? '15px' : ''"
+                    [style.font-style]="(unit.prerequisites.length > 0) ? 'normal' : 'italic'"
+                    [style.color]="(unit.prerequisites.length > 0) ? '#000000' : '#239638'">
+                    {{(unit.prerequisites.length > 0) ? (unit.prerequisites | json) : '[Empty]'}}
+            </tr>
+            <ng-container *ngFor="let lesson of unit.lessonGroup">
+                <tr>
+                    <td width="10%"></td>
+                    <td width="60%">{{lesson.name}}<span
+                            class="block-title">{{(lesson.blockQty) ? '(' + lesson.blockQty + ' block' + ((lesson.blockQty > 1) ? 's' : '') + ')' : ''}}</span>
+                    </td>
+                    <td width="15%">{{("CREATOR.CURRICULUMS.LIST.LESSON" | translate)}}</td>
+                    <td class="text-center" width="15%"></td>
+                </tr>
+            </ng-container>
+            <ng-container *ngFor="let exercise of unit.exerciseGroup">
+                <tr>
+                    <td width="10%"></td>
+                    <td width="60%">{{exercise.name}}<span
+                            class="block-title"></span></td>
+                    <td width="15%">{{("CREATOR.CURRICULUMS.LIST.EXERCISE" | translate)}}</td>
+                    <td class="text-center" width="15%"></td>
+                </tr>
+            </ng-container>
+            <ng-container *ngFor="let quiz of unit.quizGroup">
+                <tr>
+                    <td width="10%"></td>
+                    <td width="60%">{{quiz.name}}<span
+                            class="block-title"></span></td>
+                    <td width="15%">{{("CREATOR.CURRICULUMS.LIST.QUESTION" | translate)}}</td>
+                    <td class="text-center" width="15%"></td>
+                </tr>
+            </ng-container>
+        </ng-container>
+        </tbody>
+    </table>
+</div>

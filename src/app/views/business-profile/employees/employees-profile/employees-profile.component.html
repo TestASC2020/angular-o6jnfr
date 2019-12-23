@@ -1,0 +1,68 @@
+<div class="my-auto breadcrums-title pt-3 pb-3">
+  <a class="breadcrums mr-1" routerLink="../">{{ "BUSINESS.Employees" | translate}}</a>/ {{ "BUSINESS.profile" | translate}}
+</div>
+<div class="row pb-4">
+  <div class="col-sm-6">
+    <div class="background-profile p-4 text-center" *ngIf="employeeProfile">
+      <img class="rounded-circle mx-auto d-block" [src]="(employeeProfile.avatarURL) ? employeeProfile.avatarURL : '../../../../assets/img/user-avatar.png'" alt="">
+      <p>{{(employeeProfile.name) ? employeeProfile.name : ''}}</p>
+      <div class="text-center">
+        <img class="icon-margin" src="../../../../assets/icons/mails.png" alt="">
+        <img class="icon-margin" *ngIf="chatAble" (click)="chatWith()" src="../../../../assets/icons/chats.png" alt="">
+        <img class="icon-margin" src="../../../../assets/icons/call.png" alt="">
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education><i class="fas fa-graduation-cap mr-1"></i>{{ "AUTH.EDUCATION_EXPERIENCES" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="employeeProfile && employeeProfile.experiences && employeeProfile.experiences.length > 0">
+        <ng-container *ngFor="let experience of employeeProfile.experiences; let i = index">
+          <div class="row">
+            <div class="col-sm-6">
+              <ul class="square">
+                <li>{{(experience.business) ? experience.business : ''}}</li>
+              </ul>
+            </div>
+            <div class="col-sm-6">{{(experience.role) ? experience.role : ''}}
+            </div>
+          </div>
+        </ng-container>
+        <div class="education1" *ngIf="employeeProfile && employeeProfile.experiences && employeeProfile.experiences.length === 0">
+          <p style="font-style: italic; color: green">{{ "MESSAGE.EMPTY" | translate}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education><i class="fas fa-user mr-1"></i>{{ "BUSINESS.About" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="employeeProfile">
+        <p [style.font-style]="(employeeProfile.about) ? 'normal' : 'italic'" [style.color]="(employeeProfile.about) ? 'black' : 'green'">{{(employeeProfile.about) ? employeeProfile.about : '[Empty]'}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="background-profile">
+      <div class="education">
+        <p class=font-education><i class="fas fa-lightbulb mr-1"></i>{{ "AUTH.SPECIALTIES" | translate}}</p>
+      </div>
+      <div class="education1" *ngIf="employeeProfile && employeeProfile.specialties && employeeProfile.specialties.length > 0">
+        <ng-container *ngFor="let specialty of employeeProfile.specialties; let j = index;">
+          <ul class="square">
+            <li>{{(specialty.name) ? specialty.name : ''}}</li>
+          </ul>
+        </ng-container>
+      </div>
+      <div class="education1" *ngIf="employeeProfile && employeeProfile.specialties && employeeProfile.specialties.length === 0">
+        <p style="font-style: italic; color: green">[Empty]</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+
+      :hover {
+        font-weight: bold;
+      }
+
+      i {
+
+        width: 1rem;
+      }
+    }
+  }
+}
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.font-icon {
+  font-size: 18px;
+  vertical-align: bottom;
+}
+.list-group-item{
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    width: 160px;
+    padding-right: 7px;
+  }
+}

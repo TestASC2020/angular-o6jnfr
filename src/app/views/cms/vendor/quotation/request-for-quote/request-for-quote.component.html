@@ -1,0 +1,152 @@
+<div class="row pt-3">
+  <div class="col-sm-8 breadcrums-title">
+    <a class="breadcrums mr-1"> {{"VENDOR.QUOTATION.LIST.OTHERS.QUOTATION" | translate}}</a><a class="breadcrums"> / {{'VENDOR.REQUESTQUOTE' | translate}}</a>
+  </div>
+  <div class="col-sm-4 text-right">
+    <input class="form-control search" placeholder="Search" type="text" [(ngModel)]="searchText"/>
+  </div>
+</div>
+<div class="pl-3 pr-3 pt-3">
+  <div class="row education">
+    <div class="col-sm-12">
+      <div class="text-left">
+        <div class="col-inline">
+          <div class="text-white">{{"VENDOR.QUOTATION.LIST.STATUS" | translate}}</div>
+        </div>
+        <div class="col-inline ml-2">
+          <select class="form-control form-control-report" [(ngModel)]="selectedStatus" (change)="updateSelectedStatus()"  onchange="this.style.color = this.options[this.selectedIndex].style.color;">
+            <option value="-1" [style.color]="'#000000'">{{"MESSAGE.All" | translate}}</option>
+            <option *ngFor="let status of QUOTATIONSTATUS.toArray()" [style.color]="status.getColor()" value="{{status.getValue()}}">{{status.getDisplay() | translate}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<table class="table table-striped table-wrapper-scroll-y" id="style-1">
+  <thead>
+  <tr>
+    <th width="15%">{{"VENDOR.QUOTATION.LIST.ON_DATE" | translate}}</th>
+    <th width="27%">{{"VENDOR.QUOTATION.LIST.DESCRIPTION" | translate}}</th>
+    <th width="10%">{{"VENDOR.QUOTATION.LIST.BUYER" | translate}}</th>
+    <th width="15%">{{"VENDOR.QUOTATION.LIST.PRICE" | translate}}</th>
+    <th width="13%">{{"VENDOR.QUOTATION.LIST.COMPLETED_IN" | translate}}</th>
+    <th width="12%">{{"VENDOR.QUOTATION.LIST.STATUS" | translate}}</th>
+    <th class="text-center" width="8%">{{"VENDOR.QUOTATION.LIST.ACTION" | translate}}</th>
+  </tr>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let item of items">
+    <ng-container *ngIf="checkSearch(
+      item,
+      ('DATEFORMAT.DayString' | translate: {'st': getCreateDateInfo(item?.createDate).st, 'day': getCreateDateInfo(item?.createDate).day}) + '/' +
+    ('DATEFORMAT.' + getCreateDateInfo(item?.createDate).month | translate) + '/' +
+    ('DATEFORMAT.YearString' | translate: {'year': getCreateDateInfo(item?.createDate).year}),
+    (item.wishMinPrice | number)  + ' - ' + (item.wishMaxPrice | number),
+    item.wishDayEndOn | number,
+     (QUOTATIONSTATUS.valueOf(item.status).getDisplay() | translate))">
+      <tr class="info-line">
+        <td width="15%">
+          {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(item?.createDate).st, 'day': getCreateDateInfo(item?.createDate).day}) + '/' +
+          ('DATEFORMAT.' + getCreateDateInfo(item?.createDate).month | translate) + '/' +
+          ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(item?.createDate).year})}}
+        </td>
+        <td width="27%">{{item.description}}</td>
+        <td width="10%">{{item.buyer}}</td>
+        <td width="15%">{{(item.wishMinPrice | number)  + ' - ' + (item.wishMaxPrice | number)}}</td>
+        <td width="13%">{{item.wishDayEndOn | number}}</td>
+        <td width="12%" [style.color]="QUOTATIONSTATUS.valueOf(item.status).getColor()">{{(QUOTATIONSTATUS.valueOf(item.status).getDisplay()) | translate}}</td>
+        <td width="8%"><app-cms-vendor-request-for-quote-action-menu
+                [item]="item"
+                class="my-menu-list"
+                (sendQuoteRqt)="sendRqtQuote(item)"
+                (ignoreEmitter)="ignoreRequestQuotation(item)"
+                (interestEmitter)="interestRequestQuotation(item)"
+                (error)="showError($event)"
+        ></app-cms-vendor-request-for-quote-action-menu></td>
+      </tr>
+    </ng-container>
+  </ng-container>
+  </tbody>
+</table>
+<ng-container>
+  <div class="my-table-footer">
+    <div style="float: left">
+      <span>{{('MESSAGE.NameList.CurrentTotalItems' | translate) + ':'}}</span>
+      <span style="margin-left: 5px; font-weight: bold;">{{items.length}}</span></div>
+    <div class="my-select-area">
+      <div class="d-flex">
+        <span class="my-auto">{{'MESSAGE.NameList.RowsPerPage' | translate}}</span>
+        <select [(ngModel)]="rowsPerPage" class="form-control my-select my-auto" (change)="reloadRecords()">
+          <option *ngFor="let size of pageSizes" [value]="size">{{size}}</option>
+        </select>
+      </div>
+      <div class="my-auto" style="text-align: right" *ngIf="enableMore">
+                  <span class="show-more-records" (click)="loadMoreRecords()">
+                      {{'MESSAGE.More' | translate}}
+                  </span>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div mdbModal #send="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <p class="modal-title w-100 font-weight-bold mt-3">{{'VENDOR.SENDQUOTE' | translate}}</p>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="mb-0" [style.color]="'#979191'">{{'VENDOR.QUOTATION.LIST.PRICE' | translate}}</p>
+        <div class="my-auto" [style.display]="'-webkit-box'">
+          <input
+                  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                  class="form-control" [style.width]="'120px'"
+                  placeholder="1.200"
+                  id="quotePrice"
+                  type="text">
+          <p class="pl-2 my-auto title_name">TEN</p>
+        </div>
+        <div class="pt-2">
+          <label [style.color]="'#979191'" for="quoteMessage">{{'VENDOR.QUOTATION.Message' | translate}}</label>
+          <textarea class="form-control form-with" id="quoteMessage" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="text-center pb-2 pt-2">
+        <button  class="button-send" (click)="send.hide(); sendQuote()">{{'MESSAGE.SEND' | translate}}</button>
+        <button class="button-cancel" (click)="send.hide()">{{'LAYOUT.CANCEL' | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #errorModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog" *ngIf="error">
+      <div class="diaglog-title-warning text-center">
+        <h4>{{ "MESSAGE.WARNING" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ACTION_FAILED_REASON" | translate : {"error": error.text}'>
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-cancel" style="margin-right: 0;" (click)="errorModal.hide()">{{ "LAYOUT.CLOSE" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div mdbModal #confirmModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+  <div class="modal-dialog confirmDialog" role="document">
+    <div class="modal-content confirmDialog">
+      <div class="diaglog-title-confirm text-center">
+        <h4>{{ "MESSAGE.CONFIRM" | translate}}</h4>
+      </div>
+      <div class="modal-body confirmDialog ml-3 mr-3 mt-2 text-center" [innerHTML]='"MESSAGE.ConfirmInterestIgnored" | translate : {decide: selectedDecideMessage}'>
+      </div>
+      <div [class]="'btn-button mt-2'">
+        <button class="button-save" style="margin-right: 0;" (click)="changeRequesQuotationDecide()">{{ "LAYOUT.YES" | translate}}</button>
+        <button class="button-cancel" style="margin-right: 0;" (click)="confirmModal.hide()">{{ "LAYOUT.NO" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

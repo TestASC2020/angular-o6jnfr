@@ -1,0 +1,160 @@
+@import "../../../../../../globale_variables";
+.taskbar{
+  background-color:$button-color;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding:5px;
+}
+.inline{
+  display: inline;
+}
+.breadcrums-title {
+  color: #C3C3C3;
+  font-size: 14px;
+
+  .breadcrums {
+    color: #C3C3C3;
+    font-size: 14px;
+  }
+}
+table{
+  tr{
+    line-height: 30px;
+  }
+}
+select {
+  display: unset !important;
+  &#type{
+    width: 100%;
+  }
+}
+.info-title{
+  font-size:14px;
+  color:#363636;
+}
+.table{
+  th{
+    font-size:14px;
+    color:#787A78;
+    border:0;
+  }
+  td{
+    border:0;
+  }
+  .info-text{
+    font-size:14px;
+    color:#232222;
+  }
+  .info-line:hover{
+    background-color:#DAEFF9;
+  }
+  &.table-striped{
+    border-left:solid 1px #D8D8D8;
+    border-right:solid 1px #D8D8D8;
+    border-bottom:solid 1px #D8D8D8;
+  }
+}
+table.table th, table.table td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.table-responsive {
+  padding-bottom: 30px;
+}
+.modal-header {
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: space-between;
+  padding-top:0;
+  padding-bottom:0;
+  height: 50px;
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0.3rem;
+  border-bottom:unset!important;
+}
+.modal-dialog{
+  top:30%;
+}
+.modal-body{
+  padding-top:0;
+}
+.modal-content .close {
+  position: unset !important;
+  right: 0 !important;
+}
+.btn{
+  text-transform: none;
+  word-wrap: unset;
+  padding: 0;
+}
+.bg-white {
+  background-color: #fff;
+}
+.feature-info{
+  margin: auto 10px auto;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  @media only screen and (max-width: 990px) {
+    margin: 5px 10px 5px;
+  }
+}
+@media only screen and (max-width: 990px) {
+  select{
+    margin: auto;
+  }
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  background-color: $button-color !important;
+}
+@media screen and (max-width: 600px) {
+  table {
+    margin: auto;
+    overflow-x: auto;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  td, th {
+    padding: .5rem;
+  }
+
+  th {
+    text-align: left;
+    text-transform: uppercase;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  td {
+    white-space: pre-wrap;
+    border-bottom: none;
+    color: rgb(20, 20, 20);
+  }
+
+  td:first-of-type, th:first-of-type {
+    border-left: none;
+  }
+
+  td:last-of-type, th:last-of-type {
+    border-right: none;
+  }
+  .pd-top {
+    padding-top: 25px;
+  }
+}
+tbody tr:hover{
+  background-color: $table-row-hover;
+  .my-menu-list{
+    display: block !important;
+  }
+}
+tbody tr{
+  .my-menu-list{
+    display: none !important;
+  }
+}

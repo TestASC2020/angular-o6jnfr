@@ -1,0 +1,20 @@
+<div style="cursor:pointer;">
+    <button class="action-button">
+        <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="update(item);">
+                <i class="pe-7s-note"></i><span class="pl-1">{{"LAYOUT.Update" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="chat(item);">
+                <i class="pe-7s-chat"></i><span class="pl-1">{{"VENDOR.QUOTATION.LIST.ACTION_MENU.CHAT" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="terminate(item.crsSig);">
+                <i class="pe-7s-trash"></i><span class="pl-1">{{"LAYOUT.CANCEL" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

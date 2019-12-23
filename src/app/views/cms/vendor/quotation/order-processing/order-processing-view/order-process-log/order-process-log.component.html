@@ -1,0 +1,55 @@
+<div class="mb-4 pd-top">
+    <div class="col-sm-8 my-auto breadcrums-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1 && i !== toRouters.length - 2" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <a *ngIf="i !== toRouters.length - 1 && i === toRouters.length - 2" class="breadcrums mr-1" routerLink="{{toRouter.link}}">
+                {{(toRouter.display | translate) + ' - ' + (cv ? cv.name : '')}}
+            </a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div class="unit-form">
+    <p class="my-auto">{{"BUSINESS.Unit" | translate}}:</p>
+    <select class="form-control unit-control" *ngIf="unitsList" (change)="changeSelectedUnit($event)">
+        <option *ngFor="let unit of unitsList"
+                [value]="unit.signature"
+                [selected]="unit.signature === selectedUnit.signature"
+        >{{unit.name}}</option>
+    </select>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="bg-white">
+            <div class="table-responsive scrollbar-cyan units-list pl-3 pr-3">
+                <table class="table">
+                    <thead>
+                    <tr style="color: #8B8787; border-bottom: 1px solid #c4c4c4">
+                        <th scope="col" width="45%">{{"Accounting.DATE/TIME" | translate}}</th>
+                        <th scope="col" width="40%">{{"Accounting.DESCRIPTION" | translate}}</th>
+                        <th scope="col" width="15%">{{"Accounting.STATUS" | translate}}</th>
+                    </tr>
+                    </thead>
+                    <tbody style="color: #000000" *ngIf="selectedLog">
+                        <ng-container *ngFor="let log of selectedLog">
+                            <tr style="color: #8B8787; border-bottom: 1px solid #c4c4c4">
+                                <td scope="col" width="45%">
+                                    {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(log.createDate).st, 'day': getCreateDateInfo(log.createDate).day}) + '/' +
+                                    ('DATEFORMAT.' + getCreateDateInfo(log.createDate).month | translate) + '/' +
+                                    ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(log.createDate).year}) + ', ' +
+                                    getCreateDateInfo(log.createDate).hour +
+                                    ':' + getCreateDateInfo(log.createDate).minute + ':' + getCreateDateInfo(log.createDate).second + ' ' +
+                                    (('DATEFORMAT.' + getCreateDateInfo(log.createDate).ampm | translate))}}
+                                </td>
+                                <td scope="col" width="40%">{{log.description}}</td>
+                                <td scope="col" width="15%" [style.color]="TASKSTATUS.valueOf(log.status).getColor()">{{TASKSTATUS.valueOf(log.status).getDisplay() | translate}}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>

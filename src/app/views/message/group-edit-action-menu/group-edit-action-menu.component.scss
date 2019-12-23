@@ -1,0 +1,95 @@
+@import "../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.fa-ellipsis-v{
+  padding-top: 13px !important;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 130px;
+    padding-right: 7px;
+  }
+  .popover::after{
+    right: -4px;
+    top: 2px;
+    content: '';
+    margin: 0px -9px 0 0;
+    border-style: solid;
+    border-width: 2px 2px 8px 15px;
+    border-color: transparent transparent transparent black;
+    margin-top: -.5rem;
+    -webkit-transform: rotate(-35deg);
+    -moz-transform: rotate(-35deg);
+    -ms-transform: rotate(-35deg);
+    -o-transform: rotate(-35deg);
+  }
+}
+.fa-user {
+  color: #11e810;
+  &:hover {
+    color: #0b7c0a;
+  }
+}
+.fa-user-alt-slash {
+  color: #ff7918;
+  &:hover {
+    color: #9b4a0f;
+  }
+}
+.pe-7s-lock {
+  color: #ff7d6e;
+  &:hover {
+    color: red;
+  }
+}
+.pe-7s-unlock{
+  color: #00d800;
+  &:hover {
+    color: #009600;
+  }
+}
+.fa-user-minus {
+  color: red;
+  &:hover {
+    color: #ff7d6e;
+  }
+}
+.fa-ban {
+  color: red;
+  &:hover {
+    color: #ff7d6e;
+  }
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}

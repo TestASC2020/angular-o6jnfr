@@ -1,0 +1,12 @@
+<!--Carousel Wrapper-->
+<mdb-carousel [isControls]="true" class="carousel slide carousel-fade" [animation]="'fade'">
+  <!--First slide-->
+  <mdb-carousel-item *ngFor="let item of data">
+    <div class="view w-100">
+      <img class="d-block w-100" src="{{item.url}}" alt="{{item.name}}">
+      <div class="mask rgba-black-light waves-light" mdbWavesEffect></div>
+    </div>
+  </mdb-carousel-item>
+  <!--/Fourth slide-->
+</mdb-carousel>
+<!--/.Carousel Wrapper-->

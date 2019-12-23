@@ -1,0 +1,303 @@
+<div class="row mb-1 about-top" *ngIf="toRouters && toRouters.length > 0">
+    <div class="col-12">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div [class]="(toRouters && toRouters.length > 0) ? 'pb-3 mb-5 mt-4' : ''">
+    <div class="row pratice" *ngIf="toRouters && toRouters.length > 0">
+        <div class="col-sm-5">
+            <p class="font-exercises" *ngIf="question.name">{{question.name}}</p>
+            <p class="font-exercises" *ngIf="!question.name">{{'MESSAGE.EMPTY' | translate}}</p>
+        </div>
+    </div>
+    <div class="row info mb-3">
+        <div class="col-sm-1"><p class="title-black">{{'CREATOR.CURRICULUMS.QUESTION.Name' | translate}}</p></div>
+        <div class="col-sm-4">
+            <select class="form-control form-chart" [(ngModel)]="selectedQuiz" (change)="updateQuiz($event)">
+                <option *ngFor="let quest of questionList" [value]="quest.signature">{{quest.name | translate}}</option>
+            </select>
+        </div>
+        <div class="col-sm-7" *ngIf="editable">
+            <button class="create relative btn" title="{{'CREATOR.CURRICULUMS.QUESTION.CreateNewPracticeQuestion' | translate}}" (click)="quizTypeListModal.show()">
+                <i class="fas fa-plus"></i><span>{{'LAYOUT.CREATE' | translate}}</span>
+            </button>
+        </div>
+    </div>
+    <div class="row info" *ngIf="selectedQuiz !== -1">
+        <div class="col-sm-6">
+            <p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.QuestionInformation' | translate}}</p>
+        </div>
+        <div class="col-sm-6" *ngIf="canSubmit && editable">
+            <button (click)="isEdit = !isEdit" [class]="(isEdit) ? 'view' : 'view fas fa-edit'">{{(isEdit) ? ('LAYOUT.VIEW' | translate) : ('LAYOUT.EDIT' | translate)}}</button>
+        </div>
+    </div>
+
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedQuiz === -1">
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedQuiz !== -1">
+        <div class="row" *ngIf="!isEdit && canSubmit" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-12">
+                {{'CREATOR.CURRICULUMS.QUESTION.Name' | translate}}:<span class="pl-1 pr-1">{{selectedName}}</span>
+            </div>
+            <div class="col-sm-3">
+                No:<span class="pl-1 pr-1">{{selectedNo}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{'CREATOR.CURRICULUMS.QUESTION.AnswerIn' | translate}}:<span class="pl-1 pr-1">{{selectedDuration}}</span><span>{{(selectedDuration > 1) ? ('CREATOR.CURRICULUMS.QUESTION.Seconds' | translate) : ('CREATOR.CURRICULUMS.QUESTION.Second' | translate)}}</span>
+            </div>
+            <div class="col-sm-3">
+                {{'CREATOR.CURRICULUMS.QUESTION.Point' | translate}}:<span class="pl-1 pr-1">{{selectedPoint}}</span>
+            </div>
+        </div>
+        <div class="row" *ngIf="isEdit && canSubmit" style="margin: 0; padding-top: 5px; padding-bottom: 15px;">
+            <div class="col-sm-3">
+                <label for="name"><strong>{{'CREATOR.CURRICULUMS.QUESTION.Name' | translate}}:</strong></label>
+                <input id="name" class="form-control" type="text" [(ngModel)]="selectedName" [value]="selectedName">
+            </div>
+            <div class="col-sm-3">
+                <label for="no"><strong>No:</strong></label>
+                <input id="no" class="form-control" type="text" [(ngModel)]="selectedNo" [value]="selectedNo" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+            <div class="col-sm-3">
+                <label for="duration"><strong>{{'CREATOR.CURRICULUMS.QUESTION.AnswerIn' | translate}}:</strong></label>
+                <input id="duration" class="form-control" type="text" [(ngModel)]="selectedDuration" [value]="selectedDuration" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+            <div class="col-sm-3">
+                <label for="point"><strong>{{'CREATOR.CURRICULUMS.QUESTION.Point' | translate}}:</strong></label>
+                <input id="point" class="form-control" type="text" [(ngModel)]="selectedPoint" [value]="selectedPoint" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+        </div>
+        <div *ngIf="canSubmit && editable && isEdit" class="row action-area">
+            <div class="col-sm-6">
+                <button class="button-cancel" [disabled]="!canSubmit" (click)="resetFromSelected()">{{'LAYOUT.CANCEL' | translate}}</button>
+                <button class="button-save" [disabled]="!canSubmit" (click)="saveQuestion()">{{'LAYOUT.SAVE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+    <div style="background-color: white; margin-right: -15px; margin-left: -15px;" *ngIf="selectedQuiz !== -1">
+        <div class="row info ml-0 mr-0">
+            <div class="col-sm-6">
+                <p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.QuestionContent' | translate}}</p>
+            </div>
+            <div class="col-sm-6" *ngIf="editable">
+                <button (click)="updateContentEdit()" [class]="(isContentEdit) ? 'view' : 'view fas fa-edit'">{{(isContentEdit) ? ('LAYOUT.VIEW' | translate) : ('LAYOUT.EDIT' | translate)}}</button>
+            </div>
+        </div>
+        <div class="cover-content question-scroll square scrollbar-cyan">
+            <div class="row question-editor" *ngIf="!isContentEdit" id="question_area" [innerHTML]="selectedQuestion"></div>
+        </div>
+        <div class="cover-content-edit">
+            <div class="row question-editor" *ngIf="isContentEdit && canSubmit">
+                <i class="fas fa-image fa-2x" title="Insert Image" (click)="openImageChooser()"></i>
+                <input type="file" style="display: none" accept="image/*" id="file_image" (change)="insertImage($event)">
+                <ckeditor [editor]="Editor" [config]="configs" [(ngModel)]="selectedQuestion" style="width: 100%"></ckeditor>
+            </div>
+        </div>
+        <div *ngIf="isContentEdit" class="row action-area">
+            <div class="col-sm-6">
+                <button class="button-cancel" [disabled]="!canSubmit" (click)="restoreQuiz()">{{'LAYOUT.CANCEL' | translate}}</button>
+                <button class="button-save" [disabled]="!canSubmit" (click)="saveQuizQuestion()">{{'LAYOUT.SAVE' | translate}}</button>
+            </div>
+        </div>
+        <div class="row info ml-0 mr-0 mt-3">
+            <div class="col-sm-6"><p class="font-exercises-info">{{'CREATOR.CURRICULUMS.QUESTION.Solution' | translate}}</p></div>
+            <div class="col-sm-6" *ngIf="editable && editable">
+                <button (click)="updateSolutionContentEdit()" [class]="(isSolutionContentEdit) ? 'view' : 'view fas fa-edit'">{{(isSolutionContentEdit) ? ('LAYOUT.VIEW' | translate) : ('LAYOUT.EDIT' | translate)}}</button>
+            </div>
+        </div>
+        <div class="cover-content">
+            <div class="row question-editor" *ngIf="selectedQuizType === 1 || selectedQuizType === 2">
+                <label class="my-auto" for="inp_showselections"> {{'CREATOR.CURRICULUMS.QUESTION.ShowSelections' | translate}} </label>
+                <select class="form-control ml-2" type="text" [(ngModel)]="selectedShowPerRow" style="width: 165px; display: inline-block;"
+                       id="inp_showselections">
+                    <option *ngFor="let selection of showSelections" [value]="selection.value">
+                        {{selection.display + ' ' + ('CREATOR.CURRICULUMS.QUESTION.PerRow' | translate)}}
+                    </option>
+                </select>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 2 && !isSolutionContentEdit">
+                <ng-container *ngFor="let ans of selectedAnswer; let run = index;">
+                    <div [class]="'custom-control custom-checkbox text-left col-md-' + getColMd()">
+                        <input type="checkbox" class="custom-control-input mr-1" id="answer_{{run}}" name="answerCheckbox" [attr.disabled]="!isSolutionContentEdit" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="answer_{{run}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="row question-editor" *ngIf="(selectedQuizType === 1 || selectedQuizType === 2) && isSolutionContentEdit">
+                <div class="col-md-6 answer_area">
+                    <form [formGroup]="answerForm">
+                        <table class="table">
+                            <thead class="table-description">
+                                <tr>
+                                    <th width="12%">{{'CREATOR.CURRICULUMS.QUESTION.Solution' | translate}}</th>
+                                    <th width="88%" colspan="2">{{'CREATOR.CURRICULUMS.QUESTION.Description' | translate}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let answer of answerForm.controls['answers']['controls']; let iRun = index" formArrayName="answers">
+                                    <ng-container [formGroupName]="iRun">
+                                        <tr>
+                                            <td width="12%" class="text-center">
+                                                <div [class]="'custom-control ' + ((selectedQuizType === 2) ? 'custom-checkbox' : 'custom-radio')">
+                                                    <input [type]="(selectedQuizType === 2) ? 'checkbox' : 'radio'" class="custom-control-input"
+                                                           id="answerCheckboxEdit_{{iRun}}"
+                                                           name="answerCheckboxEdit"
+                                                           formControlName="isCorrect"
+                                                           (change)="updateCheckbox(iRun, $event)"
+                                                           [checked]="getAnswerControlValue(iRun).isCorrect">
+                                                    <label class="custom-control-label" for="answerCheckboxEdit_{{iRun}}">
+                                                    </label>
+                                                </div>
+                                                <input type="hidden" formControlName="id">
+                                                <input type="hidden" formControlName="isEdit">
+                                            </td>
+                                            <td width="70%">
+                                                <p style="margin: 0" *ngIf="!getAnswerControlValue(iRun).isEdit">{{getAnswerControlValue(iRun).text}}</p>
+                                                <input type="{{getAnswerControlValue(iRun).isEdit ? 'text' : 'hidden'}}"  class="form-control" placeholder="Enter Description" formControlName="text">
+                                            </td>
+                                            <td width="18%">
+                                                <div class="text-center">
+                                                    <div *ngIf="!getAnswerControlValue(iRun).isEdit">
+                                                        <i class="fas fa-pen icon" style="margin: 0 10px" data-toggle="tooltip" title="Edit" (click)="enableAnswerControl(iRun, true)"></i>
+                                                        <i class="fas fa-times icon-time" data-toggle="tooltip" title="Delete" (click)="removeAnswerControl(iRun)"></i>
+                                                    </div>
+                                                    <div *ngIf="getAnswerControlValue(iRun).isEdit">
+                                                        <i class="fas fa-save icon-save" title="Save" (click)="saveAnswerControl(iRun)"></i>
+                                                        <i *ngIf="getAnswerControlValue(iRun).id !== ''" class="fas fa-history icon-history" title="Cancel" (click)="cancelAnswer(iRun)"></i>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 1 && !isSolutionContentEdit">
+                <ng-container *ngFor="let ans of selectedAnswer; let run = index;">
+                    <div [class]="'custom-control custom-radio text-left col-md-' + getColMd()">
+                        <input type="radio" class="custom-control-input mr-1" id="answerRadio_{{run}}" name="answerRadio" [attr.disabled]="!isSolutionContentEdit" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="answerRadio_{{run}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 0 && !isSolutionContentEdit">
+                <p>{{'CREATOR.CURRICULUMS.QUESTION.CorrectAnswer' | translate}}</p>
+            </div>
+            <div class="row question-editor" *ngIf="selectedQuizType === 3 && !isSolutionContentEdit">
+                <p>{{('CREATOR.CURRICULUMS.QUESTION.Solution' | translate) + ': ' + selectedAnsValue}}</p>
+            </div>
+            <div class="row" *ngIf="selectedQuizType === 0 && !isSolutionContentEdit">
+                <ng-container *ngFor="let ans of selectedAnswer; let run4 = index;">
+                    <div class="custom-control custom-radio mr-5">
+                        <input type="radio" class="custom-control-input mr-1" id="cra_{{run4}}" name="correct_answer" [attr.disabled]="!isSolutionContentEdit" [checked]="ans.isCorrect">
+                        <label class="custom-control-label" for="cra_{{run4}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="row" *ngIf="selectedQuizType === 0 && isSolutionContentEdit">
+                <ng-container *ngFor="let ans of selectedAnswer; let run5 = index;">
+                    <div class="custom-control custom-radio mr-5">
+                        <input type="radio" class="custom-control-input mr-1" (change)="truefalseChange(run5)" id="craEdit_{{run5}}" name="correct_answer" [checked]="ans.isCorrect" [value]="ans.text">
+                        <label class="custom-control-label" for="craEdit_{{run5}}">
+                            {{ans.text}}
+                        </label>
+                    </div>
+                </ng-container>
+            </div>
+            <div style="display: -webkit-box; margin-left: -15px;" *ngIf="selectedQuizType === 3 && isSolutionContentEdit">
+                <label class="my-auto" for="inp_ansvalue"> {{'CREATOR.CURRICULUMS.QUESTION.Solution' | translate}} </label>
+                <input
+                        oninput="this.value = this.value.replace(/[^-0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                        class="form-control ml-1"
+                        type="text"
+                        style="width: 130px;
+                        display: inline-block;"
+                        id="inp_ansvalue"
+                        name="answerValue"
+                        [value]="selectedAnsValue">
+            </div>
+            <div class="row action-area">
+                <div class="col-sm-6" *ngIf="isSolutionContentEdit">
+                    <button class="button-cancel" [disabled]="!canSubmit" (click)="resetFromSelected()">{{'LAYOUT.CANCEL' | translate}}</button>
+                    <button class="button-save" style="margin-left: -30px;" [disabled]="!canSubmit" (click)="saveQuestionAnswerValue()">{{'LAYOUT.SAVE' | translate}}</button>
+                </div>
+                <div *ngIf="canSubmit" [class]="(isSolutionContentEdit) ? 'col-sm-6 text-right my-auto' : 'col-sm-12 text-right my-auto'">
+                    <i class="fas fa-info"
+                       title="{{'CREATOR.CURRICULUMS.QUESTION.EditSolution' | translate}}"
+                       (click)="(toRouters && toRouters.length > 0) ? viewSolution() : viewSolutionEmit()"
+                    ></i>
+                    <strong>{{'CREATOR.CURRICULUMS.QUESTION.Solution' | translate}}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="row action-area" *ngIf="canSubmit && editable">
+            <div class="col-sm-6">
+                <button class="button-delete" [disabled]="!canSubmit" (click)="confirmDeleteQuestion.show()">
+                    <i class="fas fa-trash mr-1"></i>
+                    {{'CREATOR.CURRICULUMS.QUESTION.DeleteThisProblem' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #quizTypeListModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog" role="document">
+        <div class="modal-title w-100 font-weight-bold text-center">
+            {{'CREATOR.CURRICULUMS.QUESTION.NewPracticeQuestion' | translate}}
+        </div>
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-8 offset-md-2">
+                        <p class="font-weight-bold text-center mb-0">{{'CREATOR.CURRICULUMS.QUESTION.SelectTypeMessage' | translate}}</p>
+                        <ng-container *ngFor="let quizType of quizTypeList">
+                            <div class="custom-control custom-radio radio-area">
+                                <input
+                                        type="radio"
+                                        class="custom-control-input"
+                                        name="customCheck"
+                                        [checked]="(quizType.value === selectedQuizType) ? true: false"
+                                        (change)="quizTypeChange($event)" id="customCheck_{{quizType.value}}"
+                                        [value]="quizType.value">
+                                <label class="custom-control-label" for="customCheck_{{quizType.value}}">
+                                    {{quizType.text}}
+                                </label>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <button class="button-save" (click)="createNewQuiz(); quizTypeListModal.hide()">{{'LAYOUT.OK' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div mdbModal #confirmDeleteQuestion="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel2" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: true}'>
+    <div class="modal-dialog confirmDialog" role="document">
+        <div class="modal-content confirmDialog">
+            <p class="confirm">{{ "BUSINESS.Confirm" | translate}}</p>
+            <div class="modal-body confirmDialog ml-3 mr-3 text-center">
+                {{ "CREATOR.CURRICULUMS.Are_You_Sure_Delete_CV" | translate}}
+            </div>
+            <div [class]="'btn-button mt-2'">
+                <button class="button-cancel" (click)="confirmDeleteQuestion.hide()">{{ "LAYOUT.CANCEL" | translate}}</button>
+                <button class="button-save" style="margin-right: 0;" (click)="confirmDeleteQuestion.hide(); deleteQuestion();">{{ "LAYOUT.YES" | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

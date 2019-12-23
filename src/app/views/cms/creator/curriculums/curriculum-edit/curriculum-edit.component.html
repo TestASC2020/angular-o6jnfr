@@ -1,0 +1,181 @@
+<div class="row">
+    <div class="col-8">
+        <i class="fas fa-th mr-1"></i>
+        <a class="mr-1" routerLink="../../../curriculums">Curriculums</a>
+        <span class="mr-1">></span>
+        <span>Edit</span>
+    </div>
+</div>
+<hr>
+<mdb-stepper #stepper [linear]="true">
+  <mdb-step name="Create" [stepForm]="firstFormGroup">
+    <!-- Card -->
+    <div class="card-father">
+      <!-- Card content -->
+      <div>
+        <!-- Card -->
+        <form [formGroup]="firstFormGroup">
+            <div class="row" style="background: transparent; height: 40px">
+              <div class="col-6 pl-5" style="display: flex">
+                <label>Template</label>
+                <select id="template" class="form-control ml-3" formControlName="template">
+                  <option *ngFor="let template of templates" [value]="template.value">{{template.name}}</option>
+                </select>
+              </div>
+            </div>
+          <div class="row">
+            <div class="card col-12">
+              <!-- Card content -->
+              <div class="card-body">
+                <div *ngFor="let data of templates[template.value].data">
+                  <span style="font-family: 'Roboto medium'; font-size: 14px;">{{data.name}}</span>
+                  <p class="pl-4" style="font-family: 'Roboto regular'; font-size: 14px;" *ngIf="data.description">{{data.description}}</p>
+                  <div *ngIf="data.unit && data.unit.length > 0">
+                    <div *ngFor="let unit of data.unit" class="pl-4">
+                      <span style="font-family: 'Roboto regular'; font-size: 14px;">{{unit.name + ((unit.title) ? (': ' + unit.title) : '')}}</span>
+                      <p style="font-family: 'Roboto regular'; font-size: 13px; color: #787676" *ngIf="unit.description">{{unit.description}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="text-center">
+          <button mdbBtn size="sm" color="primary" disabled="disabled" (click)="stepper.previous()">Prev</button>
+          <button mdbBtn size="sm" color="primary" (click)="stepper.next()">Next</button>
+        </div>
+      </div>
+    </div>
+  </mdb-step>
+  <mdb-step name="Update info" [stepForm]="secondFormGroup">
+    <!-- Card -->
+    <div class="card-father">
+      <!-- Card content -->
+      <div>
+        <!-- Card -->
+        <form [formGroup]="secondFormGroup">
+          <div class="card" style="background: #E5EBEB; height: 55px;">
+            <div class="row">
+              <div class="col-12 pl-5 pr-5 pt-3 pb-3" style="display: flex">
+                Information
+              </div>
+            </div>
+          </div>
+          <div class="card pl-4 pr-4 pt-3 pb-3">
+            <div class="row">
+              <div class="col-6 form-group">
+                <label for="type">Type</label>
+                <select id="type" class="form-control" formControlName="type">
+                  <option *ngFor="let type of types" [value]="type.value">{{type.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="learning_objective">Learning Objectives</label>
+                <textarea rows="2" id="learning_objective" class="form-control" formControlName="learning_objective"></textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="goals_and_expectations">Goals and Expectations</label>
+                <input id="goals_and_expectations" class="form-control" formControlName="goals_and_expectations">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 form-group">
+                <!-- Card content -->
+                <label for="materials">Materials</label>
+                <input id="materials" class="form-control" formControlName="materials">
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="text-center">
+          <button mdbBtn size="sm" color="primary" (click)="stepper.previous()">Prev</button>
+          <button mdbBtn size="sm" color="primary" (click)="stepper.next()">Next</button>
+        </div>
+      </div>
+    </div>
+  </mdb-step>
+  <mdb-step name="Update units" [stepForm]="thirdFormGroup">
+    <!-- Card -->
+    <div class="card-father">
+      <!-- Card content -->
+      <div>
+        <!-- Card -->
+        <form [formGroup]="thirdFormGroup">
+          <div class="row">
+            <div class="col-6 offset-2" style="display: flex">
+              dasd
+            </div>
+          </div>
+          <div class="row">
+            <div class="card col-12">
+              <!-- Card content -->
+              dfsfdsfsdfsdf
+            </div>
+          </div>
+        </form>
+        <div class="text-center">
+          <button mdbBtn size="sm" color="primary" (click)="stepper.previous()">Prev</button>
+          <button mdbBtn size="sm" color="primary" (click)="stepper.next()">Next</button>
+        </div>
+      </div>
+    </div>
+  </mdb-step>
+  <mdb-step name="Request quotation" [stepForm]="fourthFormGroup">
+    <!-- Card -->
+    <div class="card-father">
+      <!-- Card content -->
+      <div>
+        <!-- Card -->
+        <form [formGroup]="fourthFormGroup">
+          <div class="row">
+            <div class="col-6 offset-2" style="display: flex">
+              dasd
+            </div>
+          </div>
+          <div class="row">
+            <div class="card col-12">
+              <!-- Card content -->
+              dfsfdsfsdfsdf
+            </div>
+          </div>
+        </form>
+        <div class="text-center">
+          <button mdbBtn size="sm" color="primary" (click)="stepper.previous()">Prev</button>
+          <button mdbBtn size="sm" color="primary" (click)="stepper.next()">Next</button>
+        </div>
+      </div>
+    </div>
+  </mdb-step>
+  <mdb-step name="Done" [stepForm]="firthFormGroup">
+    <!-- Card -->
+    <div class="card-father">
+      <!-- Card content -->
+      <div>
+        <!-- Card -->
+        <form [formGroup]="firthFormGroup">
+          <div class="row">
+            <div class="col-6 offset-2" style="display: flex">
+              dasd
+            </div>
+          </div>
+          <div class="row">
+            <div class="card col-12">
+              <!-- Card content -->
+              dfsfdsfsdfsdf
+            </div>
+          </div>
+        </form>
+        <div class="text-center">
+          <button mdbBtn size="sm" color="primary" (click)="save()">Complete</button>
+        </div>
+      </div>
+    </div>
+  </mdb-step>
+</mdb-stepper>

@@ -1,0 +1,17 @@
+<div style="cursor:pointer;">
+    <button class="action-button">
+        <i class="fas fa-ellipsis-v fa-lg" [popover]="popContent"></i>
+    </button>
+</div>
+<popover-content #popContent placement="left" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="submitItem(item);">
+                <i class="pe-7s-check font-icon"></i><span class="pl-1">{{"LAYOUT.SUBMIT" | translate}}</span>
+            </li>
+            <li class="list-group-item" (click)="logsItem(item);">
+                <i class="pe-7s-refresh-2 font-icon"></i><span class="pl-1">{{"LAYOUT.LOGS" | translate}}</span>
+            </li>
+        </ul>
+    </div>
+</popover-content>

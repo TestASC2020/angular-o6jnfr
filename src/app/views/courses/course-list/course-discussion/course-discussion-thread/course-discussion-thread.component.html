@@ -1,0 +1,248 @@
+<div class="employees-top">
+    <div class="row pb-3 pt-3">
+        <div class="col-sm-12 my-auto breadcrum-title">
+            <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+                <a *ngIf="i !== toRouters.length - 1" class="breadcrum mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+                <span class="breadcrum-title mr-1" *ngIf="i !== toRouters.length - 1">></span>
+                <span class="breadcrum-title" *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="background-tutors pl-3 pr-3">
+        <div class="row">
+            <div class="col-sm-1">
+                <p class="font-tu">{{'MESSAGE.THREAD' | translate}}</p>
+            </div>
+            <div class="col-sm-4">
+                <select class="form-control" (change)="updateThreadInfo($event)">
+                    <option [selected]="selectedLessonThread === discussionListItem.signature" *ngFor="let discussionListItem of discussionList" [value]="discussionListItem.signature">{{discussionListItem.name}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="background-add pl-4 pr-4 pb-2">
+        <div class="chat">
+            <div class="message message-before m-0">
+                <img *ngIf="userProfile" [style.margin-top]="'12px'" [src]="(userProfile.avatarURL) ? userProfile.avatarURL : '../../../../../../assets/img/user-avatar.png'" />
+                <div style="position: relative">
+                    <input placeholder="{{'MESSAGE.EnterNewMessage' | translate}}" [(ngModel)]="newMessage" (keyup)="onKey($event)" class="form-control" type="text">
+                    <i (click)="createNewThreadLesson()" class="pe-7s-paper-plane reply-icon" title="{{'MESSAGE.SEND' | translate}}"></i>
+                    <i class="pe-7s-link" (click)="addNewFile()"></i>
+                    <input type="file" multiple style="display: none" accept="image/*" #fileInputNewMsg (change)="previewFileNewMsg($event)">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pb-2 pt-2">
+        <span class="show-more-message" (click)="loadMoreMessage()" *ngIf="threadMessages.length < selectedLessonThreadMsgCount">
+            {{'MESSAGE.More' | translate}}
+        </span>
+    </div>
+    <div class="chat-list scroll scrollbar-cyan">
+        <ng-container *ngFor="let threadMessage of threadMessages; let i = index;">
+            <div
+                 [class]="(threadMessage && threadMessage.reply && threadMessage.reply.length === 0 && !isOnReply(i))? 'container-fluid bg-chat pb-2 mb-5' : 'container-fluid bg-chat pb-2'"
+                 *ngIf="threadMessage">
+                <form [formGroup]="fileAttachmentsFormGroups[i]">
+                    <div class="row pt-3 pb-2">
+                        <div class="col-sm-9">
+                            <div class="chat my-auto">
+                                <div class="message">
+                                    <img [src]="(threadMessage.user && threadMessage.user.avatarURL) ? threadMessage.user.avatarURL : '../../../../../assets/img/user-avatar.png'" />
+                                    <div>
+                                        <div class="bg-content">
+                                            <span style="font-weight: bold" class="mr-1">
+                                                {{(threadMessage.user && threadMessage.user.name) ? (threadMessage.user.name + ':') : ''}}
+                                            </span>
+                                            <span style="width: fit-content" *ngIf="!getIsEdit(i)">{{(threadMessage.msg) ? threadMessage.msg : ''}}</span>
+                                            <div class="input-message" style="position: relative" *ngIf="getIsEdit(i)">
+                                                <textarea style="width: 100% !important;" class="form-control font-textarea" (keyup)="changeThreadMessage(i, $event)"  id="threadMessage_{{i}}" rows="3"> {{threadMessage.msg}}</textarea>
+                                                <i (click)="changeThreadMessageName(i)" class="pe-7s-paper-plane" title="{{'MESSAGE.SEND' | translate}}"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 text-right">
+                            <p  class="russ-ti spentTime" *ngIf="threadMessage.createOn && threadMessage.timeSpentMore === ''">
+                                {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(threadMessage.createOn).st, 'day': getCreateDateInfo(threadMessage.createOn).day})  + '/' +
+                                ('DATEFORMAT.' + getCreateDateInfo(threadMessage.createOn).month | translate) + '/' +
+                                ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(threadMessage.createOn).year}) + ', ' +
+                                getCreateDateInfo(threadMessage.createOn).hour + ':' + getCreateDateInfo(threadMessage.createOn).minute + ' ' +
+                                (("DATEFORMAT." + getCreateDateInfo(threadMessage.createOn).ampm) | translate)}}
+                            </p>
+                            <p  class="russ-ti spentTime" *ngIf="threadMessage.createOn && threadMessage.timeSpentMore !== ''">
+                                {{('MESSAGE.last' | translate) + ' ' + threadMessage.timeSpent + ' ' + (threadMessage.timeSpentMore |  translate)}}
+                            </p>
+                            <span
+                                    [class]="(getIsEdit0(i)) ? 'span-eye' : 'span-edit'"
+                                    [title]="(getIsEdit0(i)) ? ('MESSAGE.ViewMode' | translate) : ('MESSAGE.EditMode' | translate)"
+                                    (click)="updateIsEdit(i)">
+                                <i [class]="(getIsEdit0(i)) ? 'fas fa-eye mr-1' : 'fas fa-edit mr-1'">
+                                    {{(getIsEdit0(i)) ? ('LAYOUT.VIEW' | translate) : ('LAYOUT.EDIT' | translate)}}
+                                </i>
+                            </span>
+                        </div>
+                    </div>
+                    <ng-container style="display: block" formArrayName="files" *ngIf="fileAttachmentsFormGroups[i]['controls']['files']['controls'].length >= 0">
+                        <div class="files-list scroll scrollbar-cyan mx-auto">
+                            <ng-container style="display: block" *ngFor="let file of fileAttachmentsFormGroups[i]['controls']['files']['controls']; let j = index;">
+                                <ng-container [style.display]="(fileAttachmentsFormGroups[i]['controls']['files']['controls'][j].get('onLoad').value) ? 'block' : 'none'" [formGroupName]="j">
+                                    <input type="hidden" formControlName="onLoad">
+                                    <input type="hidden" formControlName="fileExt">
+                                    <input type="hidden" formControlName="data">
+                                    <div style="position: relative; display: inline-block">
+                                        <img
+                                                (click)="showImage(i, j)"
+                                                [class]="(j === 0) ? 'ml-4 mr-4' : 'mr-4'"
+                                                [src]="(fileAttachmentsFormGroups[i]['controls']['files']['controls'][j].get('url').value) ?
+                                                 fileAttachmentsFormGroups[i]['controls']['files']['controls'][j].get('url').value : '../../../../../../assets/img/user-avatar.png'"
+                                                height="105px" width="81px"
+                                                alt="">
+                                        <span
+                                                [class]="(j === fileAttachmentsFormGroups[i]['controls']['files']['controls'].length - 1 &&
+                                                fileAttachmentsFormGroups[i]['controls']['files']['controls'].length !== 1) ?
+                                                 'fileIconRemove2' : 'fileIconRemove'"
+                                                id="span_{{i + '_' + j}}"
+                                                [style.display]="(fileAttachmentsFormGroups[i]['controls']['files']['controls'][j].get('onLoad').value) ? 'block' : 'none'"
+                                        >
+                                        </span>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </form>
+                <div class="pl-3">
+                    <span style="cursor: pointer" (click)="(threadLikeList[i].like) ? addLike(i) : addUnLike(i)">
+                        <i title="{{(threadLikeList[i].like) ? ('Courses.AddLike' | translate) : ('Courses.AddUnLike' | translate)}}" class="fas fa-heart" id="heart_{{i}}"></i>
+                    </span>
+                    <span class="pr-2 pl-2">{{(threadMessage.actions && threadMessage.actions.Like) ? (threadMessage.actions.Like | number) : '0'}}</span>
+                    <span style="cursor: pointer" (click)="showReply(i)"><i title="{{'Courses.AddReply' | translate}}" class="fas fa-comment pl-5"></i></span>
+                    <span style="cursor: pointer" class="pl-2" (click)="showReply(i)">{{'MESSAGE.Reply' | translate}}</span>
+                </div>
+            </div>
+            <div class="container-fluid" style="padding-left: 40px; padding-right: 40px;">
+                <div class="chat pb-2" id="reply_{{i}}" style="display: none;">
+                    <div class="message message-before m-0">
+                        <img *ngIf="userProfile" [style.margin-top]="'12px'" [src]="(userProfile.avatarURL) ? userProfile.avatarURL : '../../../../../../assets/img/user-avatar.png'" />
+                        <div style="position: relative">
+                            <input placeholder="{{'MESSAGE.EnterNewMessage' | translate}}" [(ngModel)]="replyMessage" (keyup)="onKey2(i, $event)" class="form-control" type="text">
+                            <i (click)="createReplyThreadLesson(i)" class="pe-7s-paper-plane reply-icon" title="{{'MESSAGE.SEND' | translate}}"></i>
+                            <i class="pe-7s-link" (click)="addNewRepyFile(i)"></i>
+                            <input type="file" multiple style="display: none" accept="image/*" id="fileInputNewReplyMsg_{{i}}" (change)="previewFileNewReplyMsg(i, $event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid bg-fff pb-2 mb-5 reply-list-area scroll scrollbar-cyan" *ngIf="threadMessage && threadMessage.reply && threadMessage.reply.length > 0">
+                <ng-container *ngFor="let reply of threadMessage.reply; let replyIndex = index;">
+                    <div class="container-fluid bg-chat-reply pb-2" *ngIf="reply">
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="chat">
+                                    <div class="message">
+                                        <img [src]="(reply.user && reply.user.avatarURL) ? reply.user.avatarURL : '../../../../../assets/img/user-avatar.png'" />
+                                        <div>
+                                            <div class="bg-content-reply reply">
+                                            <span style="font-weight: bold" class="mr-1">
+                                                {{(reply.user && reply.user.name) ? (reply.user.name + ':') : ''}}
+                                            </span>
+                                                <ng-container *ngIf="!getIsReplyEdit(i, replyIndex)">
+                                                    {{(reply.msg) ? reply.msg : ''}}
+                                                </ng-container>
+                                            </div>
+                                            <div class="input-message" style="position: relative" *ngIf="getIsReplyEdit(i, replyIndex)">
+                                                <textarea style="width: 100% !important;" class="form-control font-textarea" (keyup)="changeThreadReplyMessage(i, replyIndex, $event)"  id="threadReplyMessage_{{i + '_' + replyIndex}}" rows="3"> {{reply.msg}}</textarea>
+                                                <i (click)="changeThreadReplyMessageName(i, replyIndex)" class="pe-7s-paper-plane" title="{{'MESSAGE.SEND' | translate}}"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="font-comment text-right">
+                                    <p class="mb-0 russ-minutes spentTime-reply" *ngIf="reply.createOn && reply.timeSpentMore === ''">
+                                        {{("DATEFORMAT.DayString" | translate: {'st': getCreateDateInfo(reply.createOn).st, 'day': getCreateDateInfo(reply.createOn).day})  + '/' +
+                                        ('DATEFORMAT.' + getCreateDateInfo(reply.createOn).month | translate) + '/' +
+                                        ("DATEFORMAT.YearString" | translate: {'year': getCreateDateInfo(reply.createOn).year}) + ', ' +
+                                        getCreateDateInfo(reply.createOn).hour + ':' + getCreateDateInfo(reply.createOn).minute + ' ' +
+                                        (("DATEFORMAT." + getCreateDateInfo(reply.createOn).ampm) | translate)}}
+                                    </p>
+                                    <p class="mb-0 russ-minutes spentTime-reply" *ngIf="reply.createOn && reply.timeSpentMore !== ''">
+                                        {{('MESSAGE.last' | translate) + ' ' + reply.timeSpent + ' ' + (reply.timeSpentMore |  translate)}}
+                                    </p>
+                                    <span
+                                            [class]="(getIsReplyEdit(i, replyIndex)) ? 'span-eye' : 'span-edit'"
+                                            [title]="(getIsReplyEdit(i, replyIndex)) ? ('MESSAGE.ViewMode' | translate) : ('MESSAGE.EditMode' | translate)"
+                                            (click)="updateIsReplyEdit(i, replyIndex)">
+                                  <i [class]="(getIsReplyEdit(i, replyIndex)) ? 'fas fa-eye mr-1' : 'fas fa-edit mr-1'">
+                                    {{(getIsReplyEdit(i, replyIndex)) ? ('LAYOUT.VIEW' | translate) : ('LAYOUT.EDIT' | translate)}}</i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-container *ngIf="fileReplyAttachmentsFormGroups[i][replyIndex]">
+                            <form [formGroup]="fileReplyAttachmentsFormGroups[i][replyIndex]">
+                                <ng-container style="display: block" formArrayName="files" *ngIf="fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'].length >= 0">
+                                    <div class="files-list scroll scrollbar-cyan mx-auto">
+                                        <ng-container style="display: block" *ngFor="let file of fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls']; let u = index;">
+                                            <ng-container [style.display]="(fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'][u].get('onLoad').value) ? 'block' : 'none'" [formGroupName]="u">
+                                                <input type="hidden" formControlName="onLoad">
+                                                <input type="hidden" formControlName="fileExt">
+                                                <input type="hidden" formControlName="data">
+                                                <div style="position: relative; display: inline-block">
+                                                    <img
+                                                            (click)="showReplyImage(i, replyIndex, u)"
+                                                            [class]="(u === 0) ? 'ml-4 mr-4' : 'mr-4'"
+                                                            [src]="(fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'][u].get('url').value) ?
+                                                         fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'][u].get('url').value : '../../../../../../assets/img/user-avatar.png'"
+                                                            height="105px" width="81px"
+                                                            alt="">
+                                                    <span
+                                                            [class]="(j === fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'].length - 1 &&
+                                                        fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'].length !== 1) ?
+                                                         'fileIconRemove2' : 'fileIconRemove'"
+                                                            id="span_reply_{{replyIndex + '_' + u}}"
+                                                            [style.display]="(fileReplyAttachmentsFormGroups[i][replyIndex]['controls']['files']['controls'][u].get('onLoad').value) ? 'block' : 'none'"
+                                                    >
+                                                    </span>
+                                                </div>
+                                            </ng-container>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </form>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <span class="pl-4 show-more-reply" (click)="loadMoreReply(i, threadMessage.reply.length - 1)" *ngIf="threadMessage.reply && threadMessage.reply.length < threadMessage.replyCount">
+                    {{'MESSAGE.More' | translate}}
+                </span>
+            </div>
+        </ng-container>
+    </div>
+</div>
+<div mdbModal #showImageModal="mdbModal" class="modal fade left" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel3" aria-hidden="true" [config]='{backdrop: true, ignoreBackdropClick: false}'>
+    <div class="modal-dialog showImgModal" role="document">
+        <div class="modal-content">
+            <div class="modal-body pt-3 text-center">
+                <h4 style="color: #fff">{{'MESSAGE.PreviewImages' | translate}}</h4>
+            </div>
+            <div class="modal-body pt-3 pb-3 text-center">
+                <div>
+                    <i class="pe-7s-angle-left-circle" (click)="addUpdateRunIndex(-1)" *ngIf="(selectedImages.length !== 1)"></i>
+                    <img [src]="selectedImages[autoRunIndex]" height="350px" width="270px" class="ml-3 mr-3">
+                    <i class="pe-7s-angle-right-circle" (click)="addUpdateRunIndex(1)" *ngIf="(selectedImages.length !== 1)"></i>
+                </div>
+            </div>
+            <div class="text-center pb-2">
+                <button class="button-cancel" (click)="showImageModal.hide()">{{'LAYOUT.CLOSE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

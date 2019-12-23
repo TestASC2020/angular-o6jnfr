@@ -3,38 +3,85 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "demo": {
+    "e-learning": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/demo",
+            "outputPath": "dist/e-learning",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/manifest.json",
+              "src/firebase-messaging-sw.js"
             ],
-            "styles": [
-              "src/styles.css"
+            "styles": [{
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/css/all.css"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/solid.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/regular.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/brands.scss"
+              },
+              {
+                "input": "src/app/lib/ng-uikit-pro-standard/assets/scss/bootstrap/bootstrap.scss"
+              },
+              {
+                "input": "src/app/lib/ng-uikit-pro-standard/assets/scss/mdb.scss"
+              },
+              {
+                "input": "./node_modules/font-awesome/css/font-awesome.css"
+              },
+              {
+                "input": "src/assets/pe-icon-7-stroke/css/pe-icon-7-stroke.css"
+              },
+              {
+                "input": "src/styles.scss"
+              }
             ],
-            "scripts": []
+            "scripts": [{
+                "input": "node_modules/chart.js/dist/Chart.js"
+              },
+              {
+                "input": "node_modules/screenfull/dist/screenfull.js"
+              },
+              {
+                "input": "node_modules/hammerjs/hammer.min.js"
+              },
+              {
+                "input": "./node_modules/jquery/dist/jquery.min.js"
+              },
+              {
+                "input": "src/assets/date-input-polyfill/date-input-polyfill.dist.js"
+              }
+            ]
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -43,25 +90,30 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "budgets": [{
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              }]
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "demo:build"
+            "browserTarget": "e-learning:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "demo:build:production"
+              "browserTarget": "e-learning:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "demo:build"
+            "browserTarget": "e-learning:build"
           }
         },
         "test": {
@@ -71,13 +123,58 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "styles.css"
+            "styles": [{
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/css/all.css"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/solid.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/regular.scss"
+              },
+              {
+                "input": "node_modules/@fortawesome/fontawesome-free/scss/brands.scss"
+              },
+              {
+                "input": "src/app/lib/ng-uikit-pro-standard/assets/scss/bootstrap/bootstrap.scss"
+              },
+              {
+                "input": "src/app/lib/ng-uikit-pro-standard/assets/scss/mdb.scss"
+              },
+              {
+                "input": "src/app/lib/ng-uikit-pro-standard/assets/scss/mdb.scss"
+              },
+              {
+                "input": "src/assets/pe-icon-7-stroke/css/pe-icon-7-stroke.css"
+              },
+              {
+                "input": "src/styles.scss"
+              }
             ],
-            "scripts": [],
+            "scripts": [{
+                "input": "node_modules/chart.js/dist/Chart.js"
+              },
+              {
+                "input": "node_modules/screenfull/dist/screenfull.js"
+              },
+              {
+                "input": "node_modules/hammerjs/hammer.min.js"
+              },
+              {
+                "input": "./node_modules/jquery/dist/jquery.min.js"
+              },
+              {
+                "input": "src/assets/date-input-polyfill/date-input-polyfill.dist.js"
+              }
+            ],
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/manifest.json",
+              "src/firebase-messaging-sw.js"
             ]
           }
         },
@@ -94,7 +191,35 @@
           }
         }
       }
+    },
+    "e-learning-e2e": {
+      "root": "e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "e-learning:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "e-learning:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
-  "defaultProject": "demo"
+  "defaultProject": "e-learning"
 }

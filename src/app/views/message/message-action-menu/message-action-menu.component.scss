@@ -1,0 +1,83 @@
+@import "../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.font-messages {
+  font-weight: bold;
+  color: #0e129d;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ .popover-content {
+    min-width: 130px;
+    padding-right: 7px;
+}
+:host /deep/ {
+  .popover::after {
+    right: 50%;
+    top: 0;
+    content: '';
+    margin: 0px -9px 0 0;
+    border-style: solid;
+    border-width: 0px 8px 8px 8px;
+    border-color: transparent transparent #858585 transparent;
+    margin-top: -.5rem;
+  }
+  .popover {
+    margin-left: 22px;
+    margin-top: 5px;
+  }
+}
+.fa-users {
+  color: #0b7c0a;
+  &:hover {
+    color: #11e810;
+  }
+}
+.fa-search {
+  color: #0320ad;
+  &:hover {
+    color: #4b5cff;
+  }
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}
+.breadcrum-title {
+  color: #C3C3C3;
+  font-size: 14px;
+  .breadcrum {
+    color: #007bff;
+    font-size: 14px;
+    &:hover{
+      color: #0056b3;
+    }
+  }
+}

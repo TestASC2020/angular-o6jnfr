@@ -1,0 +1,76 @@
+@import "../../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0.2rem;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ .popover-content {
+    min-width: 130px;
+    padding-right: 7px;
+}
+.pe-7s-chat {
+  color: #3570ef;
+  &:hover {
+    color: #4f9eef;
+  }
+}
+.pe-7s-users{
+  color: #0b7c0a;
+  &:hover {
+    color: #11e810;
+  }
+}
+.pe-7s-info {
+  color: #39d3ef;
+  &:hover {
+    color: #3684ef;
+  }
+}
+.pe-7s-news-paper {
+  color: #000000;
+  &:hover {
+    color: #cbcbcb;
+  }
+}
+.pe-7s-notebook {
+  color: #ffe212;
+  &:hover {
+    color: #9f8a0e;
+  }
+}
+.pe-7s-trash {
+  color: red;
+  &:hover {
+    color: #ff7d6e;
+  }
+}
+
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}

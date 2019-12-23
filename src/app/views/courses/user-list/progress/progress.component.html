@@ -1,0 +1,96 @@
+<div class="row pb-3 small-pd">
+    <div class="col-sm-8 my-auto breadcrums-title">
+        <ng-container *ngFor="let toRouter of toRouters; let i = index;">
+            <a *ngIf="i !== toRouters.length - 1" class="breadcrums mr-1" routerLink="{{toRouter.link}}">{{toRouter.display | translate}}</a>
+            <span class="mr-1" *ngIf="i !== toRouters.length - 1">></span>
+            <span *ngIf="i === toRouters.length - 1">{{toRouter.display | translate}}</span>
+        </ng-container>
+    </div>
+</div>
+<div class="bg-title">
+    <div class="row">
+        <div class="col-sm-1">
+            <p class="course-r">{{"Courses.Course" | translate}}</p>
+        </div>
+        <div class="col-sm-9">
+            <p class="course-r">{{"Courses.Forex_trading" | translate}}</p>
+        </div>
+        <div class="col-sm-2">
+            <p class="course-r">{{"Courses.OPENED_ON" | translate}}</p>
+        </div>
+
+    </div>
+</div>
+<div class="p-3 pr-3 bg-white">
+    <div class="table-responsive">
+        <table width="100%">
+            <tbody>
+            <tr>
+                <th width="10" scope="row"> <p class="number-tops">#0009123789</p></th>
+                <td width="90%"><p class="number-tops">Enroll on 15-Aug-2018</p></td>
+            </tr>
+            <tr>
+                <th width="10%" scope="row"> <p class="number-top">Phạm Mai Anh</p></th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="bg-title">
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="course-r">{{"Courses.Curriculum_Units" | translate}}</p>
+        </div>
+    </div>
+</div>
+<div class="full-width bg-white">
+    <div class="table-responsive">
+        <table width="100%" class="table">
+            <tr class="header-title">
+                <td width="20%">{{"Courses.NAME" | translate}}</td>
+                <td width="30%">{{"Courses.REQUIRED" | translate}}</td>
+                <td width="30%">{{"Courses.LEARNED" | translate}}</td>
+                <td width="20%">{{"Courses.PERCENT" | translate}}</td>
+            </tr>
+            <ng-container *ngFor="let item of items;">
+                <tr class="info-title">
+                    <td>{{item.name}}</td>
+                    <td>{{item.required}}</td>
+                    <td>{{item.learned}}</td>
+                    <td>{{item.percent}}</td>
+                </tr>
+            </ng-container>
+        </table>
+    </div>
+</div>
+<div class="bg-title">
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="course-r">{{"Courses.Activities" | translate}}</p>
+        </div>
+    </div>
+</div>
+<div class="p-3 pr-3 bg-white white-pb">
+    <div class="table-responsive">
+        <table width="100%">
+            <tbody>
+            <tr>
+                <th width="10" scope="row"> <p class="number-top">{{"Courses.Last_active" | translate}}</p></th>
+                <td width="90%"><p class="number-tops">15-Aug-2018 10:15</p></td>
+            </tr>
+            <tr>
+                <th width="10%" scope="row"> <p class="number-top">{{"Courses.Discussion" | translate}}</p></th>
+                <td width="90%"><p class="number-tops">10/500</p></td>
+            </tr>
+            <tr>
+                <th width="10%" scope="row"> <p class="number-top">{{"Courses.Warning" | translate}}</p></th>
+                <td width="90%"><p class="number-tops">2</p></td>
+            </tr>
+            <tr>
+                <th width="10%" scope="row"> <p class="number-top">{{"Courses.Banned" | translate}}</p></th>
+                <td width="90%"><p class="number-tops">0</p></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+@import "../../../globale_variables";
+.pop-content {
+  ul {
+    padding-left: 0.5rem;
+
+    li {
+      min-width: 6.25rem;
+      padding: 0 0 0.3rem 0;
+      display: block;
+      :hover {
+        font-weight: bold;
+      }
+      i {
+        width: 1rem;
+      }
+    }
+  }
+}
+
+button.action-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.fa-ellipsis-v{
+  padding-top: 13px !important;
+}
+.popover-body {
+  padding: 0 !important;
+}
+:host /deep/ {
+  .popover-content {
+    min-width: 110px;
+  }
+  .popover::after {
+    border-color: transparent;
+  }
+  .list-group-item {
+    background-color: unset;
+  }
+  .popover {
+    border-radius: 2.3rem;
+  }
+}
+.pe-7s-look {
+  color: #0b7c0a;
+  &:hover {
+    color: #11e810;
+  }
+}
+.pe-7s-note {
+  color: #6ef3ff;
+  &:hover {
+    color: #2562ff;
+  }
+}
+.pe-7s-like2 {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #0A1AFB;
+  font-weight: bold;
+  &:hover {
+    color: #00e5ff;
+  }
+}
+.list-group-flush {
+  cursor: pointer;
+}
+.padding-icon {
+  font-weight: bold;
+  vertical-align: bottom;
+  font-size: 18px;
+}
+img {
+  width: 20px;
+}

@@ -1,0 +1,14 @@
+<div class="menu-icon">
+    <button class="action-button" [popover]="popContent">
+        <i class="pe-7s-like2 pl-3"></i><span class="">{{"MESSAGE.Like" | translate}}</span>
+    </button>
+</div>
+<popover-content #popContent placement="top" [closeOnClickOutside]="true" class="popover-body">
+    <div class="pop-content">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item" (click)="edit(item);">
+                <img class="mr-3" src="../../../../assets/icons/smile.png" alt=""><img class="mr-3" src="../../../../assets/icons/cute.png" alt=""><img src="../../../../assets/icons/sad.png" alt="">
+            </li>
+        </ul>
+    </div>
+</popover-content>

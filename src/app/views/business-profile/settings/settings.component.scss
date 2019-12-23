@@ -1,0 +1,122 @@
+@import "../../../globale_variables";
+.taskbar{
+  position: relative;
+  background-color: $button-color;
+  padding-right: 8px;
+  box-sizing: border-box;
+}
+.font-he {
+  font-size: 18px;
+  color: #fff;
+  font-weight: 500;
+  padding-top: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+.font-education {
+  font-size: 18px;
+  font-weight: bold;
+}
+.breadcrums-title {
+  color: #C3C3C3;
+  font-size: 14px;
+
+  .breadcrums {
+    color: #C3C3C3;
+    font-size: 14px;
+  }
+}
+.background-setting {
+  background-color: #fff;
+}
+.button-save {
+  cursor: pointer;
+  color: white;
+  border: 1px solid #3BC7EF;
+  background:$button-color;
+  border-radius: 4px;
+  width: 129px;
+  height: 38px;
+  &:hover {
+    -webkit-box-shadow: 0px 1px 2px 1px #26c3cc;
+    -moz-box-shadow:    0px 1px 2px 1px #26c3cc;
+    box-shadow:         0px 1px 2px 1px #26c3cc;
+  }
+}
+.button-cancel {
+  cursor: pointer;
+  margin: 0.375rem;
+  color: #3BC7EF;
+  border: 1px solid #3BC7EF;
+  background: #fff;
+  border-radius: 4px;
+  width: 129px;
+  height: 38px;
+  &:hover {
+    -webkit-box-shadow: 0px 1px 2px 1px #26c3cc;
+    -moz-box-shadow:    0px 1px 2px 1px #26c3cc;
+    box-shadow:         0px 1px 2px 1px #26c3cc;
+  }
+}
+.font-learn {
+  margin-top: 5px;
+}
+.center-font {
+  display: flex;
+}
+.table th, .table td {
+  border-top: 0;
+}
+td {
+  font-weight: 400;
+}
+.checkbox-r {
+  padding-left: 0.75rem;
+}
+.max-font {
+  margin-bottom: 0;
+  color: #9A9A9A;
+}
+label {
+  font-weight: 400;
+}
+//Begin - Confirm settings
+.modal-dialog {
+  top: 25%;
+  max-width: 320px;
+}
+.modal-header {
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  justify-content: space-between;
+  padding: 1rem;
+  height: 50px;
+  border-bottom: 0;
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0.3rem;
+}
+.modal-content .close {
+  position: unset !important;
+  right: 0 !important;
+}
+.btn-button {
+  margin: auto;
+  margin-bottom: 11px;
+}
+.modal-body {
+  font-weight: normal;
+  padding: 0;
+}
+.confirm {
+  text-align: center;
+  margin-bottom: 0;
+  font-weight: 500;
+  font-size: 28px;
+  color: #000000;
+}
+//End - Confirm settings
+/deep/ #toast-container{
+  position: absolute !important;
+}
