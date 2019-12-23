@@ -1,0 +1,33 @@
+import {AsyncPipe, CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MDBBootstrapModulesPro} from 'src/app/lib';
+import {TranslateModule} from '@ngx-translate/core';
+import {MainNavigationComponent} from './main-navigation/main-navigation.component';
+import {FooterComponent} from './footer/footer.component';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslateModule,
+    MDBBootstrapModulesPro.forRoot()
+  ],
+  declarations: [
+    FooterComponent,
+    MainNavigationComponent,
+    NavigationComponent
+  ],
+  exports: [
+    FooterComponent,
+    MainNavigationComponent
+  ],
+  providers: [
+      AsyncPipe
+  ]
+})
+export class MainLayoutModule {
+
+}
